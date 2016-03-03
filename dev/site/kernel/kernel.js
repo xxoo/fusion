@@ -395,19 +395,29 @@ define(['site/pages/pages', 'site/popups/popups'], function(pages, popups) {
 			kernel.showReadable('<iframe frameborder="no" allowtransparency="yes" marginwidth="0" marginheight="0" style="width:100%;height:100%;" src="' + url + '"></iframe>', width, height, callback);
 		};
 		kernel.confirm = function(text, callback, width, height) {
+			var ctn, txt;
 			if (dlgCtn.className === '') {
+				ctn = $(dlgCtn).find('>div');
+				txt = ctn.find('>div>div')
 				dlgCb = callback;
-				$(dlgCtn).find('>div').css('width', width || '400px').css('height', height || '150px').find('>div>div').text(text);
+				ctn.css('width', width || '400px');
+				txt.text(text);
 				dlgCtn.className = 'confirm';
+				ctn.css('height', txt.outerHeight() + 82 + 'px');
 			} else {
 				dlgStack.push(['confirm', text, callback, width, height]);
 			}
 		};
 		kernel.alert = function(text, callback, width, height) {
+			var ctn, txt;
 			if (dlgCtn.className === '') {
+				ctn = $(dlgCtn).find('>div');
+				txt = ctn.find('>div>div');
 				dlgCb = callback;
-				$(dlgCtn).find('>div').css('width', width || '400px').css('height', height || '120px').find('>div>div').text(text);
+				ctn.css('width', width || '400px');
+				txt.text(text);
 				dlgCtn.className = 'alert';
+				ctn.css('height', txt.outerHeight() + 50 + 'px');
 			} else {
 				dlgStack.push(['alert', text, callback, width, height]);
 			}
