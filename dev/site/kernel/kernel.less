@@ -18,12 +18,11 @@
     left: 0;
     bottom: 0;
     right: 0;
-    z-index: 9;
 }
 #popup,
 #readable,
 #dialog {
-    background-image: url(./images/halftrans.png);
+    background-image: url(images/halftrans.png);
 }
 #loading {
     background-image: url(images/trans.gif);
@@ -63,7 +62,7 @@
     overflow: auto;
 }
 #loading > div > div {
-    background-image: url(./images/loading.gif);
+    background-image: url(images/loading.gif);
     background-repeat: no-repeat;
     background-position: 50% 20px;
     text-align: center;
@@ -165,19 +164,33 @@
     top: 80px;
     left: 0;
     right: 0;
-    z-index: 9;
     pointer-events: none;
+    > span {
+        font-size: 16px;
+        color: #666666;
+        padding: 10px 20px;
+        display: inline-block;
+        white-space: pre;
+        line-height: 24px;
+        border: 1px solid silver;
+        margin: 10px;
+        box-shadow: 0 0 10px silver;
+        background-color: #FFFBC9;
+        border-radius: 6px;
+    }
 }
-#hint > span {
-    font-size: 16px;
-    color: #666666;
-    padding: 10px 20px;
-    display: inline-block;
-    white-space: pre;
-    line-height: 24px;
-    border: 1px solid silver;
-    margin: 10px;
-    box-shadow: 0 0 10px silver;
-    background-color: #FFFBC9;
-    border-radius: 6px;
+
+.halfTrans {
+    background-image: url(images/halftrans.png);
+}
+.trans {
+    background-image: url(images/trans.gif);
+}
+.isLoading {
+    background-image: url(images/loading.gif);
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+    > * {
+        visibility: hidden;
+    }
 }

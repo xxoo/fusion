@@ -2,9 +2,6 @@
 'use strict';
 define(['site/pages/pages', 'site/popups/popups'], function(pages, popups) {
 	var kernel = {
-		// 加入css 到head中;
-		// 如果是生产环境; 加入 css
-		// 如果是开发环境 加入less
 		appendCss: function(url) { //自动根据当前环境添加css或less
 			var csslnk = document.createElement('link');
 			csslnk.type = 'text/css';
@@ -240,7 +237,7 @@ define(['site/pages/pages', 'site/popups/popups'], function(pages, popups) {
 			var popupcfg = popups[id];
 			if (popupcfg) {
 				initLoad(popupcfg, id, false, function() {
-					if (popupcfg.open instanceof Function) {
+					if (typeof popupcfg.open === 'function') {
 						popupcfg.open(param);
 					} else {
 						kernel.showPopup(id, param);
@@ -253,7 +250,7 @@ define(['site/pages/pages', 'site/popups/popups'], function(pages, popups) {
 		kernel.showPopup = function(id, param) {
 			var fire, popupcfg = popups[id];
 			if (activePopup) {
-				if (popups[activePopup].onunload instanceof Function) {
+				if (typeof popups[activePopup].onunload === 'function') {
 					popups[activePopup].onunload();
 				}
 				document.getElementById(activePopup).style.display = '';
@@ -264,12 +261,12 @@ define(['site/pages/pages', 'site/popups/popups'], function(pages, popups) {
 			activePopup = id;
 			popup.className = id;
 			document.getElementById(id).style.display = 'block';
-			if (fire && kernel.popupEvents.onshow instanceof Function) {
+			if (fire && typeof kernel.popupEvents.onshow === 'function') {
 				kernel.popupEvents.onshow({
 					type: 'show'
 				});
 			}
-			if (popupcfg.onload instanceof Function) {
+			if (typeof popupcfg.onload === 'function') {
 				popupcfg.onload(param);
 			}
 		};
@@ -284,12 +281,12 @@ define(['site/pages/pages', 'site/popups/popups'], function(pages, popups) {
 					close = true;
 				}
 				if (close) {
-					if (popups[activePopup].onunload instanceof Function) {
+					if (typeof popups[activePopup].onunload === 'function') {
 						popups[activePopup].onunload();
 					}
 					document.getElementById(activePopup).style.display = '';
 					popup.className = popup.style.display = activePopup = '';
-					if (kernel.popupEvents.onhide instanceof Function) {
+					if (typeof kernel.popupEvents.onhide === 'function') {
 						kernel.popupEvents.onhide({
 							type: 'hide'
 						});
@@ -328,7 +325,7 @@ define(['site/pages/pages', 'site/popups/popups'], function(pages, popups) {
 				loadingRT -= 1;
 				if (loadingRT === 0) {
 					document.getElementById('loading').style.display = '';
-					if (kernel.dialogEvents.onloaded instanceof Function) {
+					if (typeof kernel.dialogEvents.onloaded === 'function') {
 						kernel.dialogEvents.onloaded({
 							type: 'loaded'
 						});
@@ -460,10 +457,10 @@ define(['site/pages/pages', 'site/popups/popups'], function(pages, popups) {
 		kernel.reloadPage = function() {
 			kernel.closePopup();
 			kernel.hideReadable();
-			if (pages[currentpage].onunload instanceof Function) {
+			if (typeof pages[currentpage].onunload === 'function') {
 				pages[currentpage].onunload();
 			}
-			if (pages[currentpage].onload instanceof Function) {
+			if (typeof pages[currentpage].onload === 'function') {
 				pages[currentpage].onload(true);
 			}
 		};
@@ -485,7 +482,7 @@ define(['site/pages/pages', 'site/popups/popups'], function(pages, popups) {
 					//发生页面跳转或首次加载
 					if (kernel.location.id !== currentpage) {
 						if (currentpage) {
-							if (pages[currentpage].onunload instanceof Function) {
+							if (typeof pages[currentpage].onunload === 'function') {
 								pages[currentpage].onunload();
 							}
 							document.getElementById(currentpage).style.display = '';
@@ -499,7 +496,7 @@ define(['site/pages/pages', 'site/popups/popups'], function(pages, popups) {
 						}
 						document.body.className = currentpage = kernel.location.id;
 						document.getElementById(kernel.location.id).style.display = 'block';
-						if (pages[kernel.location.id].onload instanceof Function) {
+						if (typeof pages[kernel.location.id].onload === 'function') {
 							pages[kernel.location.id].onload(true);
 						}
 						if (scroll) {
@@ -511,7 +508,7 @@ define(['site/pages/pages', 'site/popups/popups'], function(pages, popups) {
 							}
 						}
 					} else {
-						if (pages[kernel.location.id].onload instanceof Function) {
+						if (typeof pages[kernel.location.id].onload === 'function') {
 							//未发生页面跳转但url有变化时允许页面缓存
 							pages[kernel.location.id].onload();
 						}
