@@ -416,7 +416,7 @@ define(['site/pages/pages', 'site/popups/popups'], function(pages, popups) {
 				dlgCtn.className = 'alert';
 				ctn.css('height', txt.outerHeight() + 50 + 'px');
 			} else {
-				dlgStack.push(['alert', text, callback, width, height]);
+				dlgStack.push(['alert', text, callback, width]);
 			}
 		};
 		$('#readable > div > a').on('click', kernel.hideReadable);
