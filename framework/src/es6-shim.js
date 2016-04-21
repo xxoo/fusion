@@ -2,8 +2,8 @@
   * https://github.com/paulmillr/es6-shim
   * @license es6-shim Copyright 2013-2016 by Paul Miller (http://paulmillr.com)
   *   and contributors,  MIT License
-  * es6-shim: v0.34.4
-  * see https://github.com/paulmillr/es6-shim/blob/0.34.4/LICENSE
+  * es6-shim: v0.35.0
+  * see https://github.com/paulmillr/es6-shim/blob/0.35.0/LICENSE
   * Details and documentation:
   * https://github.com/paulmillr/es6-shim/
   */
@@ -1957,8 +1957,9 @@
     tanh: function tanh(value) {
       var x = Number(value);
       if (Number.isNaN(x) || x === 0) { return x; }
-      if (x === Infinity) { return 1; }
-      if (x === -Infinity) { return -1; }
+      // can exit early at +-20 as JS loses precision for true value at this integer
+      if (x >= 20) { return 1; }
+      if (x <= -20) { return -1; }
       var a = Math.expm1(x);
       var b = Math.expm1(-x);
       if (a === Infinity) { return 1; }
