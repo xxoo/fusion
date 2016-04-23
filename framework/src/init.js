@@ -7,14 +7,14 @@ var _hmt;
 			document.getElementById('loading').firstChild.firstChild.firstChild.data = '请使用IE7+、Chrome、Firefox访问';
 		};
 	} else {
-		require(['/framework/require-config.js?' + new Date().valueOf()], function() {
+		require(['/fusion/framework/require-config.js?' + new Date().valueOf()], function() {
 			var l = document.createElement('link');
 			var m = document.createElement('link');
 			if (require.data.debug) {
 				l.rel = m.rel = 'stylesheet/less';
 				l.href = require.toUrl('site/index/index.less');
 				m.href = require.toUrl('site/kernel/kernel.less');
-				require(['/framework/less.js'], function() {
+				require(['/fusion/framework/less.js'], function() {
 					require(['site/index/index']);
 				});
 			} else {
