@@ -1,0 +1,1 @@
+"use strict";define("site/pages/pages",{home:{js:"home",html:"home.html",css:"home.less"}});
