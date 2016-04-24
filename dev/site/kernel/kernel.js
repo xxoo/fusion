@@ -438,11 +438,12 @@ define(['site/pages/pages', 'site/popups/popups'], function(pages, popups) {
 
 	//页面加载相关功能
 	! function() {
-		var currentpage;
+		var currentpage, routingCb;
 		//启动路由处理，只需要调用一次
 		//func为每次路由发生改变时需要执行的回调, 此回调会在页面加载前执行
 		kernel.init = function (func) {
 			var lastHash;
+			routingCb = func;
 			if ('onhashchange' in window) {
 				$(window).on('hashchange', hashchange);
 			} else {
@@ -478,8 +479,8 @@ define(['site/pages/pages', 'site/popups/popups'], function(pages, popups) {
 				kernel.location = nl;
 				kernel.closePopup();
 				kernel.hideReadable();
-				if (typeof func === 'function') {
-					func();
+				if (typeof routingCb === 'function') {
+					routingCb();
 				}
 				initLoad(pages[kernel.location.id], kernel.location.id, true, function() {
 					var scroll, h;
