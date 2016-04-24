@@ -400,7 +400,7 @@ define(['site/pages/pages', 'site/popups/popups'], function(pages, popups) {
 				ctn.css('width', width || '400px');
 				txt.text(text);
 				dlgCtn.className = 'confirm';
-				ctn.css('height', txt.outerHeight() + 82 + 'px');
+				ctn.css('height', txt.outerHeight() + 108 + 'px');
 			} else {
 				dlgStack.push(['confirm', text, callback, width, height]);
 			}
@@ -414,7 +414,7 @@ define(['site/pages/pages', 'site/popups/popups'], function(pages, popups) {
 				ctn.css('width', width || '400px');
 				txt.text(text);
 				dlgCtn.className = 'alert';
-				ctn.css('height', txt.outerHeight() + 50 + 'px');
+				ctn.css('height', txt.outerHeight() + 46 + 'px');
 			} else {
 				dlgStack.push(['alert', text, callback, width]);
 			}
@@ -440,7 +440,8 @@ define(['site/pages/pages', 'site/popups/popups'], function(pages, popups) {
 	! function() {
 		var currentpage;
 		//启动路由处理，只需要调用一次
-		kernel.start = function (func) {
+		//func为每次路由发生改变时需要执行的回调, 此回调会在页面加载前执行
+		kernel.init = function (func) {
 			var lastHash;
 			if ('onhashchange' in window) {
 				$(window).on('hashchange', hashchange);
@@ -477,6 +478,9 @@ define(['site/pages/pages', 'site/popups/popups'], function(pages, popups) {
 				kernel.location = nl;
 				kernel.closePopup();
 				kernel.hideReadable();
+				if (typeof func === 'function') {
+					func();
+				}
 				initLoad(pages[kernel.location.id], kernel.location.id, true, function() {
 					var scroll, h;
 					//发生页面跳转或首次加载
