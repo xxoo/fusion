@@ -1,6 +1,6 @@
 // kernel
 'use strict';
-define(['site/pages/pages', 'site/popups/popups'], function(pages, popups) {
+define(['site/pages/pages', 'site/popups/popups', 'common/slider/slider'], function(pages, popups, slider) {
 	var kernel = {
 		appendCss: function(url) { //自动根据当前环境添加css或less
 			var csslnk = document.createElement('link');
@@ -305,6 +305,47 @@ define(['site/pages/pages', 'site/popups/popups'], function(pages, popups) {
 			kernel.closePopup();
 		});
 	}();
+	//图片展示
+	! function() {
+		var ctn = $('#photoview'),
+			close = ctn.find('.close'),
+			prev = ctn.find('.prev'),
+			next = ctn.find('.next'),
+			sld = slider(ctn.find('>div'));
+		kernel.showPhotoView = function(contents, idx) {
+			var i;
+			if ($.type(contents) === 'array') {
+				for (i = 0; i < contents.length; i++) {
+					sld.add($('<div style="background-image:url(' + contents[i] + ')"></div>'));
+				}
+				if (idx >= 0 && idx < sld.children.length) {
+					sld.slideTo(idx, true);
+				}
+				if (sld.children.length > 1) {
+					prev.css('display', 'block');
+					next.css('display', 'block');
+				} else {
+					prev.css('display', '');
+					next.css('display', '');
+				}
+			}
+		};
+		kernel.hidePhotoView = function() {
+			while (sld.children.length) {
+				sld.remove(0);
+			}
+		};
+		prev.on('click', function() {
+			sld.slideTo(sld.current - 1);
+		});
+		next.on('click', function() {
+			sld.slideTo(sld.current + 1);
+		});
+		close.on('click', kernel.hidePhotoView);
+		sld.onchange = function() {
+			ctn.css('display', this.current === undefined ? '' : 'block');
+		};
+	}();
 	//对话框及提示功能
 	! function() {
 		var hintmo,
@@ -441,7 +482,7 @@ define(['site/pages/pages', 'site/popups/popups'], function(pages, popups) {
 		var currentpage, routingCb;
 		//启动路由处理，只需要调用一次
 		//func为每次路由发生改变时需要执行的回调, 此回调会在页面加载前执行
-		kernel.init = function (func) {
+		kernel.init = function(func) {
 			var lastHash;
 			routingCb = func;
 			if ('onhashchange' in window) {
