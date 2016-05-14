@@ -85,8 +85,9 @@
     height: 30px;
     line-height: 30px;
     text-align: center;
-    text-shadow: 0 0 2px white;
+    text-shadow: 0 0 2px @closeShadowColor;
     margin: 2px 2px 0 0;
+    color: @closeColor;
 }
 #popup > div > div > div > .popupTitle {
     background-color: #F1F1F1;
@@ -125,6 +126,13 @@
     position: absolute;
     bottom: 50%;
     margin-bottom: 30px;
+    display: inline-block;
+    line-height: 32px;
+    font-size: 16px;
+    width: 96px;
+    border-radius: 16px;
+    background-color: @buttonBackgroundColor;
+    color: @buttonFaceColor;
 }
 #dialog > div > a.yes {
     right: 100%;
