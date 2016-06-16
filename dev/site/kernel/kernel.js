@@ -232,7 +232,7 @@ define(['site/pages/pages', 'site/popups/popups', 'common/slider/slider'], funct
 
 	//弹出窗口
 	! function() {
-		var activePopup, popup = document.getElementById('popup');
+		var activePopup, popup = document.getElementById('popups');
 		kernel.openPopup = function(id, param) {
 			var popupcfg = popups[id];
 			if (popupcfg) {
@@ -301,7 +301,7 @@ define(['site/pages/pages', 'site/popups/popups', 'common/slider/slider'], funct
 			return activePopup;
 		};
 		kernel.popupEvents = {};
-		$('#popup > div > a').on('click', function() {
+		$('#popups > div > a').on('click', function() {
 			kernel.closePopup();
 		});
 	}();
@@ -351,7 +351,7 @@ define(['site/pages/pages', 'site/popups/popups', 'common/slider/slider'], funct
 		var hintmo,
 			hintCtn = document.getElementById('hintCtn'),
 			loadingRT = 0,
-			dlgCtn = document.getElementById('dialog'),
+			dlgCtn = document.getElementById('dialogs'),
 			dlgStack = [],
 			dlgCb, raCb; //callbacks
 		kernel.showLoading = function(text) { //loading提示框, 每次调用引用计数＋1所以showLoading和hideLoading必须成对使用
@@ -414,9 +414,9 @@ define(['site/pages/pages', 'site/popups/popups', 'common/slider/slider'], funct
 		kernel.hideDialog = function(param) {
 			var f;
 			if (typeof dlgCb === 'function') {
-				if (dlgCtn.className === 'confirm') {
+				if (dlgCtn.className === 'isConfirm') {
 					dlgCb(param);
-				} else if (dlgCtn.className === 'alert') {
+				} else if (dlgCtn.className === 'isAlert') {
 					dlgCb();
 				}
 				dlgCb = undefined;
@@ -440,7 +440,7 @@ define(['site/pages/pages', 'site/popups/popups', 'common/slider/slider'], funct
 				dlgCb = callback;
 				ctn.css('width', width || '400px');
 				txt.text(text);
-				dlgCtn.className = 'confirm';
+				dlgCtn.className = 'isConfirm';
 				ctn.css('height', txt.outerHeight() + 108 + 'px');
 			} else {
 				dlgStack.push(['confirm', text, callback, width, height]);
@@ -454,7 +454,7 @@ define(['site/pages/pages', 'site/popups/popups', 'common/slider/slider'], funct
 				dlgCb = callback;
 				ctn.css('width', width || '400px');
 				txt.text(text);
-				dlgCtn.className = 'alert';
+				dlgCtn.className = 'isAlert';
 				ctn.css('height', txt.outerHeight() + 46 + 'px');
 			} else {
 				dlgStack.push(['alert', text, callback, width]);
@@ -572,11 +572,11 @@ define(['site/pages/pages', 'site/popups/popups', 'common/slider/slider'], funct
 			oldcfg.loaded = 1;
 			var ctnSel, family, exts;
 			if (isPage) {
-				ctnSel = '#page';
+				ctnSel = '#pages';
 				family = 'page';
 				exts = ['onload', 'onunload'];
 			} else {
-				ctnSel = '#popup > div > div';
+				ctnSel = '#popups > div > div';
 				family = 'popup';
 				exts = ['onload', 'onunload', 'open'];
 			}
