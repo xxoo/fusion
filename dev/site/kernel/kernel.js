@@ -1,6 +1,7 @@
 // kernel
 'use strict';
 define(['site/pages/pages', 'site/popups/popups', 'common/slider/slider'], function(pages, popups, slider) {
+	var homePage = 'home';
 	var kernel = {
 		appendCss: function(url) { //自动根据当前环境添加css或less
 			var csslnk = document.createElement('link');
@@ -37,7 +38,7 @@ define(['site/pages/pages', 'site/popups/popups', 'common/slider/slider'], funct
 		},
 		parseHash: function(hash) {
 			var i, a, s, nl = {
-				id: 'home',
+				id: homePage,
 				args: {}
 			};
 			hash = hash.substr(1).replace(/[#\?].*$/, '');
@@ -50,9 +51,9 @@ define(['site/pages/pages', 'site/popups/popups', 'common/slider/slider'], funct
 					}
 				}
 				for (i = 1; i < s.length; i++) {
-					a = s[i].match(/^([^=]+)(?:=(.+))?$/);
+					a = s[i].match(/^([^=]+)(=)?(.+)?$/);
 					if (a) {
-						nl.args[decodeURIComponent(a[1])] = a.length > 1 ? decodeURIComponent(a[2]) : undefined;
+						nl.args[decodeURIComponent(a[1])] = a[2] ? decodeURIComponent(a[3] || '') : undefined;
 					}
 				}
 			}
@@ -244,7 +245,7 @@ define(['site/pages/pages', 'site/popups/popups', 'common/slider/slider'], funct
 					}
 				});
 			} else {
-				kernel.hint('popup config not found: ' + id);
+				kernel.hint('popup config not found: ' + id, 'error');
 			}
 		};
 		kernel.showPopup = function(id, param) {
@@ -355,7 +356,7 @@ define(['site/pages/pages', 'site/popups/popups', 'common/slider/slider'], funct
 			dlgStack = [],
 			dlgCb, raCb; //callbacks
 		kernel.showLoading = function(text) { //loading提示框, 每次调用引用计数＋1所以showLoading和hideLoading必须成对使用
-			$('#loading > div > div').text(text ? text : '正在为您努力加载中...');
+			$('#loading > div > div').text(text ? text : '加载中...');
 			if (loadingRT === 0) {
 				document.getElementById('loading').style.display = 'block';
 			}
@@ -377,8 +378,9 @@ define(['site/pages/pages', 'site/popups/popups', 'common/slider/slider'], funct
 		kernel.isLoading = function() {
 			return loadingRT > 0;
 		};
-		kernel.hint = function(text, t) {
+		kernel.hint = function(text, className, t) {
 			var o = $('#hint');
+			o.prop('className', className ? className : '');
 			o.find('span').text(text);
 			if (hintmo) {
 				clearTimeout(hintmo);
@@ -387,12 +389,15 @@ define(['site/pages/pages', 'site/popups/popups', 'common/slider/slider'], funct
 				o[0].offsetWidth;
 				o.fadeIn();
 			}
+			if (!t) {
+				t = className === 'error' ? 4000 : className === 'warning' ? 3000 : 2000;
+			}
 			hintmo = setTimeout(function() {
 				hintmo = 0;
 				o.fadeOut(function() {
 					o.css('display', '');
 				});
-			}, t ? t : 4000);
+			}, t);
 		};
 		kernel.showReadable = function(html, width, height, callback) {
 			var readable = $('#readable');
@@ -441,7 +446,7 @@ define(['site/pages/pages', 'site/popups/popups', 'common/slider/slider'], funct
 				ctn.css('width', width || '400px');
 				txt.text(text);
 				dlgCtn.className = 'isConfirm';
-				ctn.css('height', txt.outerHeight() + 108 + 'px');
+				ctn.css('height', txt.outerHeight() + Math.max($(dlgCtn).find('>div>a.yes').outerHeight(), $(dlgCtn).find('>div>a.no').outerHeight()) + 76 + 'px');
 			} else {
 				dlgStack.push(['confirm', text, callback, width, height]);
 			}
@@ -479,12 +484,17 @@ define(['site/pages/pages', 'site/popups/popups', 'common/slider/slider'], funct
 
 	//页面加载相关功能
 	! function() {
-		var currentpage, routingCb;
+		var currentpage, routingCb, pageScroller;
 		//启动路由处理，只需要调用一次
 		//func为每次路由发生改变时需要执行的回调, 此回调会在页面加载前执行
-		kernel.init = function(func) {
+		//当指定ps时则表示使用局部滚动
+		kernel.init = function(func, ps, home) {
 			var lastHash;
 			routingCb = func;
+			pageScroller = ps;
+			if (home && home in pages) {
+				homePage = home;
+			}
 			if ('onhashchange' in window) {
 				$(window).on('hashchange', hashchange);
 			} else {
@@ -496,6 +506,19 @@ define(['site/pages/pages', 'site/popups/popups', 'common/slider/slider'], funct
 				}, 10);
 			}
 			hashchange();
+		};
+		kernel.setHome = function(home) {
+			var tmp;
+			if (home in pages) {
+				tmp = homePage;
+				homePage = home;
+				if (kernel.location && kernel.location.id === tmp) {
+					if (!kernel.isSameLocation(kernel.location, kernel.parseHash(location.hash))){
+						hashchange();
+						return true;
+					}
+				}
+			}
 		};
 		kernel.reloadPage = function() {
 			kernel.closePopup();
@@ -532,7 +555,7 @@ define(['site/pages/pages', 'site/popups/popups', 'common/slider/slider'], funct
 								pages[currentpage].onunload();
 							}
 							document.getElementById(currentpage).style.display = '';
-							scroll = !historyNav;
+							scroll = !pageScroller && !historyNav;
 						} else {
 							if ('autopopup' in kernel.location.args) {
 								kernel.openPopup(kernel.location.args.autopopup, kernel.location.args.autopopuparg);
@@ -549,9 +572,11 @@ define(['site/pages/pages', 'site/popups/popups', 'common/slider/slider'], funct
 							h = Math.max(document.body.scrollTop, document.documentElement.scrollTop);
 							if (h > 0) {
 								$('html,body').animate({
-									'scrollTop': 0
+									scrollTop: 0
 								}, h);
 							}
+						} else if (pageScroller) {
+							pageScroller.scrollTop = 0;
 						}
 					} else {
 						if (typeof pages[kernel.location.id].onload === 'function') {
