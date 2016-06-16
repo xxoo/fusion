@@ -2,7 +2,7 @@
 var _hmt;
 ! function() {
 	var head = document.head || document.getElementsByTagName('head')[0];
-	if ($.browser.msie && parseInt($.browser.version) < 7) {
+	if (!window.XMLHttpRequest) {
 		window.onload = function() {
 			document.getElementById('loading').firstChild.firstChild.firstChild.data = '请使用IE7+、Chrome、Firefox访问';
 		};
@@ -23,8 +23,8 @@ var _hmt;
 				m.href = require.toUrl('site/kernel/kernel.css');
 				require(['site/index/index']);
 			}
-			head.appendChild(l);
 			head.appendChild(m);
+			head.appendChild(l);
 		});
 		//百度统计代码
 		if (location.host === 'your_production_host') {
@@ -33,7 +33,7 @@ var _hmt;
 			];
 			require(['//hm.baidu.com/hm.js?[your_hmid]'], function(){
 				//由于百度统计在head中插入的input标签在ie7中会导致jquery选择器遍历时出错，这里尝试将其移除
-				if ($.browser.msie && parseInt($.browser.version) === 7) {
+				if (/MSIE 7/.test(navigator.userAgent)) {
 					var ipt = head.getElementsByTagName('input')[0];
 					if (ipt) {
 						head.removeChild(ipt);

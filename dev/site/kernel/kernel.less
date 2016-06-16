@@ -1,18 +1,18 @@
 @import "../../config.less";
-#dialog,
+#dialogs,
 #hint,
 #loading,
-#page > div,
+#pages > div,
 #photoview,
-#popup,
-#popup > div > div > div,
+#popups,
+#popups > div > div > div,
 #readable {
     display: none;
 }
-#dialog,
+#dialogs,
 #loading,
 #photoview,
-#popup,
+#popups,
 #readable {
     position: fixed;
     top: 0;
@@ -20,18 +20,18 @@
     bottom: 0;
     right: 0;
 }
-#dialog,
+#dialogs,
 #photoview,
-#popup,
+#popups,
 #readable {
     background-image: url(images/halftrans.png);
 }
 #loading {
     background-image: url(images/trans.gif);
 }
-#dialog > div,
+#dialogs > div,
 #loading > div,
-#popup > div,
+#popups > div,
 #readable > div {
     overflow: visible;
     position: absolute;
@@ -42,9 +42,9 @@
     width: 240px;
     height: 126px;
 }
-#dialog > div > div,
+#dialogs > div > div,
 #loading > div > div,
-#popup > div > div,
+#popups > div > div,
 #readable > div > div {
     position: absolute;
     top: -50%;
@@ -54,8 +54,8 @@
     box-shadow: 0 0 15px gray;
     border-radius: 7px;
 }
-#dialog > div > div,
-#popup > div > div,
+#dialogs > div > div,
+#popups > div > div,
 #readable > div > div {
     height: 100%;
     overflow: hidden;
@@ -73,8 +73,8 @@
     color: #666666;
     padding: 90px 0 20px;
 }
-#dialog > div > a.close,
-#popup > div > a,
+#dialogs > div > a.close,
+#popups > div > a,
 #readable > div > a {
     position: absolute;
     right: 50%;
@@ -88,8 +88,9 @@
     text-shadow: 0 0 2px @closeShadowColor;
     margin: 2px 2px 0 0;
     color: @closeColor;
+    text-decoration: none;
 }
-#popup > div > div > div > .popupTitle {
+#popups > div > div > div > .popupTitle {
     background-color: #F1F1F1;
     color: #666;
     font-size: 16px;
@@ -99,17 +100,17 @@
     margin: 2px;
     box-shadow: 0 0 2px #BBBBBB;
 }
-#dialog > div > div > div,
-#popup > div > div > div {
+#dialogs > div > div > div,
+#popups > div > div > div {
     position: absolute;
 }
-#popup > div > div > div {
+#popups > div > div > div {
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
 }
-#dialog > div > div > div {
+#dialogs > div > div > div {
     white-space: pre-wrap;
     *white-space: pre;
     *word-wrap: break-word;
@@ -121,8 +122,8 @@
     right: 30px;
     text-align: justify;
 }
-#dialog > div > a.no,
-#dialog > div > a.yes {
+#dialogs > div > a.no,
+#dialogs > div > a.yes {
     position: absolute;
     bottom: 50%;
     margin-bottom: 30px;
@@ -133,26 +134,27 @@
     background-color: @buttonBackgroundColor;
     color: @buttonFaceColor;
     text-align: center;
+    text-decoration: none;
 }
-#dialog > div > a.yes {
+#dialogs > div > a.yes {
     right: 100%;
     margin-right: 15px;
 }
-#dialog > div > a.no {
+#dialogs > div > a.no {
     left: 0;
     margin-left: 15px;
 }
-#dialog > div > a {
+#dialogs > div > a {
     display: none;
 }
-#dialog.confirm {
+#dialogs.isConfirm {
     display: block;
      > div > a.no,
     > div > a.yes {
         display: block;
     }
 }
-#dialog.alert {
+#dialogs.isAlert {
     display: block;
     > div > a.close {
         display: block;
