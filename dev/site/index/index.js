@@ -1,4 +1,4 @@
 'use strict';
-define(['site/kernel/kernel'], function(kernel) {
+define(['common/kernel/kernel'], function(kernel) {
 	kernel.init();
 });

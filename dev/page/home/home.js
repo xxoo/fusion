@@ -1,5 +1,5 @@
 'use strict';
-define(['module', 'site/kernel/kernel'], function(module, kernel) {
+define(['module', 'common/kernel/kernel'], function(module, kernel) {
 	var thisPage = module.id.replace(/^[^/]+\/|\/[^/]+/g, ''),
 		dom = $('#' + thisPage);
 	var i = 0;
