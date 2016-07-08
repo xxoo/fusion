@@ -1,1 +1,0 @@
-"use strict";define("page/home/home",["module","site/kernel/kernel"],function(n,e){var o=n.id.replace(/^[^\/]+\/|\/[^\/]+/g,""),l=$("#"+o),i=0;return l.find(">a").on("click",function(){i++,e.openPopup("samplePopup",i)}),{onload:function(n){n&&e.alert("loading "+o)},onunload:function(){console.log("leaving "+o)}}});

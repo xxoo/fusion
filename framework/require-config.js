@@ -1,13 +1,13 @@
 'use strict';
 ! function() {
     //请确保modules第一个被赋值
-    var modules = {"common/slider":"0.0.1","common/text":"0.0.1","page/home":"0.0.2","popup/samplePopup":"0.0.2","site/index":"0.0.4","site/kernel":"0.0.10","site/pages":"0.0.1","site/popups":"0.0.1"},
+    var modules = {"common/kernel":"0.0.1","common/slider":"0.0.2","common/text":"0.0.2","page/home":"0.0.3","popup/samplePopup":"0.0.3","site/index":"0.0.5","site/pages":"0.0.2","site/popups":"0.0.2"},
         //请确保srcRoot第二个被赋值
         srcRoot = 'dev/',
         //请确保productRoot第三个被赋值
         productRoot = 'dist/',
         //请确保siteVersion第四个被赋值
-        siteVersion = "1.0.11",
+        siteVersion = "1.0.12",
         //请确保debug第五个被赋值
         debug = false,
         prefix = '/fusion/',
