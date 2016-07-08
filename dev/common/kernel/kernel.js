@@ -1,6 +1,6 @@
 // kernel
 'use strict';
-define(['site/pages/pages', 'site/popups/popups', 'common/slider/slider'], function(pages, popups, slider) {
+define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups'], function(slider, pages, popups) {
 	var homePage = 'home';
 	var kernel = {
 		appendCss: function(url) { //自动根据当前环境添加css或less
@@ -286,10 +286,12 @@ define(['site/pages/pages', 'site/popups/popups', 'common/slider/slider'], funct
 						popups[activePopup].onunload();
 					}
 					document.getElementById(activePopup).style.display = '';
+					close = activePopup;
 					popup.className = popup.style.display = activePopup = '';
 					if (typeof kernel.popupEvents.onhide === 'function') {
 						kernel.popupEvents.onhide({
-							type: 'hide'
+							type: 'hide',
+							id: close
 						});
 					}
 					return true;
@@ -558,9 +560,7 @@ define(['site/pages/pages', 'site/popups/popups', 'common/slider/slider'], funct
 							scroll = !pageScroller && !historyNav;
 						} else {
 							if ('autopopup' in kernel.location.args) {
-								kernel.openPopup(kernel.location.args.autopopup, kernel.location.args.autopopuparg);
-								delete kernel.location.args.autopopup;
-								delete kernel.location.args.autopopuparg;
+								kernel.openPopup(kernel.location.args.autopopup, kernel.location.args.autopopuparg ? JSON.parse(kernel.location.args.autopopuparg) : undefined);
 							}
 						}
 						document.body.className = currentpage = kernel.location.id;
@@ -652,9 +652,9 @@ define(['site/pages/pages', 'site/popups/popups', 'common/slider/slider'], funct
 					oldcfg.loaded = 2;
 					callback();
 					kernel.hideLoading();
-				}, function(error) {
+				}, require.data.debug ? undefined : function(error) {
 					oldcfg.loaded = 0;
-					if (require.data.debug || (error.requireType && error.requireType !== 'scripterror' && error.requireType !== 'nodefine') || (error.xhr && error.xhr.status !== 404)) {
+					if ((error.requireType && error.requireType !== 'scripterror' && error.requireType !== 'nodefine') || (error.xhr && error.xhr.status !== 404)) {
 						require.undef(js);
 						errorOccurs(js, error.message, isPage);
 					} else {

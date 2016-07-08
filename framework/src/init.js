@@ -13,7 +13,7 @@ var _hmt;
 			if (require.data.debug) {
 				l.rel = m.rel = 'stylesheet/less';
 				l.href = require.toUrl('site/index/index.less');
-				m.href = require.toUrl('site/kernel/kernel.less');
+				m.href = require.toUrl('common/kernel/kernel.less');
 				require(['/fusion/framework/less.js'], function() {
 					require(['site/index/index']);
 				});
