@@ -20,7 +20,7 @@ var _hmt;
 			} else {
 				l.rel = m.rel = 'stylesheet';
 				l.href = require.toUrl('site/index/index.css');
-				m.href = require.toUrl('site/kernel/kernel.css');
+				m.href = require.toUrl('common/kernel/kernel.css');
 				require(['site/index/index']);
 			}
 			head.appendChild(m);
