@@ -1,8 +1,7 @@
 // kernel
 'use strict';
 define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups'], function(slider, pages, popups) {
-	var homePage = 'home';
-	var kernel = {
+	var homePage, kernel = {
 		appendCss: function(url) { //自动根据当前环境添加css或less
 			var csslnk = document.createElement('link');
 			csslnk.type = 'text/css';
@@ -490,13 +489,11 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups'], funct
 		//启动路由处理，只需要调用一次
 		//func为每次路由发生改变时需要执行的回调, 此回调会在页面加载前执行
 		//当指定ps时则表示使用局部滚动
-		kernel.init = function(func, ps, home) {
+		kernel.init = function(home, ps, func) {
 			var lastHash;
-			routingCb = func;
+			homePage = home;
 			pageScroller = ps;
-			if (home && home in pages) {
-				homePage = home;
-			}
+			routingCb = func;
 			if ('onhashchange' in window) {
 				$(window).on('hashchange', hashchange);
 			} else {
@@ -538,10 +535,6 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups'], funct
 				historyNav = history.state;
 			history.replaceState && history.replaceState(true, null);
 			if (!kernel.location || !kernel.isSameLocation(kernel.location, nl)) {
-				//百度统计接口
-				if (typeof _hmt !== 'undefined' && _hmt.push) {
-					_hmt.push(['_trackPageview', '/' + kernel.buildHash(nl)]);
-				}
 				kernel.location = nl;
 				kernel.closePopup();
 				kernel.hideReadable();
@@ -601,7 +594,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups'], funct
 				family = 'page';
 				exts = ['onload', 'onunload'];
 			} else {
-				ctnSel = '#popups > div > div';
+				ctnSel = '#popups>div>div';
 				family = 'popup';
 				exts = ['onload', 'onunload', 'open'];
 			}
