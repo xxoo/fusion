@@ -466,7 +466,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups'], funct
 				dlgStack.push(['alert', text, callback, width]);
 			}
 		};
-		$('#readable > div > a').on('click', kernel.hideReadable);
+		$('#readable>div>a').on('click', kernel.hideReadable);
 		$(window).on('keydown', function(evt) {
 			if (evt.keyCode === 27 && $('#readable').css('display') === 'block') {
 				kernel.hideReadable();
