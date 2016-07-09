@@ -1,1 +1,0 @@
-"use strict";define("site/index/index",["common/kernel/kernel"],function(e){e.init()});
