@@ -313,12 +313,15 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups'], funct
 			close = ctn.find('.close'),
 			prev = ctn.find('.prev'),
 			next = ctn.find('.next'),
-			sld = slider(ctn.find('>div'));
+			sld = slider(ctn.find('>div')),
+			siz = [],
+			w, h;
 		kernel.showPhotoView = function(contents, idx) {
 			var i;
 			if ($.type(contents) === 'array') {
 				for (i = 0; i < contents.length; i++) {
 					sld.add($('<div style="background-image:url(' + contents[i] + ')"></div>'));
+					getsz(i, contents[i]);
 				}
 				if (idx >= 0 && idx < sld.children.length) {
 					sld.slideTo(idx, true);
@@ -334,9 +337,15 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups'], funct
 		};
 		kernel.hidePhotoView = function() {
 			while (sld.children.length) {
+				if (!$.isPlainObject(siz[0])) {
+					siz[0].onload = null;
+					document.body.removeChild(siz[0]);
+				}
+				siz.shift();
 				sld.remove(0);
 			}
 		};
+		$(window).on('resize', rsz);
 		prev.on('click', function() {
 			sld.slideTo(sld.current - 1);
 		});
@@ -345,8 +354,44 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups'], funct
 		});
 		close.on('click', kernel.hidePhotoView);
 		sld.onchange = function() {
-			ctn.css('display', this.current === undefined ? '' : 'block');
+			if (this.current === undefined) {
+				ctn.css('display', '');
+			} else {
+				if ($.isPlainObject(siz[this.current])) {
+					chksz(this.current);
+				}
+				ctn.css('display', 'block');
+			}
 		};
+		rsz();
+		function rsz() {
+			w = $(window).innerWidth();
+			h = $(window).innerHeight();
+			if (typeof sld.current === 'number' && $.isPlainObject(siz[sld.current])) {
+				chksz(sld.current);
+			}
+		}
+		function getsz(i, url) {
+			siz[i] = new Image();
+			siz[i].style.position = 'absolute';
+			siz[i].style.bottom = siz[i].style.right = '100%';
+			siz[i].onload = function (){
+				var r = {
+					w: this.width,
+					h: this.height
+				};
+				document.body.removeChild(siz[i]);
+				siz[i] = r;
+				if (sld.current === i) {
+					chksz(i);
+				}
+			};
+			siz[i].src = url;
+			document.body.appendChild(siz[i]);
+		}
+		function chksz(i) {
+			sld.children[i].css('background-size', siz[i].w > w || siz[i].h > h ? 'contain' : '');
+		}
 	}();
 	//对话框及提示功能
 	! function() {
