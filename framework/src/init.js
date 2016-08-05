@@ -15,13 +15,17 @@
 				l.href = require.toUrl('site/index/index.less');
 				m.href = require.toUrl('common/kernel/kernel.less');
 				require([prefix + 'framework/less.js'], function() {
-					require(['site/index/index']);
+					less.pageLoadFinished.then(function(){
+						require(['site/index/index']);
+					});
 				});
 			} else {
 				l.rel = m.rel = 'stylesheet';
 				l.href = require.toUrl('site/index/index.css');
 				m.href = require.toUrl('common/kernel/kernel.css');
-				require(['site/index/index']);
+				window.onload = function(){
+					require(['site/index/index']);
+				};
 			}
 			head.appendChild(m);
 			head.appendChild(l);
