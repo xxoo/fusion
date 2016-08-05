@@ -23,9 +23,7 @@
 				l.rel = m.rel = 'stylesheet';
 				l.href = require.toUrl('site/index/index.css');
 				m.href = require.toUrl('common/kernel/kernel.css');
-				window.onload = function(){
-					require(['site/index/index']);
-				};
+				require(['site/index/index']);
 			}
 			head.appendChild(m);
 			head.appendChild(l);
