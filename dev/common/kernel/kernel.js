@@ -564,14 +564,16 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups'], funct
 				}
 			}
 		};
-		kernel.reloadPage = function() {
-			kernel.closePopup();
-			kernel.hideReadable();
-			if (typeof pages[currentpage].onunload === 'function') {
-				pages[currentpage].onunload();
-			}
-			if (typeof pages[currentpage].onload === 'function') {
-				pages[currentpage].onload(true);
+		kernel.reloadPage = function(id) {
+			if (!id || (typeof id === 'string' && id === kernel.location.id) || id.infexOf(kernel.location.id) >= 0) {
+				kernel.closePopup();
+				kernel.hideReadable();
+				if (typeof pages[currentpage].onunload === 'function') {
+					pages[currentpage].onunload();
+				}
+				if (typeof pages[currentpage].onload === 'function') {
+					pages[currentpage].onload(true);
+				}
 			}
 		};
 
