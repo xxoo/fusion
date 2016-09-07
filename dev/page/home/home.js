@@ -5,7 +5,7 @@ define(['module', 'common/kernel/kernel'], function(module, kernel) {
 	var i = 0;
 	dom.find('>a').on('click', function(){
 		i++;
-		kernel.openPopup('samplePopup', i);
+		kernel.openPanel('samplePanel', i);
 	});
 	return {
 		onload:function(force){
