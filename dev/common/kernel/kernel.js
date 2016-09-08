@@ -260,13 +260,12 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 					if (typeof panels[id].onload === 'function') {
 						panels[id].onload(param);
 					}
-					panelCtn.className = id;
+					panelCtn.className = activePanel = id;
 					panelCtn.style.display = document.getElementById(id).style.display = 'block';
 					startAni(function() {
 						if (typeof panels[id].onloadend === 'function') {
 							panels[id].onloadend();
 						}
-						activePanel = id;
 					}, true);
 				}
 			}
@@ -694,6 +693,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			history.replaceState && history.replaceState(true, null);
 			if (!kernel.location || !kernel.isSameLocation(kernel.location, nl)) {
 				kernel.location = nl;
+				kernel.closePanel();
 				kernel.closePopup();
 				kernel.hideReadable();
 				if (typeof routingCb === 'function') {
