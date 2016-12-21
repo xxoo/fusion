@@ -50,9 +50,7 @@
     top: -50%;
     left: -50%;
     width: 100%;
-    background-color: white;
-    box-shadow: 0 0 15px gray;
-    border-radius: 7px;
+    background-color: @dialogBackgroundColor;
 }
 #dialogs > div > div,
 #popups > div > div,
@@ -70,12 +68,12 @@
 	text-align: center;
 	font-size: 16px;
 	line-height: 16px;
-	color: #666666;
+	color: @dialogTextColor;
 	padding: 100px 0 20px;
 }
 #dialogs > div > a.close,
-#popups > div > a,
-#readable > div > a {
+#popups > div > a.close,
+#readable > div > a.close {
     position: absolute;
     right: 50%;
     top: -50%;
@@ -106,28 +104,34 @@
     *word-wrap: break-word;
     font-size: 16px;
     line-height: 30px;
-    color: #666666;
+    color: @dialogTextColor;
     top: 23px;
     left: 30px;
     right: 30px;
     text-align: justify;
 }
-#dialogs > div > a.no,
-#dialogs > div > a.yes {
-    position: absolute;
-    bottom: 50%;
-    margin-bottom: 30px;
-}
-#dialogs > div > a.yes {
-    right: 100%;
-    margin-right: 15px;
-}
-#dialogs > div > a.no {
-    left: 0;
-    margin-left: 15px;
-}
 #dialogs > div > a {
     display: none;
+	&.yes,
+	&.no{
+	    position: absolute;
+	    bottom: 50%;
+	    margin-bottom: 30px;
+		line-height: 32px;
+		padding:0 24px;
+	}
+	&.yes{
+	    right: 100%;
+	    margin-right: 15px;
+		background-color: @dialogYesBackgroundColor;
+		color: @dialogYesTextColor;
+	}
+	&.no{
+	    left: 0;
+	    margin-left: 15px;
+		background-color: @dialogNoBackgroundColor;
+		color: @dialogNoTextColor;
+	}
 }
 #dialogs.isConfirm {
     display: block;
@@ -160,28 +164,25 @@
         display: inline-block;
         white-space: pre;
         line-height: 1.5;
-        border-radius: 3px;
-    	border: 1px solid #31708f;
-    	background-color: #d9edf7;
-    	border-color: #bce8f1;
-        color: #31708f;
-        box-shadow: 0 0 15px silver;
         min-width: 200px;
+    	background-color: @infoBackgroundColor;
+    	border: 1px solid @infoBorderColor;
+        color: @infoTextColor;
     }
     &.success > span{
-    	color: #3c763d;
-    	background-color: #dff0d8;
-    	border-color: #d6e9c6;
+    	background-color: @successBackgroundColor;
+    	border-color: @successBorderColor;
+	    color: @successTextColor;
     }
     &.warning > span{
-        color: #8a6d3b;
-    	background-color: #fcf8e3;
-    	border-color: #faebcc;
+    	background-color: @warningBackgroundColor;
+    	border-color: @warningBorderColor;
+	    color: @warningTextColor;
     }
     &.error > span{
-        color: #a94442;
-    	background-color: #f2dede;
-    	border-color: #ebccd1;
+    	background-color: @errorBackgroundColor;
+    	border-color: @errorBorderColor;
+	    color: @errorTextColor;
     }
 }
 #photoview {
@@ -197,8 +198,8 @@
     > a {
         position: absolute;
         text-align: center;
-        text-shadow: 0 0 3px black;
-        color: white;
+        text-shadow: 0 0 3px @photoViewBtnShadowColor;
+        color: @photoViewBtnColor;
         font-weight: bold;
         line-height: 1;
     }
@@ -248,12 +249,13 @@
 			position: relative;
 			height:100%;
 			width:100%;
-			background-color: white;
-			box-shadow: 0 0 5px silver;
+			background-color: @dialogBackgroundColor;
 			>div{
-				height:100%;
-				width:100%;
-				overflow: auto;
+				position: absolute;
+				top:0;
+				left:0;
+				bottom:0;
+				right:0;
 				display: none;
 			}
 			>.close{
