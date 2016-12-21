@@ -85,13 +85,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 					o.xEvents[e] = [];
 					o.xEvents[e].stack = [];
 					o.xEvents[e].locked = false;
-					if (o.addEventListener) {
-						o.addEventListener(e, o.xEvents, false);
-					} else if (o.attachEvent) {
-						o.attachEvent('on' + e, o.xEvents);
-					} else {
-						o['on' + e] = o.xEvents;
-					}
+					o['on' + e] = o.xEvents;
 				}
 				if (o.xEvents[e].locked) {
 					o.xEvents[e].stack.push([false, f]);
@@ -113,7 +107,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 					r = {};
 					if (o.xEvents) {
 						for (n in o.xEvents) {
-							if (o.xEvents[n] instanceof Array && o.xEvents[n].length > 0) {
+							if ($.type(o.xEvents[n]) === 'array' && o.xEvents[n].length) {
 								r[n] = o.xEvents[n].slice(0);
 							}
 						}
@@ -122,7 +116,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				return r;
 			},
 			remove: function(o, e, f) {
-				var n, addRemoveMark;
+				var n, addRemoveMark, tmp;
 				if (o.xEvents) {
 					if (e) {
 						if (o.xEvents[e]) {
@@ -134,7 +128,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 								}
 							} else {
 								if (f) {
-									var tmp = o.xEvents[e].indexOf(f);
+									tmp = o.xEvents[e].indexOf(f);
 									if (tmp !== -1) {
 										o.xEvents[e].splice(tmp, 1);
 									}
@@ -144,13 +138,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 							}
 							if (o.xEvents[e].length === 0) {
 								delete o.xEvents[e];
-								if (o.removeEventListener) {
-									o.removeEventListener(e, o.xEvents, false);
-								} else if (o.detachEvent) {
-									o.detachEvent('on' + e, o.xEvents);
-								} else {
-									o['on' + e] = null;
-								}
+								o['on' + e] = null;
 							}
 						}
 					} else {
@@ -158,13 +146,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 							for (n in o.xEvents) {
 								if (!o.xEvents[n].locked) {
 									delete o.xEvents[n];
-									if (o.removeEventListener) {
-										o.removeEventListener(n, o.xEvents, false);
-									} else if (o.detachEvent) {
-										o.detachEvent('on' + n, o.xEvents);
-									} else {
-										o['on' + n] = null;
-									}
+									o['on' + n] = null;
 								} else {
 									addRemoveMark = true;
 								}
@@ -181,14 +163,15 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 		};
 
 		function xEventProcessor(o, evt) {
+			var i, tmp;
 			o.xEvents[evt.type].locked = true;
-			for (var i = 0; i < o.xEvents[evt.type].length; i++) {
+			for (i = 0; i < o.xEvents[evt.type].length; i++) {
 				o.xEvents[evt.type][i].call(o, evt);
 			}
 			o.xEvents[evt.type].locked = false;
-			while (o.xEvents[evt.type].stack.length > 0) {
+			while (o.xEvents[evt.type].stack.length) {
 				if (o.xEvents[evt.type].stack[0]) {
-					var tmp = o.xEvents[evt.type].indexOf(o.xEvents[evt.type].stack[0][1]);
+					tmp = o.xEvents[evt.type].indexOf(o.xEvents[evt.type].stack[0][1]);
 					if (o.xEvents[evt.type].stack[0][0]) {
 						if (tmp !== -1) {
 							o.xEvents[evt.type].splice(tmp, 1);
@@ -203,27 +186,15 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				}
 				o.xEvents[evt.type].stack.shift();
 			}
-			if (o.xEvents[evt.type].length === 0) {
+			if (!o.xEvents[evt.type].length) {
 				delete o.xEvents[evt.type];
-				if (o.removeEventListener) {
-					o.removeEventListener(evt.type, o.xEvents, false);
-				} else if (o.detachEvent) {
-					o.detachEvent('on' + evt.type, o.xEvents);
-				} else {
-					o['on' + evt.type] = null;
-				}
+				o['on' + evt.type] = null;
 			}
 			if (o.xEvents.removeMark) {
 				delete o.xEvents.removeMark;
 				for (var n in o.xEvents) {
 					delete o.xEvents[n];
-					if (o.removeEventListener) {
-						o.removeEventListener(n, o.xEvents, false);
-					} else if (o.detachEvent) {
-						o.detachEvent('on' + n, o.xEvents);
-					} else {
-						o['on' + n] = null;
-					}
+					o['on' + n] = null;
 				}
 				o.xEvents = null;
 			}
@@ -289,7 +260,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				if (activePanel) {
 					if (typeof id === 'string') {
 						close = id === activePanel;
-					} else if (id instanceof Array) {
+					} else if ($.type(id) === 'array') {
 						close = id.indexOf(activePanel) >= 0;
 					} else {
 						close = true;
@@ -302,6 +273,8 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				}
 			}
 		}
+		$(panelCtn.firstChild).on('click', kernel.closePanel);
+		$(ctn.firstChild).on('click', kernel.closePanel);
 
 		function startAni(cb, show){
 			ani = true;
@@ -319,12 +292,6 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				}
 			});
 		}
-		$(panelCtn.firstChild).on('click', function(){
-			kernel.closePanel();
-		});
-		$(ctn.firstChild).on('click', function(){
-			kernel.closePanel();
-		});
 
 		function hidePanel(){
 			if (typeof panels[activePanel].onunload === 'function') {
@@ -334,8 +301,8 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				if (typeof panels[activePanel].onunloadend === 'function') {
 					panels[activePanel].onunloadend();
 				}
+				document.getElementById(activePanel).style.display = panelCtn.style.display = '';
 				activePanel = undefined;
-				panelCtn.style.display = '';
 			}, false);
 		}
 	}();
@@ -385,7 +352,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			if (activePopup) {
 				if (typeof id === 'string') {
 					close = id === activePopup;
-				} else if (id instanceof Array) {
+				} else if ($.type(id) === 'array') {
 					close = id.indexOf(activePopup) >= 0;
 				} else {
 					close = true;
@@ -675,7 +642,8 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			}
 		};
 		kernel.reloadPage = function(id) {
-			if (!id || (typeof id === 'string' && id === kernel.location.id) || id.infexOf(kernel.location.id) >= 0) {
+			if (!id || (typeof id === 'string' && id === kernel.location.id) || id.indexOf(kernel.location.id) >= 0) {
+				kernel.closePanel();
 				kernel.closePopup();
 				kernel.hideReadable();
 				if (typeof pages[currentpage].onunload === 'function') {
@@ -689,7 +657,8 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 
 		function hashchange() {
 			var nl = kernel.parseHash(location.hash),
-				historyNav = history.state;
+				historyNav = history.state,
+				pageChanged = nl.id !== currentpage;
 			history.replaceState && history.replaceState(true, null);
 			if (!kernel.location || !kernel.isSameLocation(kernel.location, nl)) {
 				kernel.location = nl;
@@ -697,12 +666,12 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				kernel.closePopup();
 				kernel.hideReadable();
 				if (typeof routingCb === 'function') {
-					routingCb();
+					routingCb(pageChanged);
 				}
-				initLoad('page', pages[kernel.location.id], kernel.location.id, function() {
+				initLoad('page', pages[nl.id], nl.id, function() {
 					var scroll, h;
 					//发生页面跳转或首次加载
-					if (kernel.location.id !== currentpage) {
+					if (pageChanged) {
 						if (currentpage) {
 							if (typeof pages[currentpage].onunload === 'function') {
 								pages[currentpage].onunload();
@@ -710,14 +679,14 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 							document.getElementById(currentpage).style.display = '';
 							scroll = !pageScroller && !historyNav;
 						} else {
-							if ('autopopup' in kernel.location.args) {
-								kernel.openPopup(kernel.location.args.autopopup, kernel.location.args.autopopuparg ? JSON.parse(kernel.location.args.autopopuparg) : undefined);
+							if ('autopopup' in nl.args) {
+								kernel.openPopup(nl.args.autopopup, nl.args.autopopuparg ? JSON.parse(nl.args.autopopuparg) : undefined);
 							}
 						}
-						document.body.className = currentpage = kernel.location.id;
-						document.getElementById(kernel.location.id).style.display = 'block';
-						if (typeof pages[kernel.location.id].onload === 'function') {
-							pages[kernel.location.id].onload(true);
+						document.body.className = currentpage = nl.id;
+						document.getElementById(nl.id).style.display = 'block';
+						if (typeof pages[nl.id].onload === 'function') {
+							pages[nl.id].onload(true);
 						}
 						if (scroll) {
 							h = Math.max(document.body.scrollTop, document.documentElement.scrollTop);
@@ -730,9 +699,9 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 							pageScroller.scrollTop = 0;
 						}
 					} else {
-						if (typeof pages[kernel.location.id].onload === 'function') {
+						if (typeof pages[nl.id].onload === 'function') {
 							//未发生页面跳转但url有变化时允许页面缓存
-							pages[kernel.location.id].onload();
+							pages[nl.id].onload();
 						}
 					}
 				});

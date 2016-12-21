@@ -1,5 +1,5 @@
 'use strict';
-! function() {
+define(['module'], function(module) {
     //请确保modules第一个被赋值
     var modules = {},
         //请确保srcRoot第二个被赋值
@@ -10,7 +10,7 @@
         siteVersion = "1.0.0",
         //请确保debug第五个被赋值
         debug = true,
-        prefix = '/fusion/',
+        prefix = module.id.replace(/framework\/[^\/]+$/, ''),
         cfg = {
             baseUrl: prefix + srcRoot
         };
@@ -28,4 +28,4 @@
         debug: debug
     };
     //若需要从外部获得模块路径请使用require.toUrl('family/name')
-}();
+});
