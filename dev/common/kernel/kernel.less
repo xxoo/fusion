@@ -71,9 +71,9 @@
 	color: @dialogTextColor;
 	padding: 100px 0 20px;
 }
-#dialogs > div > a.close,
-#popups > div > a.close,
-#readable > div > a.close {
+#dialogs > div > .close,
+#popups > div > .close,
+#readable > div > .close {
     position: absolute;
     right: 50%;
     top: -50%;
@@ -112,37 +112,34 @@
 }
 #dialogs > div > a {
     display: none;
-	&.yes,
-	&.no{
+}
+#dialogs.isConfirm {
+    display: block;
+    > div > .no,
+    > div > .yes {
+        display: block;
 	    position: absolute;
 	    bottom: 50%;
 	    margin-bottom: 30px;
 		line-height: 32px;
 		padding:0 24px;
-	}
-	&.yes{
+    }
+	> div > .yes{
 	    right: 100%;
 	    margin-right: 15px;
 		background-color: @dialogYesBackgroundColor;
 		color: @dialogYesTextColor;
 	}
-	&.no{
+	> div > .no{
 	    left: 0;
 	    margin-left: 15px;
 		background-color: @dialogNoBackgroundColor;
 		color: @dialogNoTextColor;
 	}
 }
-#dialogs.isConfirm {
-    display: block;
-     > div > a.no,
-    > div > a.yes {
-        display: block;
-    }
-}
 #dialogs.isAlert {
     display: block;
-    > div > a.close {
+    > div > .close {
         display: block;
     }
 }
