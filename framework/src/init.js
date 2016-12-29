@@ -1,9 +1,9 @@
 'use strict';
 ! function() {
 	var prefix = (document.currentScript || (function() {
-    	var scripts = document.getElementsByTagName('script');
-     	return scripts[scripts.length - 1];
-	})()).src.replace(/^http(s)?:\/\/[^\/]+|[^\/]+$/g, ''),
+			var scripts = document.getElementsByTagName('script');
+			return scripts[scripts.length - 1];
+		})()).src.replace(/^http(s)?:\/\/[^\/]+|[^\/]+$/g, ''),
 		head = document.head || document.getElementsByTagName('head')[0];
 	if (!window.XMLHttpRequest) {
 		window.onload = function() {
@@ -18,7 +18,7 @@
 				l.href = require.toUrl('site/index/index.less');
 				m.href = require.toUrl('common/kernel/kernel.less');
 				require([prefix + 'less.js'], function() {
-					less.pageLoadFinished.then(function(){
+					less.pageLoadFinished.then(function() {
 						require(['site/index/index']);
 					});
 				});
