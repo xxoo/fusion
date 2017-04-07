@@ -1,1 +1,0 @@
-"use strict";define("panel/samplePanel/samplePanel",["module","common/kernel/kernel"],function(e,n){var t=e.id.replace(/^[^\/]+\/|\/[^\/]+/g,"");$("#"+t);return{onload:function(e){console.log("opening "+t)},onunload:function(){console.log("closing "+t)},onloadend:function(){console.log(t+" is open")},onunloadend:function(){console.log(t+" is closed")}}});
