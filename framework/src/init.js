@@ -1,5 +1,5 @@
-'use strict';
 ! function() {
+	'use strict';
 	var prefix = (document.currentScript || (function() {
 			var scripts = document.getElementsByTagName('script');
 			return scripts[scripts.length - 1];

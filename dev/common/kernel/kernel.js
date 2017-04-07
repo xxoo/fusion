@@ -1,77 +1,72 @@
 // kernel
 'use strict';
 define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/panels/panels'], function(slider, pages, popups, panels) {
-	var homePage, kernel = {
-		appendCss: function(url) { //自动根据当前环境添加css或less
-			var csslnk = document.createElement('link');
-			csslnk.type = 'text/css';
-			if (/\.less$/.test(url)) {
-				if (typeof less === 'object') {
-					csslnk.rel = 'stylesheet/less';
-					csslnk.href = url;
-					less.sheets.push(csslnk);
-					less.refresh();
+	var homePage,
+		kernel = {
+			appendCss: function(url) { //自动根据当前环境添加css或less
+				var csslnk = document.createElement('link');
+				csslnk.type = 'text/css';
+				if (/\.less$/.test(url)) {
+					if (typeof less === 'object') {
+						csslnk.rel = 'stylesheet/less';
+						csslnk.href = url;
+						less.sheets.push(csslnk);
+						less.refresh();
+					} else {
+						csslnk.rel = 'stylesheet';
+						csslnk.href = url.replace(/less$/, 'css');
+					}
 				} else {
 					csslnk.rel = 'stylesheet';
-					csslnk.href = url.replace(/less$/, 'css');
+					csslnk.href = url;
 				}
-			} else {
-				csslnk.rel = 'stylesheet';
-				csslnk.href = url;
-			}
-			(document.head || document.getElementsByTagName('head')[0]).appendChild(csslnk);
-		},
-		extendIn: function(o, e, p) {
-			for (var i = 0; i < p.length; i++) {
-				if (p[i] in e) {
-					o[p[i]] = e[p[i]];
+				(document.head || document.getElementsByTagName('head')[0]).appendChild(csslnk);
+				return csslnk;
+			},
+			buildHash: function(loc) {
+				var n, hash = '#!' + encodeURIComponent(loc.id);
+				for (n in loc.args) {
+					hash += loc.args[n] === undefined ? '&' + encodeURIComponent(n) : '&' + encodeURIComponent(n) + '=' + encodeURIComponent(loc.args[n]);
 				}
-			}
-		},
-		buildHash: function(loc) {
-			var n, hash = '#!' + encodeURIComponent(loc.id);
-			for (n in loc.args) {
-				hash += loc.args[n] === undefined ? '&' + encodeURIComponent(n) : '&' + encodeURIComponent(n) + '=' + encodeURIComponent(loc.args[n]);
-			}
-			return hash;
-		},
-		parseHash: function(hash) {
-			var i, a, s, nl = {
-				id: homePage,
-				args: {}
-			};
-			hash = hash.substr(1).replace(/[#\?].*$/, '');
-			s = hash.match(/[^=&]+(=[^&]*)?/g);
-			if (s) {
-				if (s[0].charAt(0) === '!') {
-					a = s[0].substr(1);
-					if (a in pages) {
-						nl.id = decodeURIComponent(a);
+				return hash;
+			},
+			parseHash: function(hash) {
+				var i, a, s, nl = {
+					id: homePage,
+					args: {}
+				};
+				hash = hash.substr(1).replace(/[#\?].*$/, '');
+				s = hash.match(/[^=&]+(=[^&]*)?/g);
+				if (s) {
+					if (s[0].charAt(0) === '!') {
+						a = s[0].substr(1);
+						if (a in pages) {
+							nl.id = decodeURIComponent(a);
+						}
+					}
+					for (i = 1; i < s.length; i++) {
+						a = s[i].match(/^([^=]+)(=)?(.+)?$/);
+						if (a) {
+							nl.args[decodeURIComponent(a[1])] = a[2] ? decodeURIComponent(a[3] || '') : undefined;
+						}
 					}
 				}
-				for (i = 1; i < s.length; i++) {
-					a = s[i].match(/^([^=]+)(=)?(.+)?$/);
-					if (a) {
-						nl.args[decodeURIComponent(a[1])] = a[2] ? decodeURIComponent(a[3] || '') : undefined;
+				return nl;
+			},
+			isSameLocation: function(loc1, loc2) {
+				var n;
+				if (loc1.id === loc2.id && Object.keys(loc1.args).length === Object.keys(loc2.args).length) {
+					for (n in loc1.args) {
+						if (!(n in loc2.args) || loc1.args[n] !== loc2.args[n]) {
+							return false;
+						}
 					}
+					return true;
+				} else {
+					return false;
 				}
 			}
-			return nl;
-		},
-		isSameLocation: function(loc1, loc2) {
-			var n;
-			if (loc1.id === loc2.id && Object.keys(loc1.args).length === Object.keys(loc2.args).length) {
-				for (n in loc1.args) {
-					if (!(n in loc2.args) || loc1.args[n] !== loc2.args[n]) {
-						return false;
-					}
-				}
-				return true;
-			} else {
-				return false;
-			}
-		}
-	};
+		};
 
 	! function() {
 		kernel.listeners = {
@@ -219,7 +214,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			} else {
 				kernel.hint('panel config not found: ' + id, 'error');
 			}
-		}
+		};
 		kernel.showPanel = function(id, param) {
 			if (ani) {
 				setTodo();
@@ -273,7 +268,13 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 					}
 				}
 			}
-		}
+		};
+		kernel.destoryPanel = function(id) {
+			var p = panels[id];
+			if (p) {
+				destory(p, 'panel', id);
+			}
+		};
 		$(panelCtn.firstChild).on('click', kernel.closePanel);
 		$(ctn.firstChild).on('click', kernel.closePanel);
 
@@ -380,8 +381,14 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 		kernel.getCurrentPopup = function() {
 			return activePopup;
 		};
+		kernel.destoryPopup = function(id) {
+			var p = ppoups[id];
+			if (p) {
+				destory(p, 'popup', id);
+			}
+		};
 		kernel.popupEvents = {};
-		$('#popups > div > a').on('click', function() {
+		$('#popups>div>a').on('click', function() {
 			kernel.closePopup();
 		});
 	}();
@@ -398,8 +405,8 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			var i;
 			if ($.type(contents) === 'array') {
 				for (i = 0; i < contents.length; i++) {
-					sld.add($('<div style="background-image:url(' + contents[i] + ')"></div>'));
-					getsz(i, contents[i]);
+					sld.add($('<img src="' + contents[i] + '"/>'));
+					getsz(i);
 				}
 				if (idx >= 0 && idx < sld.children.length) {
 					sld.slideTo(idx, true);
@@ -423,6 +430,16 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				sld.remove(0);
 			}
 		};
+		ctn.on('click', '>div>img', function() {
+			if (this.style.cursor === 'zoom-in') {
+				this.style.width = this.style.height = '';
+				this.style.cursor = 'zoom-out';
+				this.style.top = siz[sld.current].h > h ? 0 : (h - siz[sld.current].h) / 2 + 'px';
+				this.style.left = siz[sld.current].w > w ? 0 : (w - siz[sld.current].w) / 2 + 'px';
+			} else if (this.style.cursor === 'zoom-out') {
+				chksz(sld.current);
+			}
+		});
 		$(window).on('resize', rsz);
 		prev.on('click', function() {
 			sld.slideTo(sld.current - 1);
@@ -451,27 +468,52 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			}
 		}
 
-		function getsz(i, url) {
-			siz[i] = new Image();
-			siz[i].style.position = 'absolute';
-			siz[i].style.bottom = siz[i].style.right = '100%';
-			siz[i].onload = function() {
-				var r = {
+		function getsz(i) {
+			sld.children[i].one('load', function() {
+				siz[i] = {
 					w: this.width,
 					h: this.height
 				};
-				document.body.removeChild(siz[i]);
-				siz[i] = r;
 				if (sld.current === i) {
 					chksz(i);
 				}
-			};
-			siz[i].src = url;
-			document.body.appendChild(siz[i]);
+				this.style.visibility = 'visible';
+			});
 		}
 
 		function chksz(i) {
-			sld.children[i].css('background-size', siz[i].w > w || siz[i].h > h ? 'contain' : '');
+			var r, cw, ch;
+			if (siz[i].w > w || siz[i].h > h) {
+				r = siz[i].w / siz[i].h;
+				if (w / h > r) {
+					ch = h;
+					cw = ch * r;
+					sld.children[i].css({
+						left: (w - cw) / 2 + 'px',
+						top: 0
+					});
+				} else {
+					cw = w;
+					ch = cw / r;
+					sld.children[i].css({
+						left: 0,
+						top: (h - ch) / 2 + 'px'
+					});
+				}
+				sld.children[i].css({
+					width: cw + 'px',
+					height: ch + 'px',
+					cursor: 'zoom-in'
+				});
+			} else {
+				sld.children[i].css({
+					top: (h - siz[i].h) / 2 + 'px',
+					left: (w - siz[i].w) / 2 + 'px',
+					width: '',
+					height: '',
+					cursor: ''
+				});
+			}
 		}
 	}();
 	//对话框及提示功能
@@ -483,7 +525,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			dlgStack = [],
 			dlgCb, raCb; //callbacks
 		kernel.showLoading = function(text) { //loading提示框, 每次调用引用计数＋1所以showLoading和hideLoading必须成对使用
-			$('#loading > div > div').text(text ? text : '加载中...');
+			$('#loading>div>div').text(text ? text : '加载中...');
 			if (loadingRT === 0) {
 				document.getElementById('loading').style.display = 'block';
 			}
@@ -646,7 +688,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			}
 		};
 		kernel.reloadPage = function(id) {
-			if (!id || (typeof id === 'string' && id === kernel.location.id) || id.indexOf(kernel.location.id) >= 0) {
+			if (!id || (typeof id === 'string' && id === kernel.location.id) || ($.type(id) === 'array' && id.indexOf(kernel.location.id) >= 0)) {
 				kernel.closePanel();
 				kernel.closePopup();
 				kernel.hideReadable();
@@ -656,6 +698,12 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				if (typeof pages[currentpage].onload === 'function') {
 					pages[currentpage].onload(true);
 				}
+			}
+		};
+		kernel.destoryPage = function(id) {
+			var p = pages[id];
+			if (p) {
+				destory(p, 'page', id);
 			}
 		};
 
@@ -714,30 +762,51 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 	}();
 	return kernel;
 
+	function destory(cfg, type, id) {
+		var n;
+		if (cfg.loaded === 2 && typeof cfg.ondestory === 'function') {
+			cfg.ondestory();
+		}
+		$('#' + id).remove();
+		if (cfg.css && typeof cfg.css !== 'string') {
+			$(cfg.css).remove();
+			if (cfg.css.type === 'stylesheet/less') {
+				less.sheets.splice(less.sheets.indexOf(cfg.css), 1);
+				less.refresh();
+			}
+			cfg.css = cfg.css.getAttribute('href').replace(RegExp('^' + require.toUrl(type + '/' + id) + '/'), '');
+		}
+		if (cfg.js) {
+			n = type + '/' + id + '/' + cfg.js;
+			if (require.defined(n)) {
+				require([n], function(o) {
+					require.undef(n);
+					if (o) {
+						cfg.__proto__ = Object.prototype;
+					}
+				});
+			}
+		}
+		cfg.loaded = 0;
+	}
+
 	function initLoad(type, oldcfg, id, callback) {
 		if (oldcfg.loaded === 2) {
 			callback();
 		} else if (oldcfg.loaded !== 1) {
 			oldcfg.loaded = 1;
 			var ctn = '#' + type + 's',
-				exts = ['onload', 'onunload'],
 				n = type + '/' + id + '/',
 				m = require.toUrl(n),
 				isPage = type === 'page';
-			if (!isPage) {
-				exts.push('open');
-				if (type === 'popup') {
-					ctn += '>div>div';
-				} else if (type === 'panel') {
-					exts.push('onloadend');
-					exts.push('onunloadend');
-					ctn += '>.contents>div';
-				}
+			if (type === 'popup') {
+				ctn += '>div>div';
+			} else if (type === 'panel') {
+				ctn += '>.contents>div';
 			}
 			ctn = $(ctn)[0];
-			if ('css' in oldcfg) {
-				kernel.appendCss(m + oldcfg.css);
-				delete oldcfg.css;
+			if (typeof oldcfg.css === 'string') {
+				oldcfg.css = kernel.appendCss(m + oldcfg.css);
 			}
 			if ('html' in oldcfg) {
 				var url = m + oldcfg.html
@@ -746,12 +815,12 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 					type: 'get',
 					dataType: 'text',
 					success: function(text) {
-						delete oldcfg.html;
+						//delete oldcfg.html;
 						ctn.insertAdjacentHTML('afterBegin', '<div id="' + id + '">' + text + '</div>');
 						loadJs();
 					},
 					error: function(xhr, msg) {
-						oldcfg.loaded = 0;
+						destory(oldcfg, type, id);
 						if (require.data.debug || xhr.status !== 404) {
 							errorOccurs(url, xhr.status, isPage);
 						} else {
@@ -773,17 +842,15 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				kernel.showLoading();
 				js = n + oldcfg.js;
 				require([js], function(cfg) {
-					delete oldcfg.js;
 					if (cfg) {
-						kernel.extendIn(oldcfg, cfg, exts);
+						oldcfg.__proto__ = cfg;
 					}
 					oldcfg.loaded = 2;
 					callback();
 					kernel.hideLoading();
 				}, require.data.debug ? undefined : function(error) {
-					oldcfg.loaded = 0;
+					destory(oldcfg, type, id);
 					if ((error.requireType && error.requireType !== 'scripterror' && error.requireType !== 'nodefine') || (error.xhr && error.xhr.status !== 404)) {
-						require.undef(js);
 						errorOccurs(js, error.message, isPage);
 					} else {
 						updated(isPage);
