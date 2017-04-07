@@ -15,6 +15,12 @@ define(['module', 'common/kernel/kernel'], function(module, kernel) {
 		},
 		onunloadend: function() {
 			console.log(thisPanel + ' is closed');
+			setTimeout(function(){
+				kernel.destoryPanel(thisPanel);
+			},0);
+		},
+		ondestory: function() {
+			console.log('do clean up stuff here');
 		}
 	};
 });

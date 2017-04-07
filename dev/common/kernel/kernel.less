@@ -212,13 +212,12 @@
 
 #photoview {
 	> div {
-		position: relative;
 		height: 100%;
-
-		> div {
-			background-repeat: no-repeat;
-			background-position: 50% 50%;
-			height: 100%;
+		overflow: auto;
+		position: relative;
+		>img{
+			position: absolute;
+			visibility: hidden;
 		}
 	}
 
@@ -229,6 +228,7 @@
 		color: @photoViewBtnColor;
 		font-weight: bold;
 		line-height: 1;
+		text-decoration: none;
 	}
 
 	> .close {
