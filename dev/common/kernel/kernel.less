@@ -27,11 +27,11 @@
 #photoview,
 #popups,
 #readable {
-	background-image: url("images/halftrans.png");
+	.halfTrans;
 }
 
 #loading {
-	background-image: url("images/trans.gif");
+	.trans;
 }
 
 #dialogs > div,
@@ -64,7 +64,6 @@
 #popups > div > div,
 #readable > div > div {
 	height: 100%;
-	//overflow: hidden;
 }
 
 #readable > div > div {
@@ -132,8 +131,8 @@
 #dialogs.isConfirm {
 	display: block;
 
-	> div > .yes,
-	> div > .no {
+	 > div > .no,
+	> div > .yes {
 		display: block;
 		position: absolute;
 		bottom: 50%;
@@ -215,7 +214,8 @@
 		height: 100%;
 		overflow: auto;
 		position: relative;
-		>img{
+
+		> img {
 			position: absolute;
 			visibility: hidden;
 		}
@@ -239,8 +239,8 @@
 		height: 40px;
 	}
 
-	 > .prev,
-	> .next {
+	 > .next,
+	> .prev {
 		top: 50%;
 		margin-top: -50px;
 		font-size: 100px;
@@ -272,7 +272,7 @@
 		bottom: 0;
 		right: 0;
 		left: 0;
-		background-image: url("images/halftrans.png");
+		.halfTrans;
 	}
 
 	> .contents {
@@ -313,10 +313,14 @@
 	}
 }
 
-.isLoading {
+.loading {
 	background-image: url("images/loading.gif");
 	background-repeat: no-repeat;
 	background-position: 50% 50%;
+}
+
+.isLoading {
+	.loading;
 
 	> * {
 		visibility: hidden;
