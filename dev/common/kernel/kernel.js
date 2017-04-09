@@ -382,7 +382,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			return activePopup;
 		};
 		kernel.destoryPopup = function(id) {
-			var p = ppoups[id];
+			var p = popups[id];
 			if (p) {
 				destory(p, 'popup', id);
 			}
