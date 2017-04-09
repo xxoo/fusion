@@ -421,12 +421,8 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			}
 		};
 		kernel.hidePhotoView = function() {
+			siz = [];
 			while (sld.children.length) {
-				if (!$.isPlainObject(siz[0])) {
-					siz[0].onload = null;
-					document.body.removeChild(siz[0]);
-				}
-				siz.shift();
 				sld.remove(0);
 			}
 		};
@@ -452,7 +448,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			if (this.current === undefined) {
 				ctn.css('display', '');
 			} else {
-				if ($.isPlainObject(siz[this.current])) {
+				if (siz[this.current]) {
 					chksz(this.current);
 				}
 				ctn.css('display', 'block');
@@ -463,7 +459,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 		function rsz() {
 			w = $(window).innerWidth();
 			h = $(window).innerHeight();
-			if (typeof sld.current === 'number' && $.isPlainObject(siz[sld.current])) {
+			if (typeof sld.current === 'number' && siz[sld.current]) {
 				chksz(sld.current);
 			}
 		}
