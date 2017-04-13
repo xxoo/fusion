@@ -12,6 +12,7 @@ define(['module'], function(module) {
 		debug = false,
 		prefix = module.id.replace(/framework\/[^\/]+$/, ''),
 		cfg = {
+			waitSeconds: 0,
 			baseUrl: prefix + srcRoot
 		};
 
