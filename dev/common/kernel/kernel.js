@@ -59,7 +59,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 					for (n in loc1.args) {
 						if (n in loc2.args) {
 							if (loc1.args[n] === undefined) {
-								if (loc1.args[n] !== loc2.args[n]) {
+								if (loc2.args[n] !=== undefined) {
 									return false;
 								}
 							} else {
@@ -141,7 +141,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 							} else {
 								if (f) {
 									tmp = o.xEvents[e].indexOf(f);
-									if (tmp !== -1) {
+									if (tmp >= 0) {
 										o.xEvents[e].splice(tmp, 1);
 									}
 								} else {
@@ -166,7 +166,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 							if (addRemoveMark) {
 								o.xEvents.removeMark = true;
 							} else {
-								o.xEvents = null;
+								delete o.xEvents;
 							}
 						}
 					}
@@ -185,11 +185,11 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				if (o.xEvents[evt.type].stack[0]) {
 					tmp = o.xEvents[evt.type].indexOf(o.xEvents[evt.type].stack[0][1]);
 					if (o.xEvents[evt.type].stack[0][0]) {
-						if (tmp !== -1) {
+						if (tmp >= 0) {
 							o.xEvents[evt.type].splice(tmp, 1);
 						}
 					} else {
-						if (tmp === -1) {
+						if (tmp < 0) {
 							o.xEvents[evt.type].push(o.xEvents[evt.type].stack[0][1]);
 						}
 					}
@@ -204,11 +204,11 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			}
 			if (o.xEvents.removeMark) {
 				delete o.xEvents.removeMark;
-				for (var n in o.xEvents) {
+				for (i in o.xEvents) {
 					delete o.xEvents[n];
-					o['on' + n] = null;
+					o['on' + i] = null;
 				}
-				o.xEvents = null;
+				delete o.xEvents;
 			}
 		}
 	}();
