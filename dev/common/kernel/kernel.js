@@ -59,7 +59,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 					for (n in loc1.args) {
 						if (n in loc2.args) {
 							if (loc1.args[n] === undefined) {
-								if (loc2.args[n] !=== undefined) {
+								if (loc2.args[n] !== undefined) {
 									return false;
 								}
 							} else {
