@@ -808,7 +808,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			callback();
 		} else if (oldcfg.loaded !== 1) {
 			oldcfg.loaded = 1;
-			var ctn = '#' + type + 's',
+			var url, ctn = '#' + type + 's',
 				n = type + '/' + id + '/',
 				m = require.toUrl(n),
 				isPage = type === 'page';
@@ -822,7 +822,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				oldcfg.css = kernel.appendCss(m + oldcfg.css);
 			}
 			if ('html' in oldcfg) {
-				var url = m + oldcfg.html
+				url = m + oldcfg.html
 				$.ajax({
 					url: url,
 					type: 'get',
