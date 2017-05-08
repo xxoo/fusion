@@ -1,1 +1,0 @@
-"use strict";define("site/panels/panels",{samplePanel:{js:"samplePanel",html:"samplePanel.html",css:"samplePanel.less"}});

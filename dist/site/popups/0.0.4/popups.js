@@ -1,0 +1,1 @@
+"use strict";define({samplePopup:{js:"samplePopup",html:"samplePopup.html",css:"samplePopup.less"}});

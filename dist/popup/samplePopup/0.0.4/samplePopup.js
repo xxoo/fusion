@@ -1,1 +1,0 @@
-"use strict";define("popup/samplePopup/samplePopup",["module","common/kernel/kernel"],function(e,n){var t=e.id.replace(/^[^\/]+\/|\/[^\/]+/g,""),o=$("#"+t),i=o.find(">.content>span");return{onload:function(e){i.text(e)},onunload:function(){console.log("closing "+t)}}});

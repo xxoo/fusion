@@ -1,0 +1,1 @@
+"use strict";define(["module","common/kernel/kernel"],function(e,n){var t=e.id.replace(/^[^\/]+\/|\/[^\/]+/g,"");$("#"+t);return{onload:function(){},onunload:function(){},onloadend:function(){},onunloadend:function(){setTimeout(function(){n.destoryPanel(t)},0)},ondestory:function(){}}});
