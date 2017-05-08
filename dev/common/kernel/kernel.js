@@ -415,8 +415,11 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			close = ctn.find('.close'),
 			prev = ctn.find('.prev'),
 			next = ctn.find('.next'),
+			rp = ctn.find('.rotate.p'),
+			rn = ctn.find('.rotate.n'),
 			sld = slider(ctn.find('>div')),
 			siz = [],
+			deg = [],
 			w, h;
 		kernel.showPhotoView = function(contents, idx) {
 			var i;
@@ -444,11 +447,19 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			}
 		};
 		ctn.on('click', '>div>img', function() {
+			var d;
 			if (this.style.cursor === 'zoom-in') {
-				this.style.width = this.style.height = '';
+				d = deg[sld.current] % 2;
+				if (d) {
+					this.style.top = siz[sld.current].w > h ? (siz[sld.current].w - siz[sld.current].h) / 2 + 'px' : (h - siz[sld.current].h) / 2 + 'px';
+					this.style.left = siz[sld.current].h > w ? (siz[sld.current].h - siz[sld.current].w) / 2 + 'px' : (w - siz[sld.current].w) / 2 + 'px';
+				} else {
+					this.style.top = siz[sld.current].h > h ? 0 : (h - siz[sld.current].h) / 2 + 'px';
+					this.style.left = siz[sld.current].w > w ? 0 : (w - siz[sld.current].w) / 2 + 'px';
+				}
+				this.style.width = siz[sld.current].w + 'px';
+				this.style.height = siz[sld.current].h + 'px';
 				this.style.cursor = 'zoom-out';
-				this.style.top = siz[sld.current].h > h ? 0 : (h - siz[sld.current].h) / 2 + 'px';
-				this.style.left = siz[sld.current].w > w ? 0 : (w - siz[sld.current].w) / 2 + 'px';
 			} else if (this.style.cursor === 'zoom-out') {
 				chksz(sld.current);
 			}
@@ -459,6 +470,18 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 		});
 		next.on('click', function() {
 			sld.slideTo(sld.current + 1);
+		});
+		rp.on('click', function() {
+			if (typeof deg[sld.current] === 'number') {
+				deg[sld.current]++;
+				chksz(sld.current);
+			}
+		});
+		rn.on('click', function() {
+			if (typeof deg[sld.current] === 'number') {
+				deg[sld.current]--;
+				chksz(sld.current);
+			}
 		});
 		close.on('click', kernel.hidePhotoView);
 		sld.onchange = function() {
@@ -471,6 +494,10 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				ctn.css('display', 'block');
 			}
 		};
+		if ('transform' in document.documentElement.style) {
+			rp.css('display', 'block');
+			rn.css('display', 'block');
+		}
 		rsz();
 
 		function rsz() {
@@ -487,6 +514,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 					w: this.width,
 					h: this.height
 				};
+				deg[i] = 0;
 				if (sld.current === i) {
 					chksz(i);
 				}
@@ -495,38 +523,44 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 		}
 
 		function chksz(i) {
-			var r, cw, ch;
-			if (siz[i].w > w || siz[i].h > h) {
-				r = siz[i].w / siz[i].h;
+			var r, cw, ch, dw, dh,
+				d = deg[i] % 2;
+			if (d) {
+				dw = siz[i].h;
+				dh = siz[i].w;
+			} else {
+				dw = siz[i].w;
+				dh = siz[i].h;
+			}
+			if (dw > w || dh > h) {
+				r = dw / dh;
 				if (w / h > r) {
 					ch = h;
 					cw = ch * r;
-					sld.children[i].css({
-						left: (w - cw) / 2 + 'px',
-						top: 0
-					});
 				} else {
 					cw = w;
 					ch = cw / r;
-					sld.children[i].css({
-						left: 0,
-						top: (h - ch) / 2 + 'px'
-					});
 				}
-				sld.children[i].css({
-					width: cw + 'px',
-					height: ch + 'px',
-					cursor: 'zoom-in'
-				});
+				if (d) {
+					dw = ch;
+					dh = cw;
+				} else {
+					dw = cw;
+					dh = ch;
+				}
+				sld.children[i].css('cursor', 'zoom-in');
 			} else {
-				sld.children[i].css({
-					top: (h - siz[i].h) / 2 + 'px',
-					left: (w - siz[i].w) / 2 + 'px',
-					width: '',
-					height: '',
-					cursor: ''
-				});
+				dw = siz[i].w;
+				dh = siz[i].h;
+				sld.children[i].css('cursor', '');
 			}
+			sld.children[i].css({
+				top: (h - dh) / 2 + 'px',
+				left: (w - dw) / 2 + 'px',
+				width: dw + 'px',
+				height: dh + 'px',
+				transform: 'rotate(' + 90 * deg[i] + 'deg)'
+			});
 		}
 	}();
 	//对话框及提示功能
