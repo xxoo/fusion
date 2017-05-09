@@ -205,7 +205,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			if (o.xEvents.removeMark) {
 				delete o.xEvents.removeMark;
 				for (i in o.xEvents) {
-					delete o.xEvents[n];
+					delete o.xEvents[i];
 					o['on' + i] = null;
 				}
 				delete o.xEvents;
@@ -810,7 +810,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 	return kernel;
 
 	function destory(cfg, type, id) {
-		var n;
+		var n = type + '/' + id;
 		if (cfg.loaded === 2 && typeof cfg.ondestory === 'function') {
 			cfg.ondestory();
 		}
@@ -821,10 +821,10 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				less.sheets.splice(less.sheets.indexOf(cfg.css), 1);
 				less.refresh();
 			}
-			cfg.css = cfg.css.getAttribute('href').replace(RegExp('^' + require.toUrl(type + '/' + id) + '/'), '');
+			cfg.css = cfg.css.getAttribute('href').replace(RegExp('^' + require.toUrl(n) + '/'), '');
 		}
 		if (cfg.js) {
-			n = type + '/' + id + '/' + cfg.js;
+			n += '/' + cfg.js;
 			if (require.defined(n)) {
 				require([n], function(o) {
 					require.undef(n);
