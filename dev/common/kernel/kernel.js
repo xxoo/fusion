@@ -810,7 +810,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 	return kernel;
 
 	function destory(cfg, type, id) {
-		var n = type + '/' + id;
+		var o, n = type + '/' + id;
 		if (cfg.loaded === 2 && typeof cfg.ondestory === 'function') {
 			cfg.ondestory();
 		}
@@ -826,12 +826,13 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 		if (cfg.js) {
 			n += '/' + cfg.js;
 			if (require.defined(n)) {
-				require([n], function(o) {
-					require.undef(n);
-					if (o) {
-						cfg.__proto__ = Object.prototype;
+				o = require(n);
+				require.undef(n);
+				if (o) {
+					for (n in o) {
+						delete cfg[n];
 					}
-				});
+				}
 			}
 		}
 		cfg.loaded = 0;
@@ -890,7 +891,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				js = n + oldcfg.js;
 				require([js], function(cfg) {
 					if (cfg) {
-						oldcfg.__proto__ = cfg;
+						Object.assign(oldcfg, cfg);
 					}
 					oldcfg.loaded = 2;
 					callback();
