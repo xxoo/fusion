@@ -20,8 +20,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 					csslnk.rel = 'stylesheet';
 					csslnk.href = url;
 				}
-				(document.head || document.getElementsByTagName('head')[0]).appendChild(csslnk);
-				return csslnk;
+				return (document.head || document.getElementsByTagName('head')[0]).appendChild(csslnk);
 			},
 			buildHash: function(loc) {
 				var n, hash = '#!' + encodeURIComponent(loc.id);
