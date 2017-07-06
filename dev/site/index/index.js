@@ -13,7 +13,7 @@ define(['common/kernel/kernel'], function(kernel) {
 			}
 		});
 	}
-	kernel.init('home', undefined, function() {
+	kernel.init('doc', undefined, function() {
 		//百度统计接口
 		if (window._hmt && _hmt.push) {
 			_hmt.push(['_trackPageview', '/' + kernel.buildHash(kernel.location)]);

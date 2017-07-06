@@ -5,7 +5,6 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 		kernel = {
 			appendCss: function(url) { //自动根据当前环境添加css或less
 				var csslnk = document.createElement('link');
-				csslnk.type = 'text/css';
 				if (/\.less$/.test(url)) {
 					if (typeof less === 'object') {
 						csslnk.rel = 'stylesheet/less';
@@ -21,6 +20,14 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 					csslnk.href = url;
 				}
 				return (document.head || document.getElementsByTagName('head')[0]).appendChild(csslnk);
+			},
+			removeCss: function(lnk) {
+				$(lnk).remove();
+				if (lnk.rel === 'stylesheet/less') {
+					less.sheets.splice(less.sheets.indexOf(lnk), 1);
+					less.refresh();
+				}
+				return lnk.getAttribute('href');
 			},
 			buildHash: function(loc) {
 				var n, hash = '#!' + encodeURIComponent(loc.id);
@@ -815,12 +822,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 		}
 		$('#' + id).remove();
 		if (cfg.css && typeof cfg.css !== 'string') {
-			$(cfg.css).remove();
-			if (cfg.css.type === 'stylesheet/less') {
-				less.sheets.splice(less.sheets.indexOf(cfg.css), 1);
-				less.refresh();
-			}
-			cfg.css = cfg.css.getAttribute('href').replace(RegExp('^' + require.toUrl(n) + '/'), '');
+			cfg.css = kernel.removeCss(cfg.css).replace(RegExp('^' + require.toUrl(n) + '/'), '');
 		}
 		if (cfg.js) {
 			n += '/' + cfg.js;
