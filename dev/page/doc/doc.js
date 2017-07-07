@@ -10,52 +10,90 @@ define(['module', 'common/kernel/kernel'], function (module, kernel) {
 			api: {
 				properties: [{
 					title: 'location:Object',
-					desc: '用语存放当前路由信息'
+					desc: '用于存放当前路由信息, 请勿直接修改'
 				}],
 				methods: [{
 					title: 'appendCss(url:String):HTMLLinkElement',
 					desc: '用于加载样式，会自动根据当前环境来选择加载less或者由less编译成的css',
-					example: ``
+					example: `var a = kernel.appendCss(require.toUrl('common/kernel/kernel.less'));
+console.log(a.href);
+setTimeout(function(){
+	console.log(kernel.removeCss(a));
+}, 1000);`
 				}, {
 					title: 'removeCss(lnk:HTMLLinkElement):String',
 					desc: '移除已加载的less或者css',
-					example: ``
+					example: `var a = kernel.appendCss(require.toUrl('common/kernel/kernel.less'));
+console.log(a.href);
+setTimeout(function(){
+	console.log(kernel.removeCss(a));
+}, 1000);`
 				}, {
 					title: 'buildHash(loc:Object):String',
 					desc: '将loc对象转换为锚点链接字符串',
-					example: ``
+					example: `console.log(kernel.buildHash(kernel.location));`
 				}, {
 					title: 'parseHash(hash:String):Object',
 					desc: '将锚点链接字符串转换为loc对象',
-					example: ``
+					example: `console.log(kernel.parseHash(location.hash));`
 				}, {
 					title: 'isSameLocation(loc1:Object, loc2:Object):Bollean',
 					desc: '判断loc1和loc2是否对应同一个地址',
-					example: ``
+					example: `console.log(kernel.isSameLocation(kernel.location, {
+	id: 'doc',
+	args: {
+		api: 'isSameLocation'
+	}
+}));`
 				}, {
 					title: 'replaceLocation(loc:Object):void',
 					desc: '改变当前地址，若loc和当前地址相同，则调用reloadPage',
-					example: ``
+					example: `kernel.replaceLocation({
+	id: 'doc', args: {
+		api: 'replaceLocation'
+	}
+});`
 				}, {
 					title: 'listeners.add(o:Object, e:String, f:Function):void',
 					desc: '注册监听事件',
-					example: ``
+					example: `kernel.listeners.add(kernel.popupEvents, 'show', func);
+kernel.listeners.add(kernel.popupEvents, 'hide', func);
+kernel.openPopup('samplePopup', 'doc');
+function func(evt){
+	console.log(kernel.listeners.list(this));
+	kernel.listeners.remove(this, evt.type, func);
+	console.log(evt);
+}`
 				}, {
 					title: 'listeners.list(o:Object, e:String):Array|Object',
 					desc: '列出已注册的监听事件',
-					example: ``
+					example: `kernel.listeners.add(kernel.popupEvents, 'show', func);
+kernel.listeners.add(kernel.popupEvents, 'hide', func);
+kernel.openPopup('samplePopup', 'doc');
+function func(evt){
+	console.log(kernel.listeners.list(this));
+	kernel.listeners.remove(this, evt.type, func);
+	console.log(evt);
+}`
 				}, {
 					title: 'listeners.remove(o:Object, e?:String, f?:Function):void',
 					desc: '解除已注册的监听',
-					example: ``
+					example: `kernel.listeners.add(kernel.popupEvents, 'show', func);
+kernel.listeners.add(kernel.popupEvents, 'hide', func);
+kernel.openPopup('samplePopup', 'doc');
+function func(evt){
+	console.log(kernel.listeners.list(this));
+	kernel.listeners.remove(this, evt.type, func);
+	console.log(evt);
+}`
 				}, {
 					title: 'openPanel(id:String, param:any):void',
 					desc: '打开侧边栏',
-					example: ``
+					example: `kernel.openPanel('samplePanel');`
 				}, {
 					title: 'showPanel(id:String, param:any):void',
-					desc: '显示侧边栏，一般不需要手动调用',
-					example: ``
+					desc: '显示侧边栏，只有在指定侧边栏已经加载后才可使用',
+					example: `kernel.showPanel('samplePanel');`
 				}, {
 					title: 'closePanel(id?:String):void',
 					desc: '关闭侧边栏',
@@ -63,101 +101,165 @@ define(['module', 'common/kernel/kernel'], function (module, kernel) {
 				}, {
 					title: 'destoryPanel(id:String):void',
 					desc: '销毁已加载的指定侧边栏, 不可销毁当前侧边栏',
-					example: ``
+					example: `kernel.destoryPanel('samplePanel');`
 				}, {
 					title: 'openPopup(id:String, param:any):void',
 					desc: '打开弹窗',
-					example: ``
+					example: `kernel.listeners.add(kernel.popupEvents, 'show', func);
+kernel.listeners.add(kernel.popupEvents, 'hide', func);
+kernel.openPopup('samplePopup', 'doc');
+function func(evt){
+	console.log(kernel.listeners.list(this));
+	kernel.listeners.remove(this, evt.type, func);
+	console.log(evt);
+}`
 				}, {
 					title: 'showPopup(id:String, param:any):void',
-					desc: '显示弹窗，一般不需要手动调用',
-					example: ``
+					desc: '显示弹窗，只有在指定弹窗已经加载后才可使用',
+					example: `kernel.showPopup('samplePopup', 'doc');`
 				}, {
 					title: 'closePopup(id:String):void',
 					desc: '关闭弹窗',
-					example: ``
+					example: `kernel.listeners.add(kernel.popupEvents, 'show', func);
+kernel.listeners.add(kernel.popupEvents, 'hide', func);
+kernel.openPopup('samplePopup', 'doc');
+function func(evt){
+	console.log(kernel.listeners.list(this));
+	kernel.listeners.remove(this, evt.type, func);
+	console.log(evt);
+}`
 				}, {
 					title: 'getCurrentPopup():String',
 					desc: '获取当前正在显示的弹窗id',
-					example: ``
+					example: `console.log(kernel.getCurrentPopup());`
 				}, {
 					title: 'destoryPopup(id:String):void',
 					desc: '销毁已加载的指定弹窗, 不可销毁当前弹窗',
-					example: ``
+					example: `kernel.destoryPopup('samplePopup');`
 				}, {
 					title: 'showPhotoView(contents:Array, idx?:Number):void',
 					desc: '显示图片查看器',
-					example: ``
+					example: `kernel.showPhotoView(['http://cn.bing.com/az/hprichbg/rb/SnailsKissing_ZH-CN7861942488_1920x1080.jpg','http://cn.bing.com/az/hprichbg/rb/RestArea_ZH-CN13518721881_1920x1080.jpg']);`
 				}, {
 					title: 'hidePhotoView():void',
-					desc: '关闭图片查看器',
+					desc: '关闭图片查看器, 一般不需要手动调用',
 					example: ``
 				}, {
 					title: 'showLoading(text?:String):void',
 					desc: '显示加载中界面, 这个方法包含一个引用计数, 每次调用会+1，所以此方法必须和hideLoading成对使用',
-					example: ``
+					example: `kernel.showLoading();
+console.log(kernel.isLoading());
+setTimeout(kernel.hideLoading, 1000);
+kernel.listeners.add(kernel.dialogEvents, 'loaded', loaded);
+function loaded(evt){
+	kernel.listeners.remove(this, evt.type, loaded);
+	console.log(kernel.isLoading());
+}`
 				}, {
 					title: 'hideLoading():void',
 					desc: '使showLoading的引用计数-1, 当到达0时才会关闭加载中界面, 并触发dialogEvents.onloaded事件',
-					example: ``
+					example: `kernel.showLoading();
+console.log(kernel.isLoading());
+setTimeout(kernel.hideLoading, 1000);
+kernel.listeners.add(kernel.dialogEvents, 'loaded', loaded);
+function loaded(evt){
+	kernel.listeners.remove(this, evt.type, loaded);
+	console.log(kernel.isLoading());
+}`
 				}, {
 					title: 'isLoading():Boolean',
 					desc: '判断加载中界面是否在显示',
-					example: ``
+					example: `kernel.showLoading();
+console.log(kernel.isLoading());
+setTimeout(kernel.hideLoading, 1000);
+kernel.listeners.add(kernel.dialogEvents, 'loaded', loaded);
+function loaded(evt){
+	kernel.listeners.remove(this, evt.type, loaded);
+	console.log(kernel.isLoading());
+}`
 				}, {
 					title: 'hint(text:String, className?:String, t?:Number)',
 					desc: '显示提示文本',
-					example: ``
+					example: `kernel.hint('提示文本', 'success');`
 				}, {
-					title: 'showReadable(html:String, width:String, height:String, callback?:Function):void',
+					title: 'showReadable(html:String|HTMLElement|JQueryDOM, width:String, height:String, callback?:Function):void',
 					desc: '显示内容展示窗',
-					example: ``
+					example: `kernel.showReadable('&lt;h1>title&lt;/h1>&lt;p>content&lt;/p>', '800px', '600px', function(){
+	console.log('readable window closed');
+});`
 				}, {
 					title: 'showForeign(url:String, width:String, height:String, callback?:Function):void',
-					desc: '显示外部链接',
-					example: ``
+					desc: '显示外部链接窗',
+					example: `kernel.showForeign('https://xxoo.github.com/fusion-mobile/', '360px', '600px', function(){
+	console.log('foreign window closed');
+});`
 				}, {
 					title: 'hideReadable():void',
-					desc: '隐藏当前内容展示或外部链接',
+					desc: '隐藏当前内容展示窗或外部链接窗, 一般不需要手动调用',
 					example: ``
 				}, {
 					title: 'alert(text:String, callback?:Function, width?:String, height?:String):void',
 					desc: '显示提示框',
-					example: ``
+					example: `kernel.alert('this is an alert box.');`
 				}, {
 					title: 'confirm(text:String, callback:Function, width?:String, height?:String):void',
 					desc: '显示需确认的提示框',
-					example: ``
+					example: `kernel.confirm('is this a confirm box?', function(sure){
+	console.log(sure);
+});`
 				}, {
 					title: 'hideDialog():void',
-					desc: '关闭当前提示框',
+					desc: '关闭当前提示框, 一般不需要手动调用',
 					example: ``
 				}, {
 					title: 'init(home:String, ps?:HTMLElement, func?:Function):void',
-					desc: '初始化路由',
-					example: ``
+					desc: '初始化路由, 需要示例请查看site/index/index中的代码'
 				}, {
 					title: 'setHome(home:String):Boolean',
-					desc: '改变默认页',
-					example: ``
+					desc: '改变默认页, ',
+					example: `kerenl.setHome('doc');`
 				}, {
 					title: 'reloadPage(id?:String):void',
 					desc: '重新加载当前页',
-					example: ``
+					example: `kernel.reloadPage();`
 				}, {
 					title: 'destoryPage(id:String):void',
 					desc: '销毁已加载的指定页面, 不可销毁当前页',
-					example: ``
+					example: `kernel.destoryPage('samplePage');`
 				}],
 				events: [{
 					title: 'popupEvents.onshow',
-					desc: '弹窗显示时触发'
+					desc: '弹窗显示时触发',
+					example: `kernel.listeners.add(kernel.popupEvents, 'show', func);
+kernel.listeners.add(kernel.popupEvents, 'hide', func);
+kernel.openPopup('samplePopup', 'doc');
+function func(evt){
+	console.log(kernel.listeners.list(this));
+	kernel.listeners.remove(this, evt.type, func);
+	console.log(evt);
+}`
 				}, {
 					title: 'popupEvents.onhide',
-					desc: '弹窗隐藏时触发'
+					desc: '弹窗隐藏时触发',
+					example: `kernel.listeners.add(kernel.popupEvents, 'show', func);
+kernel.listeners.add(kernel.popupEvents, 'hide', func);
+kernel.openPopup('samplePopup', 'doc');
+function func(evt){
+	console.log(kernel.listeners.list(this));
+	kernel.listeners.remove(this, evt.type, func);
+	console.log(evt);
+}`
 				}, {
 					title: 'dialogEvents.onloaded',
-					desc: '加载动画结束后触发'
+					desc: '加载动画结束后触发',
+					example: `kernel.showLoading();
+console.log(kernel.isLoading());
+setTimeout(kernel.hideLoading, 1000);
+kernel.listeners.add(kernel.dialogEvents, 'loaded', loaded);
+function loaded(evt){
+	kernel.listeners.remove(this, evt.type, loaded);
+	console.log(kernel.isLoading());
+}`
 				}]
 			}
 		}, {
@@ -220,6 +322,9 @@ define(['module', 'common/kernel/kernel'], function (module, kernel) {
 			events: '事件'
 		},
 		mod, section, api;
+	content.on('click', '.code>a', function(){
+		eval(this.parentNode.firstChild.data);
+	});
 	return {
 		onload: function (force) {
 			var i, j;
@@ -308,7 +413,7 @@ define(['module', 'common/kernel/kernel'], function (module, kernel) {
 		}
 		s += '"><div class="name">' + o.title + '</div><div class="desc">' + o.desc + '</div>';
 		if (o.example) {
-			s += '<div class="code">' + o.example + '</div>';
+			s += '<div class="code">' + o.example + '<a href="javascript:;">执行</a></div>';
 		}
 		s += '</div>';
 		return s;
