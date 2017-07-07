@@ -323,7 +323,7 @@ function loaded(evt){
 		},
 		mod, section, api;
 	content.on('click', '.code>a', function(){
-		eval(this.parentNode.firstChild.data);
+		eval('var kernel = require("common/kernel/kernel");' + this.parentNode.firstChild.data);
 	});
 	return {
 		onload: function (force) {
