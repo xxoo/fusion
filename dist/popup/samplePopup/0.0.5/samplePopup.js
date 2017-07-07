@@ -1,1 +1,0 @@
-"use strict";define(["module","common/kernel/kernel"],function(e){var n=e.id.replace(/^[^\/]+\/|\/[^\/]+/g,""),t=$("#"+n),i=t.find(">.content>span");return{onload:function(e){i.text(e)},onunload:function(){}}});
