@@ -398,20 +398,16 @@ function loaded(evt){
 			}
 		}
 		content.html(s);
-		s = content.find('.active')[0];
-		if (s) {
+		if (typeof api === 'number') {
+			s = content.find('>.field[data-name="' + getShotTitle(tree[mod].api[section][api].title) + '"]')[0];
 			content.animate({
-				scrollTop: s.offsetTop
+				scrollTop: Math.min(s.offsetTop, content[0].scrollHeight - content[0].clientHeight)
 			});
 		}
 	}
 
 	function makeContent(o, active) {
-		var s = '<div class="field';
-		if (active) {
-			s += ' active';
-		}
-		s += '"><div class="name">' + o.title + '</div><div class="desc">' + o.desc + '</div>';
+		var s = '<div class="field" data-name="' + getShotTitle(o.title) + '"><div class="name">' + o.title + '</div><div class="desc">' + o.desc + '</div>';
 		if (o.example) {
 			s += '<div class="code">' + o.example + '<a href="javascript:;">执行</a></div>';
 		}
