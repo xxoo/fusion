@@ -190,7 +190,7 @@ function loaded(evt){
 				}, {
 					title: 'showForeign(url:String, width:String, height:String, callback?:Function):void',
 					desc: '显示外部链接窗',
-					example: `kernel.showForeign('https://xxoo.github.com/fusion-mobile/', '360px', '600px', function(){
+					example: `kernel.showForeign('https://xxoo.github.io/fusion-mobile/', '360px', '600px', function(){
 	console.log('foreign window closed');
 });`
 				}, {
