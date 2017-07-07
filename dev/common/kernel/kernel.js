@@ -657,7 +657,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			}
 		};
 		kernel.showForeign = function(url, width, height, callback) {
-			kernel.showReadable('<iframe frameborder="no" allowtransparency="yes" marginwidth="0" marginheight="0" style="width:100%;height:100%;" src="' + url + '"></iframe>', width, height, callback);
+			kernel.showReadable('<iframe frameborder="no" allowtransparency="yes" marginwidth="0" marginheight="0" style="width:100%;height:100%;display:block;" src="' + url + '"></iframe>', width, height, callback);
 		};
 		kernel.confirm = function(text, callback, width, height) {
 			var ctn, txt;
