@@ -182,14 +182,14 @@ function loaded(evt){
 					desc: '显示提示文本',
 					example: `kernel.hint('提示文本', 'success');`
 				}, {
-					title: 'showReadable(html:String|HTMLElement|JQueryDOM, width:String, height:String, callback?:Function):void',
+					title: 'showReadable(html:String|HTMLElement|JQueryDOM, width:String, height:String, callback?:Function, className?:String):void',
 					desc: '显示内容展示窗',
 					example: `kernel.showReadable('&lt;h1>title&lt;/h1>&lt;p>content&lt;/p>', '800px', '600px', function(){
 	console.log('readable window closed');
 });`
 				}, {
-					title: 'showForeign(url:String, width:String, height:String, callback?:Function):void',
-					desc: '显示外部链接窗',
+					title: 'showForeign(url:String, width:String, height:String, callback?:Function, className?:String):void',
+					desc: '将外部链接作为iframe显示在内容展示窗内',
 					example: `kernel.showForeign('https://xxoo.github.io/fusion-mobile/', '360px', '600px', function(){
 	console.log('foreign window closed');
 });`
