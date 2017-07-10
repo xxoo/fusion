@@ -280,7 +280,14 @@ function loaded(evt){
 			construct: {
 				title: 'new? slider(container:JQueryDOM, contents?:Array, idx?:Number, nav?:JQueryDOM):slider',
 				desc: 'container: 容器节点\ncontents: 初始内容\nidx: 默认展示的内容索引\nnav: 导航节点',
-				example: ``
+				example: `var ctn = $('&lt;div>&lt;/div>');
+var contents = [$('&lt;div style="background-color:yellow;color:blue;font-size: 100px;">content1&lt;/div>'), $('&lt;div style="background-color:green;color:red;font-size: 100px;">content2&lt;/div>')];
+var slider = require('common/slider/slider');
+var s = slider(ctn, contents);
+kernel.showReadable(ctn, '800px', '400px', function(){
+	s.stopPlay();
+});
+s.startPlay(1000);`
 			},
 			api: {
 				properties: [{
@@ -399,10 +406,12 @@ function loaded(evt){
 		}
 		content.html(s);
 		if (typeof api === 'number') {
-			s = content.find('>.field[data-name="' + getShotTitle(tree[mod].api[section][api].title) + '"]')[0];
-			content.animate({
-				scrollTop: Math.min(s.offsetTop, content[0].scrollHeight - content[0].clientHeight)
-			});
+			s = Math.min(content.find('>.field[data-name="' + getShotTitle(tree[mod].api[section][api].title) + '"]')[0].offsetTop, content[0].scrollHeight - content[0].clientHeight);
+			if (s !== content[0].scrollTop) {
+				content.animate({
+					scrollTop: s
+				});
+			}
 		}
 	}
 
