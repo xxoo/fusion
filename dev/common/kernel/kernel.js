@@ -621,14 +621,14 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				});
 			}, t);
 		};
-		kernel.showReadable = function(html, width, height, callback) {
+		kernel.showReadable = function(html, width, height, callback, className) {
 			var readable = $('#readable');
 			if (typeof html === 'string') {
 				readable.find('>div').css('width', width).css('height', height).find('>div').html(html);
 			} else {
 				readable.find('>div').css('width', width).css('height', height).find('>div').append(html);
 			}
-			readable.css('display', 'block');
+			readable.prop('className', className || '').css('display', 'block');
 			raCb = callback;
 		};
 		kernel.hideReadable = function() {
@@ -656,8 +656,8 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				dlgStack.shift();
 			}
 		};
-		kernel.showForeign = function(url, width, height, callback) {
-			kernel.showReadable('<iframe frameborder="no" allowtransparency="yes" marginwidth="0" marginheight="0" style="width:100%;height:100%;display:block;" src="' + url + '"></iframe>', width, height, callback);
+		kernel.showForeign = function(url, width, height, callback, className) {
+			kernel.showReadable('<iframe frameborder="no" allowtransparency="yes" marginwidth="0" marginheight="0" style="width:100%;height:100%;display:block;" src="' + url + '"></iframe>', width, height, callback, className);
 		};
 		kernel.confirm = function(text, callback, width, height) {
 			var ctn, txt;
