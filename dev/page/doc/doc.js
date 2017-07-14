@@ -188,7 +188,7 @@ function loaded(evt){
 	console.log('readable window closed');
 });`
 				}, {
-					title: 'showForeign(url:String, width:String, height:String, callback?:Function, className?:String):void',
+					title: 'showForeign(url:String, width:String, height:String, callback?:Function):void',
 					desc: '将外部链接作为iframe显示在内容展示窗内',
 					example: `kernel.showForeign('https://xxoo.github.io/fusion-mobile/', '360px', '600px', function(){
 	console.log('foreign window closed');
