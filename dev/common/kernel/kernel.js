@@ -813,16 +813,16 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 	return kernel;
 
 	function destory(cfg, type, id) {
-		var o, n = type + '/' + id;
+		var o, n = type + '/' + id + '/';
 		if (cfg.loaded === 2 && typeof cfg.ondestory === 'function') {
 			cfg.ondestory();
 		}
 		$('#' + id).remove();
 		if (cfg.css && typeof cfg.css !== 'string') {
-			cfg.css = kernel.removeCss(cfg.css).replace(RegExp('^' + require.toUrl(n) + '/'), '');
+			cfg.css = kernel.removeCss(cfg.css).substr(require.toUrl(n).length);
 		}
 		if (cfg.js) {
-			n += '/' + cfg.js;
+			n += cfg.js;
 			if (require.defined(n)) {
 				o = require(n);
 				require.undef(n);
