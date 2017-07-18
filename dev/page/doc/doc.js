@@ -10,7 +10,12 @@ define(['module', 'common/kernel/kernel'], function (module, kernel) {
 			api: {
 				properties: [{
 					title: 'location:Object',
-					desc: '用于存放当前路由信息, 请勿直接修改'
+					desc: '用于存放当前路由信息, 请勿直接修改',
+					example: `console.log(kernel.location);`
+				}, {
+					title: 'lastLocation:Object',
+					desc: '用于存放最近发生变化的路由信息, 可能为undefined, 请勿直接修改',
+					example: `console.log(kernel.lastLocation);`
 				}],
 				methods: [{
 					title: 'appendCss(url:String):HTMLLinkElement',
