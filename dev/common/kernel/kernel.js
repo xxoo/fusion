@@ -703,37 +703,34 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 
 	//页面加载相关功能
 	! function() {
-		var currentpage, routingCb, pageScroller;
-		//启动路由处理，只需要调用一次
-		//func为每次路由发生改变时需要执行的回调, 此回调会在页面加载前执行
-		//当指定ps时则表示使用局部滚动
-		kernel.init = function(home, ps, func) {
-			var lastHash;
-			homePage = home;
-			pageScroller = ps;
-			routingCb = func;
-			if ('onhashchange' in window) {
-				$(window).on('hashchange', hashchange);
-			} else {
-				setInterval(function() {
-					if (lastHash !== location.hash) {
-						lastHash = location.hash;
-						hashchange();
-					}
-				}, 10);
-			}
-			hashchange();
-		};
-		kernel.setHome = function(home) {
+		//初始化并启动路由或者修改默认页
+		//当调用此方法后引起路由变化则会返回true
+		kernel.init = function(home) {
 			var tmp;
 			if (home in pages) {
-				tmp = homePage;
-				homePage = home;
-				if (kernel.location && kernel.location.id === tmp) {
-					if (!kernel.isSameLocation(kernel.location, kernel.parseHash(location.hash))) {
-						hashchange();
-						return true;
+				if (homePage) {
+					tmp = homePage;
+					homePage = home;
+					if (kernel.location && kernel.location.id === tmp) {
+						if (!kernel.isSameLocation(kernel.location, kernel.parseHash(location.hash))) {
+							hashchange();
+							return true;
+						}
 					}
+				} else {
+					homePage = home;
+					if ('onhashchange' in window) {
+						$(window).on('hashchange', hashchange);
+					} else {
+						setInterval(function() {
+							if (tmp !== location.hash) {
+								tmp = location.hash;
+								hashchange();
+							}
+						}, 10);
+					}
+					hashchange();
+					return true;
 				}
 			}
 		};
@@ -742,11 +739,11 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				kernel.closePanel();
 				kernel.closePopup();
 				kernel.hideReadable();
-				if (typeof pages[currentpage].onunload === 'function') {
-					pages[currentpage].onunload();
+				if (typeof pages[kernel.location.id].onunload === 'function') {
+					pages[kernel.location.id].onunload();
 				}
-				if (typeof pages[currentpage].onload === 'function') {
-					pages[currentpage].onload(true);
+				if (typeof pages[kernel.location.id].onload === 'function') {
+					pages[kernel.location.id].onload(true);
 				}
 			}
 		};
@@ -756,49 +753,38 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				destory(p, 'page', id);
 			}
 		};
+		kernel.pageEvents = {};
 
 		function hashchange() {
-			var nl = kernel.parseHash(location.hash),
-				historyNav = history.state,
-				pageChanged = nl.id !== currentpage;
-			history.replaceState && history.replaceState(true, null);
+			var nl = kernel.parseHash(location.hash);
 			if (!kernel.location || !kernel.isSameLocation(kernel.location, nl)) {
+				kernel.lastLocation = kernel.location;
 				kernel.location = nl;
 				kernel.closePanel();
 				kernel.closePopup();
 				kernel.hideReadable();
-				if (typeof routingCb === 'function') {
-					routingCb(pageChanged);
+				if (typeof kernel.pageEvents.onstartrouting === 'function') {
+					kernel.pageEvents.onroute({
+						type: 'route'
+					});
 				}
 				initLoad('page', pages[nl.id], nl.id, function() {
-					var scroll, h;
 					//发生页面跳转或首次加载
-					if (pageChanged) {
-						if (currentpage) {
-							if (typeof pages[currentpage].onunload === 'function') {
-								pages[currentpage].onunload();
+					if (!kernel.lastLocation || nl.id !== kernel.lastLocation.id) {
+						if (kernel.lastLocation) {
+							if (typeof pages[kernel.lastLocation.id].onunload === 'function') {
+								pages[kernel.lastLocation.id].onunload();
 							}
-							document.getElementById(currentpage).style.display = '';
-							scroll = !pageScroller && !historyNav;
+							document.getElementById(kernel.lastLocation.id).style.display = '';
 						} else {
 							if ('autopopup' in nl.args) {
 								kernel.openPopup(nl.args.autopopup, nl.args.autopopuparg ? JSON.parse(nl.args.autopopuparg) : undefined);
 							}
 						}
-						document.body.className = currentpage = nl.id;
+						document.body.className = nl.id;
 						document.getElementById(nl.id).style.display = 'block';
 						if (typeof pages[nl.id].onload === 'function') {
 							pages[nl.id].onload(true);
-						}
-						if (scroll) {
-							h = Math.max(document.body.scrollTop, document.documentElement.scrollTop);
-							if (h > 0) {
-								$('html,body').animate({
-									scrollTop: 0
-								}, h);
-							}
-						} else if (pageScroller) {
-							pageScroller.scrollTop = pageScroller.scrollLeft = 0;
 						}
 					} else {
 						if (typeof pages[nl.id].onload === 'function') {
@@ -806,6 +792,9 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 							pages[nl.id].onload();
 						}
 					}
+					kernel.pageEvents.onroutend({
+						type: 'routend'
+					});
 				});
 			}
 		}
