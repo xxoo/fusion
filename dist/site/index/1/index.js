@@ -1,1 +1,0 @@
-'use strict';define(['common/kernel/kernel'],function(a){'your_production_host'===location.host&&(window._hmt=[['_setAutoPageview',!1]],require(['//hm.baidu.com/hm.js?[your_hmid]'],function(){var a=head.getElementsByTagName('input')[0];a&&head.removeChild(a)})),a.init('doc',void 0,function(){window._hmt&&_hmt.push&&_hmt.push(['_trackPageview','/'+a.buildHash(a.location)])})});
