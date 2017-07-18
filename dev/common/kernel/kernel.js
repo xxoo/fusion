@@ -703,6 +703,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 
 	//页面加载相关功能
 	! function() {
+		var currentpage;
 		//初始化并启动路由或者修改默认页
 		//当调用此方法后引起路由变化则会返回true
 		kernel.init = function(home) {
@@ -735,15 +736,15 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			}
 		};
 		kernel.reloadPage = function(id) {
-			if (!id || (typeof id === 'string' && id === kernel.location.id) || ($.type(id) === 'array' && id.indexOf(kernel.location.id) >= 0)) {
+			if (!id || (typeof id === 'string' && id === currentpage) || ($.type(id) === 'array' && id.indexOf(currentpage) >= 0)) {
 				kernel.closePanel();
 				kernel.closePopup();
 				kernel.hideReadable();
-				if (typeof pages[kernel.location.id].onunload === 'function') {
-					pages[kernel.location.id].onunload();
+				if (typeof pages[currentpage].onunload === 'function') {
+					pages[currentpage].onunload();
 				}
-				if (typeof pages[kernel.location.id].onload === 'function') {
-					pages[kernel.location.id].onload(true);
+				if (typeof pages[currentpage].onload === 'function') {
+					pages[currentpage].onload(true);
 				}
 			}
 		};
@@ -770,18 +771,18 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				}
 				initLoad('page', pages[nl.id], nl.id, function() {
 					//发生页面跳转或首次加载
-					if (!kernel.lastLocation || nl.id !== kernel.lastLocation.id) {
-						if (kernel.lastLocation) {
-							if (typeof pages[kernel.lastLocation.id].onunload === 'function') {
-								pages[kernel.lastLocation.id].onunload();
+					if (nl.id !== currentpage) {
+						if (currentpage) {
+							if (typeof pages[currentpage].onunload === 'function') {
+								pages[currentpage].onunload();
 							}
-							document.getElementById(kernel.lastLocation.id).style.display = '';
+							document.getElementById(currentpage).style.display = '';
 						} else {
 							if ('autopopup' in nl.args) {
 								kernel.openPopup(nl.args.autopopup, nl.args.autopopuparg ? JSON.parse(nl.args.autopopuparg) : undefined);
 							}
 						}
-						document.body.className = nl.id;
+						document.body.className = currentpage = nl.id;
 						document.getElementById(nl.id).style.display = 'block';
 						if (typeof pages[nl.id].onload === 'function') {
 							pages[nl.id].onload(true);
