@@ -212,12 +212,8 @@ function loaded(evt){
 					desc: '关闭当前提示框, 一般不需要手动调用',
 					example: ``
 				}, {
-					title: 'init(home:String, ps?:HTMLElement, func?:Function):void',
-					desc: '初始化路由, 需要示例请查看site/index/index中的代码'
-				}, {
-					title: 'setHome(home:String):Boolean',
-					desc: '改变默认页, ',
-					example: `kerenl.setHome('doc');`
+					title: 'init(home:String):void',
+					desc: '启动路由或者修改默认页, 需要示例请查看site/index/index中的代码'
 				}, {
 					title: 'reloadPage(id?:String):void',
 					desc: '重新加载当前页',
@@ -228,6 +224,12 @@ function loaded(evt){
 					example: `kernel.destoryPage('samplePage');`
 				}],
 				events: [{
+					title: 'pageEvents.onroute',
+					desc: '路由变化时触发, 请在site/index/index中查看示例'
+				}, {
+					title: 'pageEvents.onroutend',
+					desc: '路由处理完成时触发, 请在site/index/index中查看示例'
+				}, {
 					title: 'popupEvents.onshow',
 					desc: '弹窗显示时触发',
 					example: `kernel.listeners.add(kernel.popupEvents, 'show', func);

@@ -1,5 +1,6 @@
 'use strict';
 define(['common/kernel/kernel'], function(kernel) {
+	var historyNav;
 	//百度统计代码
 	if (location.host === 'your_production_host') {
 		window._hmt = [
@@ -13,10 +14,25 @@ define(['common/kernel/kernel'], function(kernel) {
 			}
 		});
 	}
-	kernel.init('doc', undefined, function() {
+	kernel.listeners.add(kernel.pageEvents, 'route', function(){
+		historyNav = history.state;
+		history.replaceState && history.replaceState(true, null);
 		//百度统计接口
 		if (window._hmt && _hmt.push) {
 			_hmt.push(['_trackPageview', '/' + kernel.buildHash(kernel.location)]);
 		}
 	});
+	kernel.listeners.add(kernel.pageEvents, 'routend', function() {
+		var h;
+		//如果上次访问的页面id和当前页id不同，并且不是在history中导航时，则滚动到页面顶部
+		if (kernel.lastLocation && kernel.lastLocation.id !== kernel.location.id && !historyNav) {
+			h = Math.max(document.body.scrollTop, document.documentElement.scrollTop);
+			if (h > 0) {
+				$('html,body').animate({
+					scrollTop: 0
+				}, h);
+			}
+		}
+	});
+	kernel.init('doc');
 });
