@@ -735,16 +735,22 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				}
 			}
 		};
-		kernel.reloadPage = function(id) {
-			if (!id || (typeof id === 'string' && id === currentpage) || ($.type(id) === 'array' && id.indexOf(currentpage) >= 0)) {
-				kernel.closePanel();
-				kernel.closePopup();
-				kernel.hideReadable();
-				if (typeof pages[currentpage].onunload === 'function') {
-					pages[currentpage].onunload();
-				}
-				if (typeof pages[currentpage].onload === 'function') {
-					pages[currentpage].onload(true);
+		kernel.reloadPage = function(id, silent) {
+			var thislocation;
+			// 是否有数据正在加载
+			if (kernel.isLoading()) {
+				thislocation = kernel.location;
+				// 注册监听 ; loaded
+				kernel.listeners.add(kernel.dialogEvents, 'loaded', listener);
+			} else {
+				reloadPage(id, silent);
+			}
+
+			function listener(evt) {
+				kernel.listeners.remove(this, evt.type, listener);
+				// url 是否改变
+				if (kernel.isSameLocation(thislocation, kernel.location)) {
+					reloadPage(id, silent);
 				}
 			}
 		};
@@ -756,15 +762,27 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 		};
 		kernel.pageEvents = {};
 
+		function reloadPage(id, silent){
+			if (!id || (typeof id === 'string' && id === currentpage) || ($.type(id) === 'array' && id.indexOf(currentpage) >= 0)) {
+				if (!silent) {
+					clearWindow();
+				}
+				if (typeof pages[currentpage].onunload === 'function') {
+					pages[currentpage].onunload();
+				}
+				if (typeof pages[currentpage].onload === 'function') {
+					pages[currentpage].onload(true);
+				}
+			}
+		}
+
 		function hashchange() {
 			var nl = kernel.parseHash(location.hash);
 			if (!kernel.location || !kernel.isSameLocation(kernel.location, nl)) {
 				kernel.lastLocation = kernel.location;
 				kernel.location = nl;
-				kernel.closePanel();
-				kernel.closePopup();
-				kernel.hideReadable();
-				if (typeof kernel.pageEvents.onstartrouting === 'function') {
+				clearWindow();
+				if (typeof kernel.pageEvents.onroute === 'function') {
 					kernel.pageEvents.onroute({
 						type: 'route'
 					});
@@ -793,9 +811,11 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 							pages[nl.id].onload();
 						}
 					}
-					kernel.pageEvents.onroutend({
-						type: 'routend'
-					});
+					if (typeof kernel.pageEvents.onroutend === 'function') {
+						kernel.pageEvents.onroutend({
+							type: 'routend'
+						});
+					}
 				});
 			}
 		}
@@ -916,5 +936,11 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				}
 			});
 		}
+	}
+	
+	function clearWindow() {
+		kernel.closePanel();
+		kernel.closePopup();
+		kernel.hideReadable();
 	}
 });
