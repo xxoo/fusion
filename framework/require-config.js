@@ -1,13 +1,13 @@
 'use strict';
 define(['module'], function(module) {
 	//请确保modules第一个被赋值
-	var modules = {"common/kernel":3,"common/slider":1,"common/text":1,"page/doc":3,"panel/samplePanel":1,"popup/samplePopup":1,"site/index":2,"site/pages":1,"site/panels":1,"site/popups":1},
+	var modules = {"common/kernel":4,"common/slider":1,"common/text":1,"page/doc":4,"panel/samplePanel":1,"popup/samplePopup":1,"site/index":2,"site/pages":1,"site/panels":1,"site/popups":1},
 		//请确保srcRoot第二个被赋值
 		srcRoot = 'dev/',
 		//请确保productRoot第三个被赋值
 		productRoot = 'dist/',
 		//请确保siteVersion第四个被赋值
-		siteVersion = "1.0.50",
+		siteVersion = "1.0.51",
 		//请确保debug第五个被赋值
 		debug = false,
 		prefix = module.id.replace(/framework\/[^\/]+$/, ''),
