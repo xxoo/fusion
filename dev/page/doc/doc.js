@@ -220,8 +220,8 @@ function loaded(evt){
 					title: 'init(home:String):void',
 					desc: '启动路由或者修改默认页, 需要示例请查看site/index/index中的代码'
 				}, {
-					title: 'reloadPage(id?:String):void',
-					desc: '重新加载当前页',
+					title: 'reloadPage(id?:String, silent?:Boolean):void',
+					desc: '重新加载当前页, 如果silent为true则不关闭弹窗',
 					example: `kernel.reloadPage();`
 				}, {
 					title: 'destoryPage(id:String):void',
