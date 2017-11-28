@@ -1,9 +1,9 @@
 // kernel
 'use strict';
-define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/panels/panels'], function(slider, pages, popups, panels) {
+define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/panels/panels'], function (slider, pages, popups, panels) {
 	var homePage,
 		kernel = {
-			appendCss: function(url) { //自动根据当前环境添加css或less
+			appendCss: function (url) { //自动根据当前环境添加css或less
 				var csslnk = document.createElement('link');
 				if (/\.less$/.test(url)) {
 					if (typeof less === 'object') {
@@ -21,7 +21,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				}
 				return (document.head || document.getElementsByTagName('head')[0]).appendChild(csslnk);
 			},
-			removeCss: function(lnk) {
+			removeCss: function (lnk) {
 				$(lnk).remove();
 				if (lnk.rel === 'stylesheet/less') {
 					less.sheets.splice(less.sheets.indexOf(lnk), 1);
@@ -29,14 +29,14 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				}
 				return lnk.getAttribute('href');
 			},
-			buildHash: function(loc) {
+			buildHash: function (loc) {
 				var n, hash = '#!' + encodeURIComponent(loc.id);
 				for (n in loc.args) {
 					hash += loc.args[n] === undefined ? '&' + encodeURIComponent(n) : '&' + encodeURIComponent(n) + '=' + encodeURIComponent(loc.args[n]);
 				}
 				return hash;
 			},
-			parseHash: function(hash) {
+			parseHash: function (hash) {
 				var i, a, s, nl = {
 					id: homePage,
 					args: {}
@@ -59,7 +59,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				}
 				return nl;
 			},
-			isSameLocation: function(loc1, loc2) {
+			isSameLocation: function (loc1, loc2) {
 				var n;
 				if (loc1.id === loc2.id && Object.keys(loc1.args).length === Object.keys(loc2.args).length) {
 					for (n in loc1.args) {
@@ -82,7 +82,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 					return false;
 				}
 			},
-			replaceLocation: function(loc) {
+			replaceLocation: function (loc) {
 				if (kernel.location && kernel.isSameLocation(loc, kernel.location)) {
 					kernel.reloadPage();
 				} else {
@@ -91,11 +91,11 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			}
 		};
 
-	! function() {
+	! function () {
 		kernel.listeners = {
-			add: function(o, e, f) {
+			add: function (o, e, f) {
 				if (!o.xEvents) {
-					o.xEvents = function(evt) { //override internal event manager
+					o.xEvents = function (evt) { //override internal event manager
 						xEventProcessor(o, evt);
 					};
 				}
@@ -113,7 +113,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 					}
 				}
 			},
-			list: function(o, e) {
+			list: function (o, e) {
 				var r, n;
 				if (e) {
 					if (o.xEvents && o.xEvents[e]) {
@@ -133,7 +133,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				}
 				return r;
 			},
-			remove: function(o, e, f) {
+			remove: function (o, e, f) {
 				var n, addRemoveMark, tmp;
 				if (o.xEvents) {
 					if (e) {
@@ -220,25 +220,26 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 	}();
 
 	//panel
-	! function() {
+	! function () {
 		var activePanel, ani, todo,
-			panelCtn = document.getElementById('panels'),
-			ctn = panelCtn.lastChild.firstChild;
-		kernel.openPanel = function(id, param) {
+			panelCtn = $('#panels'),
+			ctn = panelCtn.find('>.contents>div');
+		kernel.openPanel = function (id, param) {
 			var panelcfg = panels[id];
 			if (panelcfg) {
-				initLoad('panel', panelcfg, id, function() {
+				initLoad('panel', panelcfg, id, function () {
 					if (typeof panelcfg.open === 'function') {
 						panelcfg.open(param);
 					} else {
 						kernel.showPanel(id, param);
 					}
 				});
+				return true;
 			} else {
 				kernel.hint('panel config not found: ' + id, 'error');
 			}
 		};
-		kernel.showPanel = function(id, param) {
+		kernel.showPanel = function (id, param) {
 			if (ani) {
 				setTodo();
 			} else {
@@ -249,9 +250,9 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 					if (typeof panels[id].onload === 'function') {
 						panels[id].onload(param);
 					}
-					panelCtn.className = activePanel = id;
-					panelCtn.style.display = document.getElementById(id).style.display = 'block';
-					startAni(function() {
+					panelCtn[0].className = activePanel = id;
+					panelCtn[0].style.display = document.getElementById(id).style.display = 'block';
+					startAni(function () {
 						if (typeof panels[id].onloadend === 'function') {
 							panels[id].onloadend();
 						}
@@ -260,18 +261,18 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			}
 
 			function setTodo() {
-				setTimeout(function() {
-					todo = function() {
+				setTimeout(function () {
+					todo = function () {
 						kernel.showPanel(id, param);
 					}
 				}, 0);
 			}
 		};
-		kernel.closePanel = function(id) {
+		kernel.closePanel = function (id) {
 			var close;
 			if (ani) {
-				setTimeout(function() {
-					todo = function() {
+				setTimeout(function () {
+					todo = function () {
 						kernel.closePanel(id);
 					};
 				}, 0);
@@ -292,22 +293,22 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				}
 			}
 		};
-		kernel.destoryPanel = function(id) {
+		kernel.destoryPanel = function (id) {
 			var p = panels[id];
 			if (p) {
 				destory(p, 'panel', id);
 			}
 		};
-		$(panelCtn.firstChild).on('click', kernel.closePanel);
-		$(ctn.firstChild).on('click', kernel.closePanel);
+		panelCtn.find('>.mask').on('click', kernel.closePanel);
+		ctn.find('>.close').on('click', kernel.closePanel);
 
 		function startAni(cb, show) {
 			ani = true;
-			$(ctn).animate({
+			ctn.animate({
 				'margin-left': show ? '-100%' : '0%'
 			}, {
 				duration: 200,
-				complete: function() {
+				complete: function () {
 					ani = false;
 					cb();
 					if (typeof todo === 'function') {
@@ -322,34 +323,35 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			if (typeof panels[activePanel].onunload === 'function') {
 				panels[activePanel].onunload();
 			}
-			startAni(function() {
+			startAni(function () {
 				if (typeof panels[activePanel].onunloadend === 'function') {
 					panels[activePanel].onunloadend();
 				}
-				document.getElementById(activePanel).style.display = panelCtn.style.display = '';
+				document.getElementById(activePanel).style.display = panelCtn[0].style.display = '';
 				activePanel = undefined;
 			}, false);
 		}
 	}();
 
 	//弹出窗口
-	! function() {
+	! function () {
 		var activePopup, popup = document.getElementById('popups');
-		kernel.openPopup = function(id, param) {
+		kernel.openPopup = function (id, param) {
 			var popupcfg = popups[id];
 			if (popupcfg) {
-				initLoad('popup', popupcfg, id, function() {
+				initLoad('popup', popupcfg, id, function () {
 					if (typeof popupcfg.open === 'function') {
 						popupcfg.open(param);
 					} else {
 						kernel.showPopup(id, param);
 					}
 				});
+				return true;
 			} else {
 				kernel.hint('popup config not found: ' + id, 'error');
 			}
 		};
-		kernel.showPopup = function(id, param) {
+		kernel.showPopup = function (id, param) {
 			var fire, popupcfg = popups[id];
 			if (activePopup) {
 				if (typeof popups[activePopup].onunload === 'function') {
@@ -372,7 +374,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				popupcfg.onload(param);
 			}
 		};
-		kernel.closePopup = function(id) {
+		kernel.closePopup = function (id) {
 			var close;
 			if (activePopup) {
 				if (typeof id === 'string') {
@@ -401,22 +403,22 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 		};
 
 		// 获取当前显示的 popup id
-		kernel.getCurrentPopup = function() {
+		kernel.getCurrentPopup = function () {
 			return activePopup;
 		};
-		kernel.destoryPopup = function(id) {
+		kernel.destoryPopup = function (id) {
 			var p = popups[id];
 			if (p) {
 				destory(p, 'popup', id);
 			}
 		};
 		kernel.popupEvents = {};
-		$('#popups>div>a').on('click', function() {
+		$(popup).find('>div>a').on('click', function () {
 			kernel.closePopup();
 		});
 	}();
 	//图片展示
-	! function() {
+	! function () {
 		var ctn = $('#photoview'),
 			close = ctn.find('.close'),
 			prev = ctn.find('.prev'),
@@ -427,7 +429,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			siz = [],
 			deg = [],
 			w, h;
-		kernel.showPhotoView = function(contents, idx) {
+		kernel.showPhotoView = function (contents, idx) {
 			var i;
 			if ($.type(contents) === 'array') {
 				for (i = 0; i < contents.length; i++) {
@@ -446,13 +448,13 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				}
 			}
 		};
-		kernel.hidePhotoView = function() {
+		kernel.hidePhotoView = function () {
 			siz = [];
 			while (sld.children.length) {
 				sld.remove(0);
 			}
 		};
-		ctn.on('click', '>div>img', function() {
+		ctn.on('click', '>div>img', function () {
 			var d;
 			if (this.style.cursor === 'zoom-in') {
 				d = deg[sld.current] % 2;
@@ -471,26 +473,26 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			}
 		});
 		$(window).on('resize', rsz);
-		prev.on('click', function() {
+		prev.on('click', function () {
 			sld.slideTo(sld.current - 1);
 		});
-		next.on('click', function() {
+		next.on('click', function () {
 			sld.slideTo(sld.current + 1);
 		});
-		rp.on('click', function() {
+		rp.on('click', function () {
 			if (typeof deg[sld.current] === 'number') {
 				deg[sld.current]++;
 				chksz(sld.current);
 			}
 		});
-		rn.on('click', function() {
+		rn.on('click', function () {
 			if (typeof deg[sld.current] === 'number') {
 				deg[sld.current]--;
 				chksz(sld.current);
 			}
 		});
 		close.on('click', kernel.hidePhotoView);
-		sld.onchange = function() {
+		sld.onchange = function () {
 			if (this.current === undefined) {
 				ctn.css('display', '');
 			} else {
@@ -507,15 +509,16 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 		rsz();
 
 		function rsz() {
-			w = $(window).innerWidth();
-			h = $(window).innerHeight();
+			var win = $(window);
+			w = win.innerWidth();
+			h = win.innerHeight();
 			if (typeof sld.current === 'number' && siz[sld.current]) {
 				chksz(sld.current);
 			}
 		}
 
 		function getsz(i) {
-			sld.children[i].one('load', function() {
+			sld.children[i].one('load', function () {
 				siz[i] = {
 					w: this.width,
 					h: this.height
@@ -570,25 +573,27 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 		}
 	}();
 	//对话框及提示功能
-	! function() {
+	! function () {
 		var hintmo,
-			hintCtn = document.getElementById('hintCtn'),
 			loadingRT = 0,
-			dlgCtn = document.getElementById('dialogs'),
+			hint = $('#hint'),
+			readable = $('#readable'),
+			dlgCtn = $('#dialogs'),
+			loading = $('#loading'),
 			dlgStack = [],
 			dlgCb, raCb; //callbacks
-		kernel.showLoading = function(text) { //loading提示框, 每次调用引用计数＋1所以showLoading和hideLoading必须成对使用
-			$('#loading>div>div').text(text ? text : '加载中...');
+		kernel.showLoading = function (text) { //loading提示框, 每次调用引用计数＋1所以showLoading和hideLoading必须成对使用
+			loading.find('>div>div').text(text ? text : '加载中...');
 			if (loadingRT === 0) {
-				document.getElementById('loading').style.display = 'block';
+				loading.css('display', 'block');
 			}
 			loadingRT += 1;
 		};
-		kernel.hideLoading = function() { //不要使用hideDialog来关闭loading提示框
+		kernel.hideLoading = function () { //不要使用hideDialog来关闭loading提示框
 			if (loadingRT > 0) {
 				loadingRT -= 1;
 				if (loadingRT === 0) {
-					document.getElementById('loading').style.display = '';
+					loading.css('display', '');
 					if (typeof kernel.dialogEvents.onloaded === 'function') {
 						kernel.dialogEvents.onloaded({
 							type: 'loaded'
@@ -597,55 +602,54 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				}
 			}
 		};
-		kernel.isLoading = function() {
+		kernel.isLoading = function () {
 			return loadingRT > 0;
 		};
-		kernel.hint = function(text, className, t) {
-			var o = $('#hint');
-			o.prop('className', className ? className : '');
-			o.find('span').text(text);
+		kernel.hint = function (text, className, t) {
+			hint[0].className = className || '';
+			hint.find('span').text(text);
 			if (hintmo) {
 				clearTimeout(hintmo);
 			} else {
-				o.css('display', 'block');
-				o[0].offsetWidth;
-				o.fadeIn();
+				hint.css('display', 'block');
+				hint[0].offsetWidth;
+				hint.fadeIn();
 			}
 			if (!t) {
 				t = className === 'error' ? 4000 : className === 'warning' ? 3000 : 2000;
 			}
-			hintmo = setTimeout(function() {
+			hintmo = setTimeout(function () {
 				hintmo = 0;
-				o.fadeOut(function() {
-					o.css('display', '');
+				hint.fadeOut(function () {
+					hint.css('display', '');
 				});
 			}, t);
 		};
-		kernel.showReadable = function(html, width, height, callback, className) {
-			$('#readable').prop('className', className || '').css('display', 'block').find('>div').css({
+		kernel.showReadable = function (html, width, height, callback, className) {
+			readable.prop('className', className || '').css('display', 'block').find('>div').css({
 				width: width,
 				height: height
 			}).find('>div').append(html);
 			raCb = callback;
 		};
-		kernel.hideReadable = function() {
+		kernel.hideReadable = function () {
 			if (typeof raCb === 'function') {
 				raCb();
 				raCb = undefined;
 			}
-			$('#readable').css('display', '').find('>div>div>*').remove();
+			readable.css('display', '').find('>div>div>*').remove();
 		};
-		kernel.hideDialog = function(param) {
+		kernel.hideDialog = function (param) {
 			var f;
 			if (typeof dlgCb === 'function') {
-				if (dlgCtn.className === 'isConfirm') {
+				if (dlgCtn[0].className === 'isConfirm') {
 					dlgCb(param);
-				} else if (dlgCtn.className === 'isAlert') {
+				} else if (dlgCtn[0].className === 'isAlert') {
 					dlgCb();
 				}
 				dlgCb = undefined;
 			}
-			dlgCtn.className = '';
+			dlgCtn[0].className = '';
 			if (dlgStack.length > 0) {
 				f = dlgStack[0][0];
 				dlgStack[0].shift();
@@ -653,48 +657,43 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				dlgStack.shift();
 			}
 		};
-		kernel.showForeign = function(url, width, height, callback) {
+		kernel.showForeign = function (url, width, height, callback) {
 			kernel.showReadable('<iframe frameborder="no" allowtransparency="yes" marginwidth="0" marginheight="0" src="' + url + '"></iframe>', width, height, callback, 'foreign');
 		};
-		kernel.confirm = function(text, callback, width, height) {
+		kernel.confirm = function (text, callback, width, height) {
 			var ctn, txt;
-			if (dlgCtn.className === '') {
-				ctn = $(dlgCtn).find('>div');
+			if (dlgCtn[0].className === '') {
+				ctn = dlgCtn.find('>div');
 				txt = ctn.find('>div>div')
 				dlgCb = callback;
 				ctn.css('width', width || '400px');
 				txt.text(text);
-				dlgCtn.className = 'isConfirm';
-				ctn.css('height', txt.outerHeight() + Math.max($(dlgCtn).find('>div>a.yes').outerHeight(), $(dlgCtn).find('>div>a.no').outerHeight()) + 76 + 'px');
+				dlgCtn[0].className = 'isConfirm';
+				ctn.css('height', txt.outerHeight() + Math.max(dlgCtn.find('>div>a.yes').outerHeight(), dlgCtn.find('>div>a.no').outerHeight()) + 76 + 'px');
 			} else {
 				dlgStack.push(['confirm', text, callback, width, height]);
 			}
 		};
-		kernel.alert = function(text, callback, width, height) {
+		kernel.alert = function (text, callback, width, height) {
 			var ctn, txt;
-			if (dlgCtn.className === '') {
-				ctn = $(dlgCtn).find('>div');
+			if (dlgCtn[0].className === '') {
+				ctn = dlgCtn.find('>div');
 				txt = ctn.find('>div>div');
 				dlgCb = callback;
 				ctn.css('width', width || '400px');
 				txt.text(text);
-				dlgCtn.className = 'isAlert';
+				dlgCtn[0].className = 'isAlert';
 				ctn.css('height', txt.outerHeight() + 46 + 'px');
 			} else {
 				dlgStack.push(['alert', text, callback, width]);
 			}
 		};
-		$('#readable>div>a').on('click', kernel.hideReadable);
-		$(window).on('keydown', function(evt) {
-			if (evt.keyCode === 27 && $('#readable').css('display') === 'block') {
-				kernel.hideReadable();
-			}
-		});
-		$(dlgCtn).find('>div>a.close').on('click', kernel.hideDialog);
-		$(dlgCtn).find('>div>a.yes').on('click', function() {
+		readable.find('>div>a').on('click', kernel.hideReadable);
+		dlgCtn.find('>div>a.close').on('click', kernel.hideDialog);
+		dlgCtn.find('>div>a.yes').on('click', function () {
 			kernel.hideDialog(true);
 		});
-		$(dlgCtn).find('>div>a.no').on('click', function() {
+		dlgCtn.find('>div>a.no').on('click', function () {
 			kernel.hideDialog(false);
 		});
 		//目前只有loaded事件
@@ -702,11 +701,11 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 	}();
 
 	//页面加载相关功能
-	! function() {
+	! function () {
 		var currentpage;
 		//初始化并启动路由或者修改默认页
 		//当调用此方法后引起路由变化则会返回true
-		kernel.init = function(home) {
+		kernel.init = function (home) {
 			var tmp;
 			if (home in pages) {
 				if (homePage) {
@@ -723,7 +722,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 					if ('onhashchange' in window) {
 						$(window).on('hashchange', hashchange);
 					} else {
-						setInterval(function() {
+						setInterval(function () {
 							if (tmp !== location.hash) {
 								tmp = location.hash;
 								hashchange();
@@ -735,7 +734,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				}
 			}
 		};
-		kernel.reloadPage = function(id, silent) {
+		kernel.reloadPage = function (id, silent) {
 			var thislocation;
 			// 是否有数据正在加载
 			if (kernel.isLoading()) {
@@ -754,7 +753,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				}
 			}
 		};
-		kernel.destoryPage = function(id) {
+		kernel.destoryPage = function (id) {
 			var p = pages[id];
 			if (p) {
 				destory(p, 'page', id);
@@ -762,7 +761,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 		};
 		kernel.pageEvents = {};
 
-		function reloadPage(id, silent){
+		function reloadPage(id, silent) {
 			if (!id || (typeof id === 'string' && id === currentpage) || ($.type(id) === 'array' && id.indexOf(currentpage) >= 0)) {
 				if (!silent) {
 					clearWindow();
@@ -787,7 +786,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 						type: 'route'
 					});
 				}
-				initLoad('page', pages[nl.id], nl.id, function() {
+				initLoad('page', pages[nl.id], nl.id, function () {
 					//发生页面跳转或首次加载
 					if (nl.id !== currentpage) {
 						if (currentpage) {
@@ -870,12 +869,12 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 					url: url,
 					type: 'get',
 					dataType: 'text',
-					success: function(text) {
+					success: function (text) {
 						//delete oldcfg.html;
 						ctn.insertAdjacentHTML('afterBegin', '<div id="' + id + '">' + text + '</div>');
 						loadJs();
 					},
-					error: function(xhr, msg) {
+					error: function (xhr, msg) {
 						destory(oldcfg, type, id);
 						if (require.data.debug || xhr.status !== 404) {
 							errorOccurs(url, xhr.status, isPage);
@@ -897,14 +896,14 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			if ('js' in oldcfg) {
 				kernel.showLoading();
 				js = n + oldcfg.js;
-				require([js], function(cfg) {
+				require([js], function (cfg) {
 					if (cfg) {
 						Object.assign(oldcfg, cfg);
 					}
 					oldcfg.loaded = 2;
 					callback();
 					kernel.hideLoading();
-				}, require.data.debug ? undefined : function(error) {
+				}, require.data.debug ? undefined : function (error) {
 					destory(oldcfg, type, id);
 					if ((error.requireType && error.requireType !== 'scripterror' && error.requireType !== 'nodefine') || (error.xhr && error.xhr.status !== 404)) {
 						errorOccurs(js, error.message, isPage);
@@ -921,7 +920,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 	}
 
 	function errorOccurs(res, msg, isPage) {
-		kernel.alert('加载' + res + '时发生了一个错误: ' + msg, isPage ? function() {
+		kernel.alert('加载' + res + '时发生了一个错误: ' + msg, isPage ? function () {
 			history.back();
 		} : undefined);
 	}
@@ -930,14 +929,14 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 		if (isPage) {
 			location.reload();
 		} else {
-			kernel.confirm('网站已经更新, 使用该功能需要先重新加载. 是否立即刷新本页?', function(sure) {
+			kernel.confirm('网站已经更新, 使用该功能需要先重新加载. 是否立即刷新本页?', function (sure) {
 				if (sure) {
 					location.reload();
 				}
 			});
 		}
 	}
-	
+
 	function clearWindow() {
 		kernel.closePanel();
 		kernel.closePopup();
