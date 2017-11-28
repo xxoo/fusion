@@ -3,7 +3,7 @@
 	var prefix = (document.currentScript || (function() {
 			var scripts = document.getElementsByTagName('script');
 			return scripts[scripts.length - 1];
-		})()).src.replace(/^http(s)?:\/\/[^\/]+|[^\/]+$/g, ''),
+		})()).getAttribute('src').replace(/[^\/]+$/, ''),
 		head = document.head || document.getElementsByTagName('head')[0];
 	if (!window.XMLHttpRequest) {
 		window.onload = function() {
