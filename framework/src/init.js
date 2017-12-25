@@ -7,7 +7,7 @@
 			waitSeconds: 0,
 			baseUrl: prefix + 'dev/'
 		};
-		if (!DEBUG) {
+		if (VERSION === 'dev') {
 			for (n in MODULES) {
 				MODULES[n] = prefix + 'dist/' + n + '/' + MODULES[n];
 			}
@@ -16,7 +16,12 @@
 		require.config(cfg);
 		l = document.createElement('link');
 		m = document.createElement('link');
-		if (DEBUG) {
+		if (VERSION === 'dev') {
+			l.rel = m.rel = 'stylesheet';
+			l.href = require.toUrl('site/index/index.css');
+			m.href = require.toUrl('common/kernel/kernel.css');
+			require(['site/index/index']);
+		} else {
 			l.rel = m.rel = 'stylesheet/less';
 			l.href = require.toUrl('site/index/index.less');
 			m.href = require.toUrl('common/kernel/kernel.less');
@@ -25,11 +30,6 @@
 					require(['site/index/index']);
 				});
 			});
-		} else {
-			l.rel = m.rel = 'stylesheet';
-			l.href = require.toUrl('site/index/index.css');
-			m.href = require.toUrl('common/kernel/kernel.css');
-			require(['site/index/index']);
 		}
 		head = document.head || document.getElementsByTagName('head')[0];
 		head.appendChild(m);
