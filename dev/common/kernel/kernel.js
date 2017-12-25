@@ -876,7 +876,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 					},
 					error: function (xhr, msg) {
 						destory(oldcfg, type, id);
-						if (require.data.debug || xhr.status !== 404) {
+						if (DEBUG || xhr.status !== 404) {
 							errorOccurs(url, xhr.status, isPage);
 						} else {
 							updated(isPage);
@@ -903,7 +903,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 					oldcfg.loaded = 2;
 					callback();
 					kernel.hideLoading();
-				}, require.data.debug ? undefined : function (error) {
+				}, DEBUG ? undefined : function (error) {
 					destory(oldcfg, type, id);
 					if ((error.requireType && error.requireType !== 'scripterror' && error.requireType !== 'nodefine') || (error.xhr && error.xhr.status !== 404)) {
 						errorOccurs(js, error.message, isPage);
