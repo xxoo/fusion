@@ -1,8 +1,9 @@
 ! function () {
 	'use strict';
-	var prefix, cfg, head, l, m, n;
+	var src, prefix, cfg, head, l, m, n;
 	if (window.XMLHttpRequest) {
-		prefix = (document.currentScript || document.scripts[document.scripts.length - 1]).getAttribute('src').replace(/framework\/[^\/]+$/, '');
+		src = (document.currentScript || document.scripts[document.scripts.length - 1]).getAttribute('src');
+		prefix = src.replace(/framework\/[^\/]+$/, '');
 		cfg = {
 			waitSeconds: 0,
 			baseUrl: prefix + 'dev/'
@@ -14,6 +15,20 @@
 			cfg.paths = MODULES;
 		}
 		require.config(cfg);
+		if (navigator.serviceWorker) {
+			navigator.serviceWorker.register('sw.js', {
+				scope: './'
+			}).then(function (registration) {
+				var controller = registration.installing || registration.waiting || registration.active;
+				RES_TO_CACHE.push(location.origin + src);
+				controller.postMessage({
+					framework: RES_TO_CACHE,
+					modules: Object.values(MODULES)
+				});
+			}, function (err) {
+				console.log('unable to register ServiceWorker: ' + err);
+			});
+		}
 		l = document.createElement('link');
 		m = document.createElement('link');
 		if (VERSION === 'dev') {
