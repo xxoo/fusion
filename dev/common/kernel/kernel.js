@@ -780,7 +780,9 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			if (!kernel.location || !kernel.isSameLocation(kernel.location, nl)) {
 				kernel.lastLocation = kernel.location;
 				kernel.location = nl;
-				clearWindow();
+				if (kernel.lastLocation) {
+					clearWindow();
+				}
 				if (typeof kernel.pageEvents.onroute === 'function') {
 					kernel.pageEvents.onroute({
 						type: 'route'
