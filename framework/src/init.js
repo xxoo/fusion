@@ -2,7 +2,7 @@
 	'use strict';
 	var src, prefix, cfg, head, l, m, n;
 	if (window.XMLHttpRequest) {
-		src = (document.currentScript || document.scripts[document.scripts.length - 1]).getAttribute('src');
+		src = (document.currentScript || document.scripts[document.scripts.length - 1]).src;
 		prefix = src.replace(/framework\/[^\/]+$/, '');
 		cfg = {
 			waitSeconds: 0,
@@ -20,7 +20,7 @@
 				scope: './'
 			}).then(function (registration) {
 				var controller = registration.installing || registration.waiting || registration.active;
-				RES_TO_CACHE.push(location.origin + src);
+				RES_TO_CACHE.push(src);
 				controller.postMessage({
 					framework: RES_TO_CACHE,
 					modules: Object.values(MODULES)
