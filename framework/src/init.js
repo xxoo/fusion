@@ -2,7 +2,7 @@
 	'use strict';
 	var src, prefix, cfg, head, l, m, n;
 	if (window.XMLHttpRequest) {
-		src = (document.currentScript || document.scripts[document.scripts.length - 1]).src;
+		src = (document.currentScript || document.scripts[document.scripts.length - 1]).getAttribute('src');
 		prefix = src.replace(/framework\/[^\/]+$/, '');
 		cfg = {
 			waitSeconds: 0,
