@@ -8,6 +8,9 @@ self.addEventListener('install', function(event) {
 self.addEventListener('message', function (event) {
 	if (event.data && event.data.framework && event.data.modules) {
 		data = event.data;
+		for (let i = 0; i < data.modules.length; i++) {
+			data.modules[i] = data.modules[i] + '/';
+		}
 		caches.open('fusion-modules').then(function (cache) {
 			return cache.keys().then(function (keys) {
 				keys.forEach(function (request) {
