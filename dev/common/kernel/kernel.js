@@ -41,14 +41,12 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 					id: homePage,
 					args: {}
 				};
-				hash = hash.substr(1).replace(/[#\?].*$/, '');
+				hash = hash.substr(1).replace(/[#?].*$/, '');
 				s = hash.match(/[^=&]+(=[^&]*)?/g);
-				if (s) {
-					if (s[0].charAt(0) === '!') {
-						a = s[0].substr(1);
-						if (a in pages) {
-							nl.id = decodeURIComponent(a);
-						}
+				if (s && s[0].charAt(0) === '!') {
+					a = decodeURIComponent(s[0].substr(1));
+					if (pages.hasOwnProperty(a)) {
+						nl.id = a;
 					}
 					for (i = 1; i < s.length; i++) {
 						a = s[i].match(/^([^=]+)(=)?(.+)?$/);
@@ -63,9 +61,9 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				var n;
 				if (loc1.id === loc2.id && Object.keys(loc1.args).length === Object.keys(loc2.args).length) {
 					for (n in loc1.args) {
-						if (n in loc2.args) {
+						if (loc2.args.hasOwnProperty(n)) {
 							if (loc1.args[n] === undefined) {
-								if (loc2.args[n] !== undefined) {
+								if (loc1.args[n] !== loc2.args[n]) {
 									return false;
 								}
 							} else {
@@ -707,7 +705,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 		//当调用此方法后引起路由变化则会返回true
 		kernel.init = function (home) {
 			var tmp;
-			if (home in pages) {
+			if (pages.hasOwnProperty(home)) {
 				if (homePage) {
 					tmp = homePage;
 					homePage = home;
@@ -797,7 +795,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 							}
 							document.getElementById(currentpage).style.display = '';
 						} else {
-							if ('autopopup' in nl.args) {
+							if (nl.args.hasOwnProperty('autopopup')) {
 								kernel.openPopup(nl.args.autopopup, nl.args.autopopuparg ? JSON.parse(nl.args.autopopuparg) : undefined);
 							}
 						}
