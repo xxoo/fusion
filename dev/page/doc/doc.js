@@ -96,11 +96,11 @@ function func(evt){
 					desc: '打开侧边栏',
 					example: `kernel.openPanel('samplePanel');`
 				}, {
-					title: 'showPanel(id:String, param:any):void',
+					title: 'showPanel(id:String):void',
 					desc: '显示侧边栏，只有在指定侧边栏已经加载后才可使用',
 					example: `kernel.showPanel('samplePanel');`
 				}, {
-					title: 'closePanel(id?:String):void',
+					title: 'closePanel(id?:String|Array):void',
 					desc: '关闭侧边栏',
 					example: ``
 				}, {
@@ -119,11 +119,11 @@ function func(evt){
 	console.log(evt);
 }`
 				}, {
-					title: 'showPopup(id:String, param:any):void',
+					title: 'showPopup(id:String):void',
 					desc: '显示弹窗，只有在指定弹窗已经加载后才可使用',
-					example: `kernel.showPopup('samplePopup', 'doc');`
+					example: `kernel.showPopup('samplePopup');`
 				}, {
-					title: 'closePopup(id:String):void',
+					title: 'closePopup(id:String|Array):void',
 					desc: '关闭弹窗',
 					example: `kernel.listeners.add(kernel.popupEvents, 'show', func);
 kernel.listeners.add(kernel.popupEvents, 'hide', func);
