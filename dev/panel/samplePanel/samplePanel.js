@@ -4,7 +4,7 @@ define(['module', 'common/kernel/kernel'], function(module, kernel) {
 		dom = $('#' + thisPanel);
 	//var o = dom.find('>.content>span');
 	return {
-		onload: function(param) {
+		onload: function() {
 			console.log('opening ' + thisPanel);
 		},
 		onunload: function() {

@@ -229,7 +229,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 					if (typeof panelcfg.open === 'function') {
 						panelcfg.open(param);
 					} else {
-						kernel.showPanel(id, param);
+						kernel.showPanel(id);
 					}
 				});
 				return true;
@@ -237,7 +237,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				kernel.hint('panel config not found: ' + id, 'error');
 			}
 		};
-		kernel.showPanel = function (id, param) {
+		kernel.showPanel = function (id) {
 			if (ani) {
 				setTodo();
 			} else {
@@ -246,7 +246,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 					setTodo();
 				} else {
 					if (typeof panels[id].onload === 'function') {
-						panels[id].onload(param);
+						panels[id].onload();
 					}
 					panelCtn[0].className = activePanel = id;
 					panelCtn[0].style.display = document.getElementById(id).style.display = 'block';
@@ -261,7 +261,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			function setTodo() {
 				setTimeout(function () {
 					todo = function () {
-						kernel.showPanel(id, param);
+						kernel.showPanel(id);
 					}
 				}, 0);
 			}
@@ -341,7 +341,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 					if (typeof popupcfg.open === 'function') {
 						popupcfg.open(param);
 					} else {
-						kernel.showPopup(id, param);
+						kernel.showPopup(id);
 					}
 				});
 				return true;
@@ -349,7 +349,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				kernel.hint('popup config not found: ' + id, 'error');
 			}
 		};
-		kernel.showPopup = function (id, param) {
+		kernel.showPopup = function (id) {
 			var fire, popupcfg = popups[id];
 			if (activePopup) {
 				if (typeof popups[activePopup].onunload === 'function') {
@@ -369,7 +369,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				});
 			}
 			if (typeof popupcfg.onload === 'function') {
-				popupcfg.onload(param);
+				popupcfg.onload();
 			}
 		};
 		kernel.closePopup = function (id) {
