@@ -6,7 +6,7 @@ define(['module', 'common/kernel/kernel'], function(module, kernel) {
 	return {
 		open: function(param) {
 			o.text(param);
-			kenrel.showPopup(thisPopup);
+			kernel.showPopup(thisPopup);
 		},
 		onunload: function() {
 			console.log('closing ' + thisPopup);
