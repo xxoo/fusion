@@ -5,7 +5,7 @@ define(['module', 'common/kernel/kernel'], function (module, kernel) {
 		menu = dom.find('.menu'),
 		content = dom.find('.content'),
 		tree = [{
-			title: 'common/kerenl',
+			title: 'common/kernel',
 			desc: '核心模块，包含框架中的主要接口',
 			api: {
 				properties: [{
@@ -56,6 +56,7 @@ setTimeout(function(){
 					desc: '改变当前地址，若loc和当前地址相同，则调用reloadPage',
 					example: `kernel.replaceLocation({
 	id: 'doc', args: {
+		mod: 'common/kernel',
 		api: 'replaceLocation'
 	}
 });`
