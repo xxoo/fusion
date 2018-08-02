@@ -47,7 +47,7 @@ setTimeout(function(){
 					example: `console.log(kernel.isSameLocation(kernel.location, {
 	id: 'doc',
 	args: {
-		mod: 'common',
+		mod: 'common/kernel',
 		api: 'isSameLocation'
 	}
 }));`
