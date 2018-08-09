@@ -225,7 +225,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 		kernel.openPanel = function (id, param) {
 			var panelcfg = panels[id];
 			if (panelcfg) {
-				initLoad('panel', panelcfg, id, function () {
+				initLoad('panel', panelcfg, id, function (firstLoad) {
 					if (typeof panelcfg.open === 'function') {
 						panelcfg.open(param);
 					} else {
@@ -337,7 +337,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 		kernel.openPopup = function (id, param) {
 			var popupcfg = popups[id];
 			if (popupcfg) {
-				initLoad('popup', popupcfg, id, function () {
+				initLoad('popup', popupcfg, id, function (firstLoad) {
 					if (typeof popupcfg.open === 'function') {
 						popupcfg.open(param);
 					} else {
@@ -786,7 +786,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 						type: 'route'
 					});
 				}
-				initLoad('page', pages[nl.id], nl.id, function () {
+				initLoad('page', pages[nl.id], nl.id, function (firstLoad) {
 					//发生页面跳转或首次加载
 					if (nl.id !== currentpage) {
 						if (currentpage) {
@@ -901,7 +901,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 						Object.assign(oldcfg, cfg);
 					}
 					oldcfg.loaded = 2;
-					callback();
+					callback(true);
 					kernel.hideLoading();
 				}, VERSION === 'dev' ? undefined : function (error) {
 					destory(oldcfg, type, id);
@@ -914,7 +914,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				});
 			} else {
 				oldcfg.loaded = 2;
-				callback();
+				callback(true);
 			}
 		}
 	}

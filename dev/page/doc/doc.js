@@ -72,7 +72,7 @@ function func(evt){
 	console.log(evt);
 }`
 				}, {
-					title: 'listeners.list(o:Object, e:String):Array|Object',
+					title: 'listeners.list(o:Object, e?:String):Array|Object',
 					desc: '列出已注册的监听事件',
 					example: `kernel.listeners.add(kernel.popupEvents, 'show', func);
 kernel.listeners.add(kernel.popupEvents, 'hide', func);
