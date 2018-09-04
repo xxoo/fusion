@@ -760,12 +760,9 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 		kernel.pageEvents = {};
 
 		function reloadPage(id, silent) {
-			if (!id || (typeof id === 'string' && id === currentpage) || ($.type(id) === 'array' && id.indexOf(currentpage) >= 0)) {
+			if (!id || id === currentpage || ($.type(id) === 'array' && id.indexOf(currentpage) >= 0)) {
 				if (!silent) {
 					clearWindow();
-				}
-				if (typeof pages[currentpage].onunload === 'function') {
-					pages[currentpage].onunload();
 				}
 				if (typeof pages[currentpage].onload === 'function') {
 					pages[currentpage].onload(true);
