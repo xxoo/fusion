@@ -13,19 +13,19 @@
 'use strict';
 define(function(pointerevents) {
 	var slider = function(container, contents, idx, nav) {
-		var i, navItem, self, delay;
+		var i, navItem, that, delay;
 		if (this instanceof slider) {
-			self = this;
+			that = this;
 			this.pushStack = []; //for adding elements while sliding
 			this.removeStack = []; //for removing elements while sliding
 			this.container = container;
 			this.nav = nav;
 			container.on('mouseover', function(evt) {
-				delay = self.delay;
-				self.stopPlay();
+				delay = that.delay;
+				that.stopPlay();
 			});
 			container.on('mouseout', function(evt) {
-				self.startPlay(delay);
+				that.startPlay(delay);
 				delay = undefined;
 			});
 			if (nav) {
@@ -36,7 +36,7 @@ define(function(pointerevents) {
 						a = nav.find('>a');
 						for (i = 0; i < a.length; i++) {
 							if (a[i] === this) {
-								self.slideTo(i);
+								that.slideTo(i);
 								break;
 							}
 						}
@@ -129,7 +129,7 @@ define(function(pointerevents) {
 		return result;
 	};
 	slider.prototype.slideTo = function(i, silent) {
-		var result, a, self = this;
+		var result, a, that = this;
 		if (!this.sliding && this.children.length > 1) {
 			i = getPos(i, this.children.length);
 			if (i !== this.current) {
@@ -144,9 +144,9 @@ define(function(pointerevents) {
 				} else {
 					this.sliding = true;
 					this.children[this.current].fadeOut(function() {
-						self.children[self.current].fadeIn(function() {
-							self.sliding = false;
-							restartTimer(self);
+						that.children[that.current].fadeIn(function() {
+							that.sliding = false;
+							restartTimer(that);
 						});
 					});
 				}

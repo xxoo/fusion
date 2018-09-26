@@ -470,7 +470,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				chksz(sld.current);
 			}
 		});
-		$(window).on('resize', rsz);
+		$(self).on('resize', rsz);
 		prev.on('click', function () {
 			sld.slideTo(sld.current - 1);
 		});
@@ -507,7 +507,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 		rsz();
 
 		function rsz() {
-			var win = $(window);
+			var win = $(self);
 			w = win.innerWidth();
 			h = win.innerHeight();
 			if (typeof sld.current === 'number' && siz[sld.current]) {
@@ -717,8 +717,8 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 					}
 				} else {
 					homePage = home;
-					if ('onhashchange' in window) {
-						$(window).on('hashchange', hashchange);
+					if ('onhashchange' in self) {
+						$(self).on('hashchange', hashchange);
 					} else {
 						setInterval(function () {
 							if (tmp !== location.hash) {

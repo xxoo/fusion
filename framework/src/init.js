@@ -1,7 +1,7 @@
 ! function () {
 	'use strict';
 	var src, prefix, cfg, head, l, m, n;
-	if (window.XMLHttpRequest) {
+	if (self.XMLHttpRequest) {
 		src = (document.currentScript || document.scripts[document.scripts.length - 1]).getAttribute('src');
 		prefix = src.replace(/framework\/[^\/]+$/, '');
 		cfg = {
@@ -50,7 +50,7 @@
 		head.appendChild(m);
 		head.appendChild(l);
 	} else {
-		window.onload = function () {
+		self.onload = function () {
 			document.getElementById('loading').firstChild.firstChild.firstChild.data = '请使用IE7+、Chrome、Firefox访问';
 		};
 	}
