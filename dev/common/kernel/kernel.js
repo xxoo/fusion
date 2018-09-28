@@ -1,6 +1,6 @@
 // kernel
 'use strict';
-define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/panels/panels'], function (slider, pages, popups, panels) {
+define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/panels/panels', './lang'], function (slider, pages, popups, panels, lang) {
 	var homePage,
 		kernel = {
 			appendCss: function (url) { //自动根据当前环境添加css或less
@@ -232,19 +232,16 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 						kernel.showPanel(id);
 					}
 				});
-				return true;
 			} else {
-				kernel.hint('panel config not found: ' + id, 'error');
+				kernel.hint(lang.panelNotFound + id, 'error');
 			}
 		};
 		kernel.showPanel = function (id) {
 			if (ani) {
 				setTodo();
 			} else {
-				if (activePanel) {
-					hidePanel();
-					setTodo();
-				} else {
+				if (!activePanel) {
+					panels[id].status++;
 					if (typeof panels[id].onload === 'function') {
 						panels[id].onload();
 					}
@@ -254,51 +251,48 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 						if (typeof panels[id].onloadend === 'function') {
 							panels[id].onloadend();
 						}
+						panels[id].status++;
 					}, true);
+				} else if (activePanel === id) {
+					if (typeof panels[id].onload === 'function') {
+						panels[id].onload();
+					}
+					if (typeof panels[id].onloadend === 'function') {
+						panels[id].onloadend();
+					}
+				} else {
+					if (!hidePanel()) {
+						setTodo();
+					}
 				}
 			}
 
 			function setTodo() {
 				setTimeout(function () {
-					todo = function () {
-						kernel.showPanel(id);
-					}
+					todo = kernel.showPanel.bind(this, id);
 				}, 0);
 			}
 		};
 		kernel.closePanel = function (id) {
-			var close;
 			if (ani) {
 				setTimeout(function () {
-					todo = function () {
-						kernel.closePanel(id);
-					};
+					todo = kernel.closePanel.bind(this, id);
 				}, 0);
 			} else {
-				if (activePanel) {
-					if (typeof id === 'string') {
-						close = id === activePanel;
-					} else if ($.type(id) === 'array') {
-						close = id.indexOf(activePanel) >= 0;
-					} else {
-						close = true;
-					}
-					if (close) {
-						hidePanel();
-					} else if (todo) {
-						todo = undefined;
-					}
+				if (activePanel && (!id || activePanel === id || ($.type(id) === 'array' && id.indexOf(activePanel) >= 0))) {
+					return hidePanel();
+				} else if (todo) {
+					todo = undefined;
 				}
 			}
 		};
-		kernel.destoryPanel = function (id) {
-			var p = panels[id];
-			if (p) {
-				destory(p, 'panel', id);
+		kernel.destroyPanel = function (id) {
+			if (panels.hasOwnProperty(id) && panels[id].status === 2) {
+				destroy(panels[id], 'panel', id);
+				return true;
 			}
 		};
-		panelCtn.find('>.mask').on('click', kernel.closePanel);
-		ctn.find('>.close').on('click', kernel.closePanel);
+		ctn.find('>.close').on('click', kernel.closePanel.bind(kernel, undefined));
 
 		function startAni(cb, show) {
 			ani = true;
@@ -318,16 +312,22 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 		}
 
 		function hidePanel() {
-			if (typeof panels[activePanel].onunload === 'function') {
-				panels[activePanel].onunload();
+			if (typeof panels[activePanel].onunload !== 'function' || !panels[activePanel].onunload()) {
+				panels[activePanel].status--;
+				startAni(function () {
+					if (typeof panels[activePanel].onunloadend === 'function') {
+						panels[activePanel].onunloadend();
+					}
+					panels[activePanel].status--;
+					document.getElementById(activePanel).style.display = panelCtn[0].style.display = '';
+					if (panels[activePanel].autoDestroy) {
+						destroy(panels[activePanel], 'panel', activePanel);
+					}
+					activePanel = undefined;
+				}, false);
+			} else {
+				return true;
 			}
-			startAni(function () {
-				if (typeof panels[activePanel].onunloadend === 'function') {
-					panels[activePanel].onunloadend();
-				}
-				document.getElementById(activePanel).style.display = panelCtn[0].style.display = '';
-				activePanel = undefined;
-			}, false);
 		}
 	}();
 
@@ -344,57 +344,64 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 						kernel.showPopup(id);
 					}
 				});
-				return true;
 			} else {
-				kernel.hint('popup config not found: ' + id, 'error');
+				kernel.hint(lang.popupNotFound + id, 'error');
 			}
 		};
 		kernel.showPopup = function (id) {
-			var fire, popupcfg = popups[id];
-			if (activePopup) {
-				if (typeof popups[activePopup].onunload === 'function') {
-					popups[activePopup].onunload();
+			if (!activePopup) {
+				document.getElementById(id).style.display = popup.style.display = 'block';
+				popup.className = activePopup = id;
+				if (typeof kernel.popupEvents.onshow === 'function') {
+					kernel.popupEvents.onshow({
+						type: 'show',
+						id: activePopup
+					});
 				}
-				document.getElementById(activePopup).style.display = '';
+				popups[id].status++;
+				if (typeof popups[id].onload === 'function') {
+					popups[id].onload();
+				}
+			} else if (activePopup === id) {
+				if (typeof popups[id].onload === 'function') {
+					popups[id].onload();
+				}
 			} else {
-				popup.style.display = 'block';
-				fire = true;
-			}
-			activePopup = id;
-			popup.className = id;
-			document.getElementById(id).style.display = 'block';
-			if (fire && typeof kernel.popupEvents.onshow === 'function') {
-				kernel.popupEvents.onshow({
-					type: 'show'
-				});
-			}
-			if (typeof popupcfg.onload === 'function') {
-				popupcfg.onload();
+				if (typeof popups[activePopup].onunload !== 'function' || popups[activePopup].onunload()) {
+					return true;
+				} else {
+					popups[activePopup].status--;
+					document.getElementById(activePopup).style.display = '';
+					if (popups[activePopup].autoDestroy) {
+						destroy(popups[activePopup], 'popup', activePopup);
+					}
+					document.getElementById(id).style.display = 'block';
+					popup.className = activePopup = id;
+					popups[id].status++;
+					if (typeof popups[id].onload === 'function') {
+						popups[id].onload();
+					}
+				}
 			}
 		};
 		kernel.closePopup = function (id) {
 			var close;
-			if (activePopup) {
-				if (typeof id === 'string') {
-					close = id === activePopup;
-				} else if ($.type(id) === 'array') {
-					close = id.indexOf(activePopup) >= 0;
-				} else {
-					close = true;
-				}
-				if (close) {
-					if (typeof popups[activePopup].onunload === 'function') {
-						popups[activePopup].onunload();
-					}
+			if (activePopup && (!id || activePopup === id || ($.type(id) === 'array' && id.indexOf(activePopup) >= 0))) {
+				if (typeof popups[activePopup].onunload !== 'function' || !popups[activePopup].onunload()) {
+					popups[activePopup].status--;
 					document.getElementById(activePopup).style.display = '';
 					close = activePopup;
 					popup.className = popup.style.display = activePopup = '';
+					if (popups[close].autoDestroy) {
+						destroy(popups[close], 'popup', activePopup);
+					}
 					if (typeof kernel.popupEvents.onhide === 'function') {
 						kernel.popupEvents.onhide({
 							type: 'hide',
 							id: close
 						});
 					}
+				} else {
 					return true;
 				}
 			}
@@ -404,16 +411,14 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 		kernel.getCurrentPopup = function () {
 			return activePopup;
 		};
-		kernel.destoryPopup = function (id) {
-			var p = popups[id];
-			if (p) {
-				destory(p, 'popup', id);
+		kernel.destroyPopup = function (id) {
+			if (popups.hasOwnProperty(p) && popups[id].status === 2) {
+				destroy(popups[id], 'popup', id);
+				return true;
 			}
 		};
 		kernel.popupEvents = {};
-		$(popup).find('>div>a').on('click', function () {
-			kernel.closePopup();
-		});
+		$(popup).find('>div>a').on('click', kernel.closePopup.bind(kernel, undefined));
 	}();
 	//图片展示
 	! function () {
@@ -581,7 +586,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			dlgStack = [],
 			dlgCb, raCb; //callbacks
 		kernel.showLoading = function (text) { //loading提示框, 每次调用引用计数＋1所以showLoading和hideLoading必须成对使用
-			loading.find('>div>div').text(text ? text : '加载中...');
+			loading.find('>div>div').text(text ? text : lang.loading);
 			if (loadingRT === 0) {
 				loading.css('display', 'block');
 			}
@@ -658,21 +663,31 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 		kernel.showForeign = function (url, width, height, callback) {
 			kernel.showReadable('<iframe frameborder="no" allowtransparency="yes" marginwidth="0" marginheight="0" src="' + url + '"></iframe>', width, height, callback, 'foreign');
 		};
-		kernel.confirm = function (text, callback, width, height) {
-			var ctn, txt;
+		kernel.confirm = function (text, callback, width) {
+			var ctn, txt, yes, no;
 			if (dlgCtn[0].className === '') {
 				ctn = dlgCtn.find('>div');
-				txt = ctn.find('>div>div')
+				txt = ctn.find('>div>div');
+				yes = ctn.find('>a.yes');
+				no = ctn.find('>a.no');
 				dlgCb = callback;
 				ctn.css('width', width || '400px');
-				txt.text(text);
+				if ($.type(text) === 'array') {
+					txt.text(text[0]);
+					yes.text(text[1]);
+					no.text(text[2]);
+				} else {
+					txt.text(text);
+					yes.text(lang.yes);
+					no.text(lang.no);
+				}
 				dlgCtn[0].className = 'isConfirm';
-				ctn.css('height', txt.outerHeight() + Math.max(dlgCtn.find('>div>a.yes').outerHeight(), dlgCtn.find('>div>a.no').outerHeight()) + 76 + 'px');
+				ctn.css('height', txt.outerHeight() + Math.max(yes.outerHeight(), no.outerHeight()) + 76 + 'px');
 			} else {
-				dlgStack.push(['confirm', text, callback, width, height]);
+				dlgStack.push(['confirm', text, callback, width]);
 			}
 		};
-		kernel.alert = function (text, callback, width, height) {
+		kernel.alert = function (text, callback, width) {
 			var ctn, txt;
 			if (dlgCtn[0].className === '') {
 				ctn = dlgCtn.find('>div');
@@ -751,10 +766,10 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				}
 			}
 		};
-		kernel.destoryPage = function (id) {
-			var p = pages[id];
-			if (p) {
-				destory(p, 'page', id);
+		kernel.destroyPage = function (id) {
+			if (pages.hasOwnProperty(id) && pages[id].status === 2) {
+				destroy(pages[id], 'page', id);
+				return true;
 			}
 		};
 		kernel.pageEvents = {};
@@ -794,7 +809,11 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 							if (typeof pages[currentpage].onunload === 'function') {
 								pages[currentpage].onunload();
 							}
+							pages[currentpage].status--;
 							document.getElementById(currentpage).style.display = '';
+							if (pages[currentpage].autoDestroy) {
+								destroy(pages[currentpage], 'popup', activePopup);
+							}
 						} else {
 							if (nl.args.hasOwnProperty('autopopup')) {
 								kernel.openPopup(nl.args.autopopup, nl.args.autopopuparg ? JSON.parse(nl.args.autopopuparg) : undefined);
@@ -802,6 +821,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 						}
 						document.body.className = currentpage = nl.id;
 						document.getElementById(nl.id).style.display = 'block';
+						pages[nl.id].status++;
 						if (typeof pages[nl.id].onload === 'function') {
 							pages[nl.id].onload(force);
 						}
@@ -823,10 +843,10 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 	}();
 	return kernel;
 
-	function destory(cfg, type, id) {
+	function destroy(cfg, type, id) {
 		var o, n = type + '/' + id + '/';
-		if (cfg.loaded === 2 && typeof cfg.ondestory === 'function') {
-			cfg.ondestory();
+		if (typeof cfg.ondestroy === 'function') {
+			cfg.ondestroy();
 		}
 		$('#' + id).remove();
 		if (cfg.css && typeof cfg.css !== 'string') {
@@ -844,14 +864,14 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				}
 			}
 		}
-		cfg.loaded = 0;
+		delete cfg.status;
 	}
 
 	function initLoad(type, oldcfg, id, callback) {
-		if (oldcfg.loaded === 2) {
+		if (oldcfg.status > 1) {
 			callback();
-		} else if (oldcfg.loaded !== 1) {
-			oldcfg.loaded = 1;
+		} else if (!oldcfg.status) {
+			oldcfg.status = 1;
 			var url, ctn = '#' + type + 's',
 				n = type + '/' + id + '/',
 				m = require.toUrl(n),
@@ -866,18 +886,17 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				oldcfg.css = kernel.appendCss(m + oldcfg.css);
 			}
 			if ('html' in oldcfg) {
-				url = m + oldcfg.html
+				url = m + oldcfg.html;
 				$.ajax({
 					url: url,
 					type: 'get',
 					dataType: 'text',
 					success: function (text) {
-						//delete oldcfg.html;
 						ctn.insertAdjacentHTML('afterBegin', '<div id="' + id + '">' + text + '</div>');
 						loadJs();
 					},
 					error: function (xhr, msg) {
-						destory(oldcfg, type, id);
+						destroy(oldcfg, type, id);
 						if (VERSION === 'dev' || xhr.status !== 404) {
 							errorOccurs(url, xhr.status, isPage);
 						} else {
@@ -902,11 +921,11 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 					if (cfg) {
 						Object.assign(oldcfg, cfg);
 					}
-					oldcfg.loaded = 2;
+					oldcfg.status++;
 					callback(true);
 					kernel.hideLoading();
 				}, VERSION === 'dev' ? undefined : function (error) {
-					destory(oldcfg, type, id);
+					destroy(oldcfg, type, id);
 					if ((error.requireType && error.requireType !== 'scripterror' && error.requireType !== 'nodefine') || (error.xhr && error.xhr.status !== 404)) {
 						errorOccurs(js, error.message, isPage);
 					} else {
@@ -915,14 +934,14 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 					kernel.hideLoading();
 				});
 			} else {
-				oldcfg.loaded = 2;
+				oldcfg.status++;
 				callback(true);
 			}
 		}
 	}
 
 	function errorOccurs(res, msg, isPage) {
-		kernel.alert('加载' + res + '时发生了一个错误: ' + msg, isPage ? function () {
+		kernel.alert(lang.error.replace('${res}', res) + msg, isPage ? function () {
 			history.back();
 		} : undefined);
 	}
@@ -931,7 +950,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 		if (isPage) {
 			location.reload();
 		} else {
-			kernel.confirm('网站已经更新, 使用该功能需要先重新加载. 是否立即刷新本页?', function (sure) {
+			kernel.confirm(lang.update, function (sure) {
 				if (sure) {
 					location.reload();
 				}

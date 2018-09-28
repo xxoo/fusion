@@ -98,16 +98,16 @@ function func(evt){
 					desc: '打开侧边栏',
 					example: `kernel.openPanel('samplePanel');`
 				}, {
-					title: 'showPanel(id:String):void',
-					desc: '显示侧边栏，只有在指定侧边栏已经加载后才可使用',
+					title: 'showPanel(id:String):Boolean',
+					desc: '显示侧边栏，只有在指定侧边栏已经加载后才可使用. 返回true表示打开侧边栏失败. 失败原因可能为当前正在显示的侧边栏无法被关闭.',
 					example: `kernel.showPanel('samplePanel');`
 				}, {
-					title: 'closePanel(id?:String|Array):void',
-					desc: '关闭侧边栏',
+					title: 'closePanel(id?:String|Array):Boolean',
+					desc: '关闭侧边栏, 返回true表示关闭失败. 失败原因可能是因为当前侧边栏的onunload方法返回true.',
 					example: ``
 				}, {
-					title: 'destoryPanel(id:String):void',
-					desc: '销毁已加载的指定侧边栏, 不可销毁当前侧边栏',
+					title: 'destoryPanel(id:String):Boolean',
+					desc: '销毁已加载的指定侧边栏, 不可销毁当前侧边栏. 返回true表示销毁成功',
 					example: `kernel.destoryPanel('samplePanel');`
 				}, {
 					title: 'openPopup(id:String, param:any):void',
@@ -121,12 +121,12 @@ function func(evt){
 	console.log(evt);
 }`
 				}, {
-					title: 'showPopup(id:String):void',
-					desc: '显示弹窗，只有在指定弹窗已经加载后才可使用',
+					title: 'showPopup(id:String):Boolean',
+					desc: '显示弹窗, 只有在指定弹窗已经加载后才可使用. 返回true表示打开弹窗失败. 失败原因可能为当前正在显示的弹窗无法被关闭.',
 					example: `kernel.showPopup('samplePopup');`
 				}, {
-					title: 'closePopup(id:String|Array):void',
-					desc: '关闭弹窗',
+					title: 'closePopup(id:String|Array):Boolean',
+					desc: '关闭弹窗, 返回true表示关闭失败. 失败原因可能是因为当前弹窗的onunload方法返回true.',
 					example: `kernel.listeners.add(kernel.popupEvents, 'show', func);
 kernel.listeners.add(kernel.popupEvents, 'hide', func);
 kernel.openPopup('samplePopup', 'doc');
@@ -140,8 +140,8 @@ function func(evt){
 					desc: '获取当前正在显示的弹窗id',
 					example: `console.log(kernel.getCurrentPopup());`
 				}, {
-					title: 'destoryPopup(id:String):void',
-					desc: '销毁已加载的指定弹窗, 不可销毁当前弹窗',
+					title: 'destoryPopup(id:String):Boolean',
+					desc: '销毁已加载的指定弹窗, 不可销毁当前弹窗. 返回true表示销毁成功',
 					example: `kernel.destoryPopup('samplePopup');`
 				}, {
 					title: 'showPhotoView(contents:Array, idx?:Number):void',
