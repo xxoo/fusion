@@ -395,7 +395,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				if (typeof popups[activePopup].onunload !== 'function' || !popups[activePopup].onunload()) {
 					popups[activePopup].status--;
 					close = activePopup;
-					popup.className = ctn.find('>.' + activePopup)[0].style.display = popup.style.display = activePopup = '';
+					ctn.find('>.' + activePopup)[0].style.display = popup.style.display = popup.className = activePopup = '';
 					if (popups[close].autoDestroy) {
 						destroy(popups[close], 'popup', activePopup);
 					}
