@@ -1,0 +1,40 @@
+.tabCtn > span {
+	position: relative;
+	display: inline-block;
+	vertical-align: top;
+
+	> div {
+		position: absolute;
+		top: 100%;
+		left: 0;
+
+		> a {
+			display: block;
+			white-space: nowrap;
+		}
+	}
+
+	 > div > a.reload,
+	&:first-child > div > a.closeLeft,
+	&:first-child > div > a.closeOther,
+	&:last-child > div > a.closeOther,
+	&:last-child > div > a.closeRight {
+		display: none;
+	}
+
+	&.active > div > a.reload {
+		display: block;
+	}
+}
+
+.tabCtn.inv > span {
+	&:first-child > div > a.closeLeft,
+	&:last-child > div > a.closeRight {
+		display: block;
+	}
+
+	&:first-child > div > a.closeRight,
+	&:last-child > div > a.closeLeft {
+		display: none;
+	}
+}

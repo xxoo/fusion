@@ -86,9 +86,23 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				} else {
 					location.replace(kernel.buildHash(loc));
 				}
+			},
+			getLang: function(langs) {
+				if (navigator.languages) {
+					for (let i = 0; i < navigator.languages.length; i++) {
+						if (langs.hasOwnProperty(navigator.languages[i])) {
+							return langs[navigator.languages[i]];
+						}
+					}
+				} else {
+					if (langs.hasOwnProperty(navigator.language)) {
+						return langs[navigator.language];
+					}
+				}
+				return langs.en;
 			}
 		};
-
+	lang = kernel.getLang(lang);
 	! function () {
 		kernel.listeners = {
 			add: function (o, e, f) {
