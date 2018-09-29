@@ -251,32 +251,34 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			}
 		};
 		kernel.showPanel = function (id) {
-			if (ani) {
-				setTodo();
-			} else {
-				if (!activePanel) {
-					panels[id].status++;
-					if (typeof panels[id].onload === 'function') {
-						panels[id].onload();
-					}
-					panelCtn[0].className = activePanel = id;
-					panelCtn[0].style.display = ctn.find('>.' + id)[0].style.display = 'block';
-					startAni(function () {
+			if (panels[id].status > 1) {
+				if (ani) {
+					setTodo();
+				} else {
+					if (!activePanel) {
+						panels[id].status++;
+						if (typeof panels[id].onload === 'function') {
+							panels[id].onload();
+						}
+						panelCtn[0].className = activePanel = id;
+						panelCtn[0].style.display = ctn.find('>.' + id)[0].style.display = 'block';
+						startAni(function () {
+							if (typeof panels[id].onloadend === 'function') {
+								panels[id].onloadend();
+							}
+							panels[id].status++;
+						}, true);
+					} else if (activePanel === id) {
+						if (typeof panels[id].onload === 'function') {
+							panels[id].onload();
+						}
 						if (typeof panels[id].onloadend === 'function') {
 							panels[id].onloadend();
 						}
-						panels[id].status++;
-					}, true);
-				} else if (activePanel === id) {
-					if (typeof panels[id].onload === 'function') {
-						panels[id].onload();
-					}
-					if (typeof panels[id].onloadend === 'function') {
-						panels[id].onloadend();
-					}
-				} else {
-					if (!hidePanel()) {
-						setTodo();
+					} else {
+						if (!hidePanel()) {
+							setTodo();
+						}
 					}
 				}
 			}
@@ -368,37 +370,39 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			}
 		};
 		kernel.showPopup = function (id) {
-			if (!activePopup) {
-				ctn.find('>.' + id)[0].style.display = popup.style.display = 'block';
-				popup.className = activePopup = id;
-				if (typeof kernel.popupEvents.onshow === 'function') {
-					kernel.popupEvents.onshow({
-						type: 'show',
-						id: activePopup
-					});
-				}
-				popups[id].status++;
-				if (typeof popups[id].onload === 'function') {
-					popups[id].onload();
-				}
-			} else if (activePopup === id) {
-				if (typeof popups[id].onload === 'function') {
-					popups[id].onload();
-				}
-			} else {
-				if (typeof popups[activePopup].onunload !== 'function' || popups[activePopup].onunload()) {
-					return true;
-				} else {
-					popups[activePopup].status--;
-					ctn.find('>.' + activePopup).css('display', '');
-					if (popups[activePopup].autoDestroy) {
-						destroy(popups[activePopup], 'popup', activePopup);
-					}
-					ctn.find('>.' + id).css('display', 'block');
+			if (popups[id].status > 1) {
+				if (!activePopup) {
+					ctn.find('>.' + id)[0].style.display = popup.style.display = 'block';
 					popup.className = activePopup = id;
+					if (typeof kernel.popupEvents.onshow === 'function') {
+						kernel.popupEvents.onshow({
+							type: 'show',
+							id: activePopup
+						});
+					}
 					popups[id].status++;
 					if (typeof popups[id].onload === 'function') {
 						popups[id].onload();
+					}
+				} else if (activePopup === id) {
+					if (typeof popups[id].onload === 'function') {
+						popups[id].onload();
+					}
+				} else {
+					if (typeof popups[activePopup].onunload !== 'function' || popups[activePopup].onunload()) {
+						return true;
+					} else {
+						popups[activePopup].status--;
+						ctn.find('>.' + activePopup).css('display', '');
+						if (popups[activePopup].autoDestroy) {
+							destroy(popups[activePopup], 'popup', activePopup);
+						}
+						ctn.find('>.' + id).css('display', 'block');
+						popup.className = activePopup = id;
+						popups[id].status++;
+						if (typeof popups[id].onload === 'function') {
+							popups[id].onload();
+						}
 					}
 				}
 			}
