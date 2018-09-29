@@ -1,7 +1,7 @@
 'use strict';
 define(['module', 'common/kernel/kernel'], function (module, kernel) {
 	var thisPage = module.id.replace(/^[^/]+\/|\/[^/]+/g, ''),
-		dom = $('#' + thisPage),
+		dom = $('#page>.' + thisPage),
 		menu = dom.find('.menu'),
 		content = dom.find('.content'),
 		tree = [{
@@ -106,9 +106,9 @@ function func(evt){
 					desc: '关闭侧边栏, 返回true表示关闭失败. 失败原因可能是因为当前侧边栏的onunload方法返回true.',
 					example: ``
 				}, {
-					title: 'destoryPanel(id:String):Boolean',
-					desc: '销毁已加载的指定侧边栏, 不可销毁当前侧边栏. 返回true表示销毁成功',
-					example: `kernel.destoryPanel('samplePanel');`
+					title: 'destroyPanel(id:String):Boolean',
+					desc: '销毁已加载的指定侧边栏, 不可销毁当前侧边栏. 返回true表示销毁成功.',
+					example: `kernel.destroyPanel('samplePanel');`
 				}, {
 					title: 'openPopup(id:String, param:any):void',
 					desc: '打开弹窗',
@@ -140,9 +140,9 @@ function func(evt){
 					desc: '获取当前正在显示的弹窗id',
 					example: `console.log(kernel.getCurrentPopup());`
 				}, {
-					title: 'destoryPopup(id:String):Boolean',
-					desc: '销毁已加载的指定弹窗, 不可销毁当前弹窗. 返回true表示销毁成功',
-					example: `kernel.destoryPopup('samplePopup');`
+					title: 'destroyPopup(id:String):Boolean',
+					desc: '销毁已加载的指定弹窗, 不可销毁当前弹窗. 返回true表示销毁成功.',
+					example: `kernel.destroyPopup('samplePopup');`
 				}, {
 					title: 'showPhotoView(contents:Array, idx?:Number):void',
 					desc: '显示图片查看器',
@@ -226,9 +226,9 @@ function loaded(evt){
 					desc: '重新加载当前页, 如果silent为true则不关闭弹窗',
 					example: `kernel.reloadPage();`
 				}, {
-					title: 'destoryPage(id:String):void',
+					title: 'destroyPage(id:String):void',
 					desc: '销毁已加载的指定页面, 不可销毁当前页',
-					example: `kernel.destoryPage('samplePage');`
+					example: `kernel.destroyPage('samplePage');`
 				}],
 				events: [{
 					title: 'pageEvents.onroute',

@@ -1,7 +1,7 @@
 'use strict';
 define(['module', 'common/kernel/kernel'], function(module, kernel) {
 	var thisPanel = module.id.replace(/^[^/]+\/|\/[^/]+/g, ''),
-		dom = $('#' + thisPanel);
+		dom = $('#panel>.contents>div>.' + thisPanel);
 	//var o = dom.find('>.content>span');
 	return {
 		onload: function() {
@@ -16,8 +16,9 @@ define(['module', 'common/kernel/kernel'], function(module, kernel) {
 		onunloadend: function() {
 			console.log(thisPanel + ' is closed');
 		},
-		ondestory: function() {
+		ondestroy: function() {
 			console.log('do clean up stuff here');
-		}
+		},
+		autoDestroy: true
 	};
 });

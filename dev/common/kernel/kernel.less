@@ -1,20 +1,20 @@
 @import "../../config.less";
 
-#dialogs,
+#dialog,
 #hint,
 #loading,
-#pages > div,
+#page > div,
 #photoview,
-#popups,
-#popups > div > div > div,
+#popup,
+#popup > div > div > div,
 #readable {
 	display: none;
 }
 
-#dialogs,
+#dialog,
 #loading,
 #photoview,
-#popups,
+#popup,
 #readable {
 	position: fixed;
 	top: 0;
@@ -23,9 +23,9 @@
 	right: 0;
 }
 
-#dialogs,
+#dialog,
 #photoview,
-#popups,
+#popup,
 #readable {
 	.halfTrans;
 }
@@ -34,9 +34,9 @@
 	.trans;
 }
 
-#dialogs > div,
+#dialog > div,
 #loading > div,
-#popups > div,
+#popup > div,
 #readable > div {
 	overflow: visible;
 	position: absolute;
@@ -45,13 +45,23 @@
 }
 
 #loading > div {
-	width: 240px;
-	height: 126px;
+	width: 280px;
+	height: 160px;
+	> div {
+		background-image: url("loading.gif");
+		background-repeat: no-repeat;
+		background-position: 50% 14px;
+		text-align: center;
+		font-size: 16px;
+		line-height: 16px;
+		color: @dialogTextColor;
+		padding: 128px 0 16px;
+	}
 }
 
-#dialogs > div > div,
+#dialog > div > div,
 #loading > div > div,
-#popups > div > div,
+#popup > div > div,
 #readable > div > div {
 	position: absolute;
 	top: -50%;
@@ -60,8 +70,8 @@
 	background-color: @dialogBackgroundColor;
 }
 
-#dialogs > div > div,
-#popups > div > div,
+#dialog > div > div,
+#popup > div > div,
 #readable > div > div {
 	height: 100%;
 }
@@ -76,19 +86,8 @@
 	display: block;
 }
 
-#loading > div > div {
-	background-image: url("images/loading.gif");
-	background-repeat: no-repeat;
-	background-position: 50% 14px;
-	text-align: center;
-	font-size: 16px;
-	line-height: 16px;
-	color: @dialogTextColor;
-	padding: 100px 0 20px;
-}
-
-#dialogs > div > .close,
-#popups > div > .close,
+#dialog > div > .close,
+#popup > div > .close,
 #readable > div > .close {
 	position: absolute;
 	right: 50%;
@@ -105,19 +104,19 @@
 	text-decoration: none;
 }
 
-#dialogs > div > div > div,
-#popups > div > div > div {
+#dialog > div > div > div,
+#popup > div > div > div {
 	position: absolute;
 }
 
-#popups > div > div > div {
+#popup > div > div > div {
 	top: 0;
 	left: 0;
 	right: 0;
 	bottom: 0;
 }
 
-#dialogs > div > div > div {
+#dialog > div > div > div {
 	white-space: pre-wrap;
 	*white-space: pre;
 	*word-wrap: break-word;
@@ -130,11 +129,11 @@
 	text-align: justify;
 }
 
-#dialogs > div > a {
+#dialog > div > a {
 	display: none;
 }
 
-#dialogs.isConfirm {
+#dialog.isConfirm {
 	display: block;
 
 	 > div > .no,
@@ -162,7 +161,7 @@
 	}
 }
 
-#dialogs.isAlert {
+#dialog.isAlert {
 	display: block;
 
 	> div > .close {
@@ -282,7 +281,8 @@
 	}
 }
 
-#panels {
+#panel {
+	.halfTrans;
 	position: fixed;
 	top: 0;
 	bottom: 0;
@@ -291,12 +291,12 @@
 	display: none;
 
 	> .mask {
+		.trans;
 		position: absolute;
 		top: 0;
 		bottom: 0;
 		right: 0;
 		left: 0;
-		.halfTrans;
 	}
 
 	> .contents {
@@ -338,7 +338,7 @@
 }
 
 .isLoading {
-	background-image: url("images/loading.gif");
+	background-image: url("loading.gif");
 	background-repeat: no-repeat;
 	background-position: 50% 50%;
 
@@ -348,9 +348,9 @@
 }
 
 .halfTrans {
-	background-image: url("images/halftrans.png");
+	background-image: url("halftrans.png");
 }
 
 .trans {
-	background-image: url("images/trans.gif");
+	background-image: url("trans.gif");
 }
