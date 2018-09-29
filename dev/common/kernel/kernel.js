@@ -220,7 +220,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 	//panel
 	! function () {
 		var activePanel, ani, todo,
-			panelCtn = $('#panels'),
+			panelCtn = $('#panel'),
 			ctn = panelCtn.find('>.contents>div');
 		kernel.openPanel = function (id, param) {
 			var panelcfg = panels[id];
@@ -246,7 +246,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 						panels[id].onload();
 					}
 					panelCtn[0].className = activePanel = id;
-					panelCtn[0].style.display = document.getElementById(id).style.display = 'block';
+					panelCtn[0].style.display = ctn.find('>.' + id)[0].style.display = 'block';
 					startAni(function () {
 						if (typeof panels[id].onloadend === 'function') {
 							panels[id].onloadend();
@@ -292,7 +292,10 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				return true;
 			}
 		};
-		ctn.find('>.close').on('click', kernel.closePanel.bind(kernel, undefined));
+		todo = kernel.closePanel.bind(kernel, undefined);
+		ctn.find('>.close').on('click', todo);
+		panelCtn.find('>.mask').on('click', todo);
+		todo = undefined;
 
 		function startAni(cb, show) {
 			ani = true;
@@ -319,7 +322,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 						panels[activePanel].onunloadend();
 					}
 					panels[activePanel].status--;
-					document.getElementById(activePanel).style.display = panelCtn[0].style.display = '';
+					ctn.find('>.' + activePanel)[0].style.display = panelCtn[0].style.display = '';
 					if (panels[activePanel].autoDestroy) {
 						destroy(panels[activePanel], 'panel', activePanel);
 					}
@@ -333,7 +336,9 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 
 	//弹出窗口
 	! function () {
-		var activePopup, popup = document.getElementById('popups');
+		var activePopup,
+			popup = document.getElementById('popup'),
+			ctn = $(popup).find('>div>div');
 		kernel.openPopup = function (id, param) {
 			var popupcfg = popups[id];
 			if (popupcfg) {
@@ -350,7 +355,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 		};
 		kernel.showPopup = function (id) {
 			if (!activePopup) {
-				document.getElementById(id).style.display = popup.style.display = 'block';
+				ctn.find('>.' + id)[0].style.display = popup.style.display = 'block';
 				popup.className = activePopup = id;
 				if (typeof kernel.popupEvents.onshow === 'function') {
 					kernel.popupEvents.onshow({
@@ -371,11 +376,11 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 					return true;
 				} else {
 					popups[activePopup].status--;
-					document.getElementById(activePopup).style.display = '';
+					ctn.find('>.' + activePopup).css('display', '');
 					if (popups[activePopup].autoDestroy) {
 						destroy(popups[activePopup], 'popup', activePopup);
 					}
-					document.getElementById(id).style.display = 'block';
+					ctn.find('>.' + id).css('display', 'block');
 					popup.className = activePopup = id;
 					popups[id].status++;
 					if (typeof popups[id].onload === 'function') {
@@ -389,9 +394,8 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			if (activePopup && (!id || activePopup === id || ($.type(id) === 'array' && id.indexOf(activePopup) >= 0))) {
 				if (typeof popups[activePopup].onunload !== 'function' || !popups[activePopup].onunload()) {
 					popups[activePopup].status--;
-					document.getElementById(activePopup).style.display = '';
 					close = activePopup;
-					popup.className = popup.style.display = activePopup = '';
+					popup.className = ctn.find('>.' + activePopup)[0].style.display = popup.style.display = activePopup = '';
 					if (popups[close].autoDestroy) {
 						destroy(popups[close], 'popup', activePopup);
 					}
@@ -406,7 +410,6 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				}
 			}
 		};
-
 		// 获取当前显示的 popup id
 		kernel.getCurrentPopup = function () {
 			return activePopup;
@@ -581,7 +584,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			loadingRT = 0,
 			hint = $('#hint'),
 			readable = $('#readable'),
-			dlgCtn = $('#dialogs'),
+			dlgCtn = $('#dialog'),
 			loading = $('#loading'),
 			dlgStack = [],
 			dlgCb, raCb; //callbacks
@@ -712,7 +715,6 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 		//目前只有loaded事件
 		kernel.dialogEvents = {};
 	}();
-
 	//页面加载相关功能
 	! function () {
 		var currentpage;
@@ -810,7 +812,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 								pages[currentpage].onunload();
 							}
 							pages[currentpage].status--;
-							document.getElementById(currentpage).style.display = '';
+							sel('page', currentpage).css('display', '');
 							if (pages[currentpage].autoDestroy) {
 								destroy(pages[currentpage], 'popup', activePopup);
 							}
@@ -820,7 +822,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 							}
 						}
 						document.body.className = currentpage = nl.id;
-						document.getElementById(nl.id).style.display = 'block';
+						sel('page', nl.id).css('display', 'block');
 						pages[nl.id].status++;
 						if (typeof pages[nl.id].onload === 'function') {
 							pages[nl.id].onload(force);
@@ -848,7 +850,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 		if (typeof cfg.ondestroy === 'function') {
 			cfg.ondestroy();
 		}
-		$('#' + id).remove();
+		sel(type, id).remove();
 		if (cfg.css && typeof cfg.css !== 'string') {
 			cfg.css = kernel.removeCss(cfg.css).substr(require.toUrl(n).length);
 		}
@@ -867,21 +869,28 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 		delete cfg.status;
 	}
 
+	function sel(type, id) {
+		var result = '#' + type;
+		if (type === 'popup') {
+			result += '>div>div';
+		} else if (type === 'panel') {
+			result += '>.contents>div';
+		}
+		if (id) {
+			result += '>.' + id;
+		}
+		return $(result);
+	}
+
 	function initLoad(type, oldcfg, id, callback) {
 		if (oldcfg.status > 1) {
 			callback();
 		} else if (!oldcfg.status) {
 			oldcfg.status = 1;
-			var url, ctn = '#' + type + 's',
+			var url, ctn = sel(type)[0],
 				n = type + '/' + id + '/',
 				m = require.toUrl(n),
 				isPage = type === 'page';
-			if (type === 'popup') {
-				ctn += '>div>div';
-			} else if (type === 'panel') {
-				ctn += '>.contents>div';
-			}
-			ctn = $(ctn)[0];
 			if (typeof oldcfg.css === 'string') {
 				oldcfg.css = kernel.appendCss(m + oldcfg.css);
 			}
@@ -892,7 +901,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 					type: 'get',
 					dataType: 'text',
 					success: function (text) {
-						ctn.insertAdjacentHTML('afterBegin', '<div id="' + id + '">' + text + '</div>');
+						ctn.insertAdjacentHTML('afterBegin', '<div class="' + id + '">' + text + '</div>');
 						loadJs();
 					},
 					error: function (xhr, msg) {
@@ -907,7 +916,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				});
 				kernel.showLoading();
 			} else {
-				ctn.insertAdjacentHTML('afterBegin', '<div id="' + id + '"></div>');
+				ctn.insertAdjacentHTML('afterBegin', '<div class="' + id + '"></div>');
 				loadJs();
 			}
 		}

@@ -1,21 +1,21 @@
 @import "../../config.less";
 
-#popups.samplePopup {
-	> div {
+#popup.samplePopup {
+	>div {
 		width: 300px;
 		height: 100px;
-	}
-}
 
-#samplePopup {
-	> .content {
-		margin: 10px;
-		color: gray;
-		font-size: 16px;
-		line-height: 1.5;
+		>div>.samplePopup {
+			>.content {
+				margin: 10px;
+				color: gray;
+				font-size: 16px;
+				line-height: 1.5;
 
-		> span {
-			color: black;
+				>span {
+					color: black;
+				}
+			}
 		}
 	}
 }
