@@ -251,56 +251,49 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			}
 		};
 		kernel.showPanel = function (id) {
+			var result = 0;
 			if (panels[id].status > 1) {
 				if (ani) {
-					setTodo();
-				} else {
-					if (!activePanel) {
-						panels[id].status++;
-						if (typeof panels[id].onload === 'function') {
-							panels[id].onload();
-						}
-						panelCtn[0].className = activePanel = id;
-						panelCtn[0].style.display = ctn.find('>.' + id)[0].style.display = 'block';
-						startAni(function () {
-							if (typeof panels[id].onloadend === 'function') {
-								panels[id].onloadend();
-							}
-							panels[id].status++;
-						}, true);
-					} else if (activePanel === id) {
-						if (typeof panels[id].onload === 'function') {
-							panels[id].onload();
-						}
+					todo = kernel.showPanel.bind(this, id);
+					result = 2;
+				} else if (!activePanel) {
+					panels[id].status++;
+					if (typeof panels[id].onload === 'function') {
+						panels[id].onload();
+					}
+					panelCtn[0].className = activePanel = id;
+					panelCtn[0].style.display = ctn.find('>.' + id)[0].style.display = 'block';
+					startAni(function () {
 						if (typeof panels[id].onloadend === 'function') {
 							panels[id].onloadend();
 						}
-					} else {
-						if (!hidePanel()) {
-							setTodo();
-						}
+						panels[id].status++;
+					}, true);
+					result = 1;
+				} else if (activePanel === id) {
+					if (typeof panels[id].onload === 'function') {
+						panels[id].onload();
 					}
+					if (typeof panels[id].onloadend === 'function') {
+						panels[id].onloadend();
+					}
+					result = 1;
+				} else if (hidePanel()) {
+					todo = kernel.showPanel.bind(this, id);
+					result = 1;
 				}
 			}
-
-			function setTodo() {
-				setTimeout(function () {
-					todo = kernel.showPanel.bind(this, id);
-				}, 0);
-			}
+			return result;
 		};
 		kernel.closePanel = function (id) {
+			var result = 0;
 			if (ani) {
-				setTimeout(function () {
-					todo = kernel.closePanel.bind(this, id);
-				}, 0);
-			} else {
-				if (activePanel && (!id || activePanel === id || ($.type(id) === 'array' && id.indexOf(activePanel) >= 0))) {
-					return hidePanel();
-				} else if (todo) {
-					todo = undefined;
-				}
+				todo = kernel.closePanel.bind(this, id);
+				result = 2;
+			} else if (activePanel && (!id || activePanel === id || ($.type(id) === 'array' && id.indexOf(activePanel) >= 0)) && hidePanel()) {
+				result = 1;
 			}
+			return result;
 		};
 		kernel.destroyPanel = function (id) {
 			if (panels.hasOwnProperty(id) && panels[id].status === 2) {
@@ -320,11 +313,13 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			}, {
 				duration: 200,
 				complete: function () {
+					var tmp;
 					ani = false;
 					cb();
 					if (typeof todo === 'function') {
-						todo();
+						tmp = todo;
 						todo = undefined;
+						tmp();
 					}
 				}
 			});
@@ -344,7 +339,6 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 					}
 					activePanel = undefined;
 				}, false);
-			} else {
 				return true;
 			}
 		}
@@ -370,6 +364,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			}
 		};
 		kernel.showPopup = function (id) {
+			var result;
 			if (popups[id].status > 1) {
 				if (!activePopup) {
 					ctn.find('>.' + id)[0].style.display = popup.style.display = 'block';
@@ -384,48 +379,45 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 					if (typeof popups[id].onload === 'function') {
 						popups[id].onload();
 					}
+					result = true;
 				} else if (activePopup === id) {
 					if (typeof popups[id].onload === 'function') {
 						popups[id].onload();
 					}
-				} else {
-					if (typeof popups[activePopup].onunload !== 'function' || popups[activePopup].onunload()) {
-						return true;
-					} else {
-						popups[activePopup].status--;
-						ctn.find('>.' + activePopup).css('display', '');
-						if (popups[activePopup].autoDestroy) {
-							destroy(popups[activePopup], 'popup', activePopup);
-						}
-						ctn.find('>.' + id).css('display', 'block');
-						popup.className = activePopup = id;
-						popups[id].status++;
-						if (typeof popups[id].onload === 'function') {
-							popups[id].onload();
-						}
+					result = true;
+				} else if (typeof popups[activePopup].onunload !== 'function' || !popups[activePopup].onunload()) {
+					popups[activePopup].status--;
+					ctn.find('>.' + activePopup).css('display', '');
+					if (popups[activePopup].autoDestroy) {
+						destroy(popups[activePopup], 'popup', activePopup);
 					}
+					ctn.find('>.' + id).css('display', 'block');
+					popup.className = activePopup = id;
+					popups[id].status++;
+					if (typeof popups[id].onload === 'function') {
+						popups[id].onload();
+					}
+					result = true;
 				}
 			}
+			return result;
 		};
 		kernel.closePopup = function (id) {
 			var close;
-			if (activePopup && (!id || activePopup === id || ($.type(id) === 'array' && id.indexOf(activePopup) >= 0))) {
-				if (typeof popups[activePopup].onunload !== 'function' || !popups[activePopup].onunload()) {
-					popups[activePopup].status--;
-					close = activePopup;
-					ctn.find('>.' + activePopup)[0].style.display = popup.style.display = popup.className = activePopup = '';
-					if (popups[close].autoDestroy) {
-						destroy(popups[close], 'popup', activePopup);
-					}
-					if (typeof kernel.popupEvents.onhide === 'function') {
-						kernel.popupEvents.onhide({
-							type: 'hide',
-							id: close
-						});
-					}
-				} else {
-					return true;
+			if (activePopup && (!id || activePopup === id || ($.type(id) === 'array' && id.indexOf(activePopup) >= 0)) && (typeof popups[activePopup].onunload !== 'function' || !popups[activePopup].onunload())) {
+				popups[activePopup].status--;
+				close = activePopup;
+				ctn.find('>.' + activePopup)[0].style.display = popup.style.display = popup.className = activePopup = '';
+				if (popups[close].autoDestroy) {
+					destroy(popups[close], 'popup', activePopup);
 				}
+				if (typeof kernel.popupEvents.onhide === 'function') {
+					kernel.popupEvents.onhide({
+						type: 'hide',
+						id: close
+					});
+				}
+				return true;
 			}
 		};
 		// 获取当前显示的 popup id
