@@ -18,14 +18,10 @@ define(['common/kernel/kernel'], function (kernel) {
 			_hmt.push(['_trackPageview', location.pathname + kernel.buildHash(kernel.location)]);
 		});
 	}
-	kernel.listeners.add(kernel.pageEvents, 'route', function () {
-		historyNav = history.state;
-		history.replaceState && history.replaceState(true, null);
-	});
-	kernel.listeners.add(kernel.pageEvents, 'routend', function () {
+	kernel.listeners.add(kernel.pageEvents, 'routeend', function (evt) {
 		var h;
 		//如果上次访问的页面id和当前页id不同，并且不是在history中导航时，则滚动到页面顶部
-		if (kernel.lastLocation && kernel.lastLocation.id !== kernel.location.id && !historyNav) {
+		if (kernel.lastLocation && kernel.lastLocation.id !== kernel.location.id && !evt.history) {
 			h = Math.max(document.body.scrollTop, document.documentElement.scrollTop);
 			if (h > 0) {
 				$('html,body').animate({

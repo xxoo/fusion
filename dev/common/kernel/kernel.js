@@ -87,7 +87,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 					location.replace(kernel.buildHash(loc));
 				}
 			},
-			getLang: function(langs) {
+			getLang: function (langs) {
 				if (navigator.languages) {
 					for (let i = 0; i < navigator.languages.length; i++) {
 						if (langs.hasOwnProperty(navigator.languages[i])) {
@@ -237,17 +237,15 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			panelCtn = $('#panel'),
 			ctn = panelCtn.find('>.contents>div');
 		kernel.openPanel = function (id, param) {
-			var panelcfg = panels[id];
-			if (panelcfg) {
-				initLoad('panel', panelcfg, id, function (firstLoad) {
-					if (typeof panelcfg.open === 'function') {
-						panelcfg.open(param);
+			if (panels.hasOwnProperty(id)) {
+				initLoad('panel', panels[id], id, function () {
+					if (typeof panels[id].open === 'function') {
+						panels[id].open(param);
 					} else {
 						kernel.showPanel(id);
 					}
 				});
-			} else {
-				kernel.hint(lang.panelNotFound + id, 'error');
+				return true;
 			}
 		};
 		kernel.showPanel = function (id) {
@@ -296,7 +294,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			return result;
 		};
 		kernel.destroyPanel = function (id) {
-			if (panels.hasOwnProperty(id) && panels[id].status === 2) {
+			if (panels[id].status === 2) {
 				destroy(panels[id], 'panel', id);
 				return true;
 			}
@@ -350,17 +348,15 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			popup = document.getElementById('popup'),
 			ctn = $(popup).find('>div>div');
 		kernel.openPopup = function (id, param) {
-			var popupcfg = popups[id];
-			if (popupcfg) {
-				initLoad('popup', popupcfg, id, function (firstLoad) {
-					if (typeof popupcfg.open === 'function') {
-						popupcfg.open(param);
+			if (popups.hasOwnProperty(id)) {
+				initLoad('popup', popups[id], id, function () {
+					if (typeof popups[id].open === 'function') {
+						popups[id].open(param);
 					} else {
 						kernel.showPopup(id);
 					}
 				});
-			} else {
-				kernel.hint(lang.popupNotFound + id, 'error');
+				return true;
 			}
 		};
 		kernel.showPopup = function (id) {
@@ -425,7 +421,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			return activePopup;
 		};
 		kernel.destroyPopup = function (id) {
-			if (popups.hasOwnProperty(p) && popups[id].status === 2) {
+			if (popups[id].status === 2) {
 				destroy(popups[id], 'popup', id);
 				return true;
 			}
@@ -731,13 +727,13 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 		//初始化并启动路由或者修改默认页
 		//当调用此方法后引起路由变化则会返回true
 		kernel.init = function (home) {
-			var tmp;
+			var tmp, oldHome;
 			if (pages.hasOwnProperty(home)) {
 				if (homePage) {
-					tmp = homePage;
-					homePage = home;
-					if (kernel.location && kernel.location.id === tmp) {
-						if (!kernel.isSameLocation(kernel.location, kernel.parseHash(location.hash))) {
+					if (homePage !== home) {
+						oldHome = homePage;
+						homePage = home;
+						if (kernel.location.id === oldHome) {
 							hashchange();
 							return true;
 						}
@@ -755,7 +751,14 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 						}, 10);
 					}
 					hashchange();
-					return true;
+					if (kernel.location.args.hasOwnProperty('autopopup')) {
+						if (kernel.location.args.hasOwnProperty('autopopuparg')) {
+							try {
+								tmp = JSON.parse(kernel.location.args.autopopuparg)
+							} catch (e) {}
+						}
+						kernel.openPopup(kernel.location.args.autopopup, tmp);
+					}
 				}
 			}
 		};
@@ -779,7 +782,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			}
 		};
 		kernel.destroyPage = function (id) {
-			if (pages.hasOwnProperty(id) && pages[id].status === 2) {
+			if (pages[id].status === 2) {
 				destroy(pages[id], 'page', id);
 				return true;
 			}
@@ -809,11 +812,12 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				}
 				if (typeof kernel.pageEvents.onroute === 'function') {
 					kernel.pageEvents.onroute({
-						type: 'route'
+						type: 'route',
+						history: historyNav
 					});
 				}
 				initLoad('page', pages[nl.id], nl.id, function (firstLoad) {
-					var force;
+					var force, tmp;
 					//发生页面跳转或首次加载
 					if (nl.id !== currentpage) {
 						force = firstLoad || !historyNav;
@@ -825,10 +829,6 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 							sel('page', currentpage).css('display', '');
 							if (pages[currentpage].autoDestroy) {
 								destroy(pages[currentpage], 'popup', activePopup);
-							}
-						} else {
-							if (nl.args.hasOwnProperty('autopopup')) {
-								kernel.openPopup(nl.args.autopopup, nl.args.autopopuparg ? JSON.parse(nl.args.autopopuparg) : undefined);
 							}
 						}
 						document.body.className = currentpage = nl.id;
@@ -843,9 +843,10 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 							pages[nl.id].onload();
 						}
 					}
-					if (typeof kernel.pageEvents.onroutend === 'function') {
-						kernel.pageEvents.onroutend({
-							type: 'routend',
+					if (typeof kernel.pageEvents.onrouteend === 'function') {
+						kernel.pageEvents.onrouteend({
+							type: 'routeend',
+							history: historyNav,
 							force: force
 						});
 					}
@@ -893,14 +894,15 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 	}
 
 	function initLoad(type, oldcfg, id, callback) {
+		var url, ctn, n, m, isPage;
 		if (oldcfg.status > 1) {
 			callback();
 		} else if (!oldcfg.status) {
 			oldcfg.status = 1;
-			var url, ctn = sel(type)[0],
-				n = type + '/' + id + '/',
-				m = require.toUrl(n),
-				isPage = type === 'page';
+			ctn = sel(type)[0];
+			n = type + '/' + id + '/';
+			m = require.toUrl(n);
+			isPage = type === 'page';
 			if (typeof oldcfg.css === 'string') {
 				oldcfg.css = kernel.appendCss(m + oldcfg.css);
 			}
@@ -914,12 +916,12 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 						ctn.insertAdjacentHTML('afterBegin', '<div class="' + id + '">' + text + '</div>');
 						loadJs();
 					},
-					error: function (xhr, msg) {
+					error: function (xhr) {
 						destroy(oldcfg, type, id);
 						if (VERSION === 'dev' || xhr.status !== 404) {
-							errorOccurs(url, xhr.status, isPage);
+							errorOccurs(url, xhr.status);
 						} else {
-							updated(isPage);
+							updated();
 						}
 					},
 					complete: kernel.hideLoading
@@ -946,9 +948,9 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				}, VERSION === 'dev' ? undefined : function (error) {
 					destroy(oldcfg, type, id);
 					if ((error.requireType && error.requireType !== 'scripterror' && error.requireType !== 'nodefine') || (error.xhr && error.xhr.status !== 404)) {
-						errorOccurs(js, error.message, isPage);
+						errorOccurs(js, error.message);
 					} else {
-						updated(isPage);
+						updated();
 					}
 					kernel.hideLoading();
 				});
@@ -957,23 +959,23 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				callback(true);
 			}
 		}
-	}
 
-	function errorOccurs(res, msg, isPage) {
-		kernel.alert(lang.error.replace('${res}', res) + msg, isPage ? function () {
-			history.back();
-		} : undefined);
-	}
+		function errorOccurs(res, msg) {
+			kernel.alert(lang.error.replace('${res}', res) + msg, isPage ? function () {
+				history.back();
+			} : undefined);
+		}
 
-	function updated(isPage) {
-		if (isPage) {
-			location.reload();
-		} else {
-			kernel.confirm(lang.update, function (sure) {
-				if (sure) {
-					location.reload();
-				}
-			});
+		function updated() {
+			if (isPage) {
+				location.reload();
+			} else {
+				kernel.confirm(lang.update, function (sure) {
+					if (sure) {
+						location.reload();
+					}
+				});
+			}
 		}
 	}
 
