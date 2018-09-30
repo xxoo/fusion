@@ -98,12 +98,12 @@ function func(evt){
 					desc: '打开侧边栏',
 					example: `kernel.openPanel('samplePanel');`
 				}, {
-					title: 'showPanel(id:String):Boolean',
-					desc: '显示侧边栏，只有在指定侧边栏已经加载后才可使用. 返回true表示打开侧边栏失败. 失败原因可能为当前正在显示的侧边栏无法被关闭.',
+					title: 'showPanel(id:String):0|1|2',
+					desc: '显示侧边栏, 只有在指定侧边栏已经加载后才可使用. 返回0表示操作失败, 返回1表示操作成功, 返回2表示操作已队列. 若失败, 原因可能是当前侧边栏的onunload方法返回true',
 					example: `kernel.showPanel('samplePanel');`
 				}, {
-					title: 'closePanel(id?:String|Array):Boolean',
-					desc: '关闭侧边栏, 返回true表示关闭失败. 失败原因可能是因为当前侧边栏的onunload方法返回true.',
+					title: 'closePanel(id?:String|Array):0|1|2',
+					desc: '关闭侧边栏. 返回0表示操作失败, 返回1表示操作成功, 返回2表示操作已队列. 若失败, 原因可能是当前侧边栏的onunload方法返回true',
 					example: ``
 				}, {
 					title: 'destroyPanel(id:String):Boolean',
@@ -122,11 +122,11 @@ function func(evt){
 }`
 				}, {
 					title: 'showPopup(id:String):Boolean',
-					desc: '显示弹窗, 只有在指定弹窗已经加载后才可使用. 返回true表示打开弹窗失败. 失败原因可能为当前正在显示的弹窗无法被关闭.',
+					desc: '显示弹窗, 只有在指定弹窗已经加载后才可使用. 返回true表示打开成功. 若失败, 原因可能是当前弹窗的onunload方法返回true',
 					example: `kernel.showPopup('samplePopup');`
 				}, {
 					title: 'closePopup(id:String|Array):Boolean',
-					desc: '关闭弹窗, 返回true表示关闭失败. 失败原因可能是因为当前弹窗的onunload方法返回true.',
+					desc: '关闭弹窗, 返回true表示关闭成. 若失败, 原因可能是当前弹窗的onunload方法返回true',
 					example: `kernel.listeners.add(kernel.popupEvents, 'show', func);
 kernel.listeners.add(kernel.popupEvents, 'hide', func);
 kernel.openPopup('samplePopup', 'doc');
