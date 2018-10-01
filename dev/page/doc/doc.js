@@ -234,7 +234,7 @@ function loaded(evt){
 					title: 'pageEvents.onroute',
 					desc: '路由变化时触发, 请在site/index/index中查看示例'
 				}, {
-					title: 'pageEvents.onroutend',
+					title: 'pageEvents.onrouteend',
 					desc: '路由处理完成时触发, 请在site/index/index中查看示例'
 				}, {
 					title: 'popupEvents.onshow',
