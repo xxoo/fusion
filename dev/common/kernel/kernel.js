@@ -131,11 +131,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			list: function (o, e) {
 				var i, result;
 				if (e) {
-					if (o.hasOwnProperty('xEvents') && o.xEvents.hasOwnProperty(e)) {
-						result = o.xEvents[e].heap.slice(0);
-					} else {
-						result = [];
-					}
+					result = o.hasOwnProperty('xEvents') && o.xEvents.hasOwnProperty(e) ? o.xEvents[e].heap.slice(0) : [];
 				} else {
 					result = {};
 					if (o.hasOwnProperty('xEvents')) {
