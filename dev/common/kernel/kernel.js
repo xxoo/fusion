@@ -108,23 +108,25 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 		kernel.listeners = {
 			add: function (o, e, f) {
 				var result = 0;
-				if (!o.hasOwnProperty('xEvents')) {
-					o.xEvents = {};
-				}
-				if (!o.xEvents.hasOwnProperty(e)) {
-					o.xEvents[e] = {
-						stack: [],
-						heap: [],
-						locked: false
-					};
-					o['on' + e] = xEventProcessor;
-				}
-				if (o.xEvents[e].locked) {
-					o.xEvents[e].stack.push([f]);
-					result = 2;
-				} else if (o.xEvents[e].heap.indexOf(f) < 0) {
-					o.xEvents[e].heap.push(f);
-					result = 1;
+				if (typeof f === 'function') {
+					if (!o.hasOwnProperty('xEvents')) {
+						o.xEvents = {};
+					}
+					if (!o.xEvents.hasOwnProperty(e)) {
+						o.xEvents[e] = {
+							stack: [],
+							heap: [],
+							locked: false
+						};
+						o['on' + e] = xEventProcessor;
+					}
+					if (o.xEvents[e].locked) {
+						o.xEvents[e].stack.push([f]);
+						result = 2;
+					} else if (o.xEvents[e].heap.indexOf(f) < 0) {
+						o.xEvents[e].heap.push(f);
+						result = 1;
+					}
 				}
 				return result;
 			},
@@ -150,7 +152,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 							if (o.xEvents[e].locked) {
 								o.xEvents[e].stack.push(f);
 								result = 2;
-							} else if (f) {
+							} else if (typeof f === 'function') {
 								i = o.xEvents[e].heap.indexOf(f);
 								if (i >= 0) {
 									o.xEvents[e].heap.splice(i, 1);
