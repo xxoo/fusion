@@ -105,26 +105,27 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 	lang = kernel.getLang(lang);
 	//事件处理
 	! function () {
+		var key = typeof Symbol === 'function' ? Symbol('xEvents') : 'xEvents';
 		kernel.listeners = {
 			add: function (o, e, f) {
 				var result = 0;
 				if (typeof f === 'function') {
-					if (!o.hasOwnProperty('xEvents')) {
-						o.xEvents = {};
+					if (!o.hasOwnProperty(key)) {
+						o[key] = {};
 					}
-					if (!o.xEvents.hasOwnProperty(e)) {
-						o.xEvents[e] = {
+					if (!o[key].hasOwnProperty(e)) {
+						o[key][e] = {
 							stack: [],
 							heap: [],
 							locked: false
 						};
 						o['on' + e] = xEventProcessor;
 					}
-					if (o.xEvents[e].locked) {
-						o.xEvents[e].stack.push([f]);
+					if (o[key][e].locked) {
+						o[key][e].stack.push([f]);
 						result = 2;
-					} else if (o.xEvents[e].heap.indexOf(f) < 0) {
-						o.xEvents[e].heap.push(f);
+					} else if (o[key][e].heap.indexOf(f) < 0) {
+						o[key][e].heap.push(f);
 						result = 1;
 					}
 				}
@@ -133,12 +134,12 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			list: function (o, e) {
 				var i, result;
 				if (e) {
-					result = o.hasOwnProperty('xEvents') && o.xEvents.hasOwnProperty(e) ? o.xEvents[e].heap.slice(0) : [];
+					result = o.hasOwnProperty(key) && o[key].hasOwnProperty(e) ? o[key][e].heap.slice(0) : [];
 				} else {
 					result = {};
-					if (o.hasOwnProperty('xEvents')) {
-						for (i in o.xEvents) {
-							result[i] = o.xEvents[i].heap.slice(0);
+					if (o.hasOwnProperty(key)) {
+						for (i in o[key]) {
+							result[i] = o[key][i].heap.slice(0);
 						}
 					}
 				}
@@ -146,16 +147,16 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			},
 			remove: function (o, e, f) {
 				var i, result = 0;
-				if (o.hasOwnProperty('xEvents')) {
+				if (o.hasOwnProperty(key)) {
 					if (e) {
-						if (o.xEvents.hasOwnProperty(e)) {
-							if (o.xEvents[e].locked) {
-								o.xEvents[e].stack.push(f);
+						if (o[key].hasOwnProperty(e)) {
+							if (o[key][e].locked) {
+								o[key][e].stack.push(f);
 								result = 2;
 							} else if (typeof f === 'function') {
-								i = o.xEvents[e].heap.indexOf(f);
+								i = o[key][e].heap.indexOf(f);
 								if (i >= 0) {
-									o.xEvents[e].heap.splice(i, 1);
+									o[key][e].heap.splice(i, 1);
 									cleanup(o, e);
 									result = 1;
 								}
@@ -165,9 +166,9 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 							}
 						}
 					} else {
-						for (i in o.xEvents) {
-							if (o.xEvents[i].locked) {
-								o.xEvents[i].stack.push(undefined);
+						for (i in o[key]) {
+							if (o[key][i].locked) {
+								o[key][i].stack.push(undefined);
 								result = 2;
 							} else {
 								cleanup(o, i, true);
@@ -184,32 +185,32 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 
 		function xEventProcessor(evt) {
 			var i;
-			this.xEvents[evt.type].locked = true;
-			for (i = 0; i < this.xEvents[evt.type].heap.length; i++) {
-				this.xEvents[evt.type].heap[i].call(this, evt);
+			this[key][evt.type].locked = true;
+			for (i = 0; i < this[key][evt.type].heap.length; i++) {
+				this[key][evt.type].heap[i].call(this, evt);
 			}
-			this.xEvents[evt.type].locked = false;
-			while (this.xEvents[evt.type].stack.length) {
-				if (this.xEvents[evt.type].stack[0]) {
-					if (typeof this.xEvents[evt.type].stack[0] === 'function') {
-						i = this.xEvents[evt.type].heap.indexOf(this.xEvents[evt.type].stack[0]);
+			this[key][evt.type].locked = false;
+			while (this[key][evt.type].stack.length) {
+				if (this[key][evt.type].stack[0]) {
+					if (typeof this[key][evt.type].stack[0] === 'function') {
+						i = this[key][evt.type].heap.indexOf(this[key][evt.type].stack[0]);
 						if (i >= 0) {
-							this.xEvents[evt.type].heap.splice(i, 1);
+							this[key][evt.type].heap.splice(i, 1);
 						}
-					} else if (this.xEvents[evt.type].heap.indexOf(this.xEvents[evt.type].stack[0][0]) < 0) {
-						this.xEvents[evt.type].heap.push(this.xEvents[evt.type].stack[0][0]);
+					} else if (this[key][evt.type].heap.indexOf(this[key][evt.type].stack[0][0]) < 0) {
+						this[key][evt.type].heap.push(this[key][evt.type].stack[0][0]);
 					}
 				} else {
-					this.xEvents[evt.type].heap.splice(0);
+					this[key][evt.type].heap.splice(0);
 				}
-				this.xEvents[evt.type].stack.shift();
+				this[key][evt.type].stack.shift();
 			}
 			cleanup(this, evt.type);
 		}
 
 		function cleanup(o, e, force) {
-			if (force || !o.xEvents[e].heap.length) {
-				delete o.xEvents[e];
+			if (force || !o[key][e].heap.length) {
+				delete o[key][e];
 				o['on' + e] = null;
 			}
 		}
@@ -272,7 +273,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			if (ani) {
 				todo = kernel.closePanel.bind(this, id);
 				result = 2;
-			} else if (activePanel && (!id || activePanel === id || ($.type(id) === 'array' && id.indexOf(activePanel) >= 0)) && hidePanel()) {
+			} else if (activePanel && (!id || activePanel === id || (dataType(id) === 'array' && id.indexOf(activePanel) >= 0)) && hidePanel()) {
 				result = 1;
 			}
 			return result;
@@ -384,7 +385,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 		};
 		kernel.closePopup = function (id) {
 			var close;
-			if (activePopup && (!id || activePopup === id || ($.type(id) === 'array' && id.indexOf(activePopup) >= 0)) && (typeof popups[activePopup].onunload !== 'function' || !popups[activePopup].onunload())) {
+			if (activePopup && (!id || activePopup === id || (dataType(id) === 'array' && id.indexOf(activePopup) >= 0)) && (typeof popups[activePopup].onunload !== 'function' || !popups[activePopup].onunload())) {
 				popups[activePopup].status--;
 				close = activePopup;
 				ctn.find('>.' + activePopup)[0].style.display = popup.style.display = popup.className = activePopup = '';
@@ -427,7 +428,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			w, h;
 		kernel.showPhotoView = function (contents, idx) {
 			var i;
-			if ($.type(contents) === 'array') {
+			if (dataType(contents) === 'array') {
 				for (i = 0; i < contents.length; i++) {
 					sld.add($('<img src="' + contents[i] + '"/>'));
 					getsz(i);
@@ -665,7 +666,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				no = ctn.find('>a.no');
 				dlgCb = callback;
 				ctn.css('width', width || '400px');
-				if ($.type(text) === 'array') {
+				if (dataType(text) === 'array') {
 					txt.text(text[0]);
 					yes.text(text[1]);
 					no.text(text[2]);
@@ -711,7 +712,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 		//初始化并启动路由或者修改默认页
 		//当调用此方法后引起路由变化则会返回true
 		kernel.init = function (home) {
-			var tmp, oldHome;
+			var oldHash, oldHome, tmp;
 			if (pages.hasOwnProperty(home)) {
 				if (homePage) {
 					if (homePage !== home) {
@@ -728,18 +729,20 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 						$(self).on('hashchange', hashchange);
 					} else {
 						setInterval(function () {
-							if (tmp !== location.hash) {
-								tmp = location.hash;
+							if (oldHash !== location.hash) {
+								oldHash = location.hash;
 								hashchange();
 							}
 						}, 10);
+						oldHash = location.hash;
 					}
 					hashchange();
 					if (kernel.location.args.hasOwnProperty('autopopup')) {
 						if (kernel.location.args.hasOwnProperty('autopopuparg')) {
-							try {
-								tmp = JSON.parse(kernel.location.args.autopopuparg)
-							} catch (e) {}
+							tmp = kernel.location.args.autopopuparg.parseJsex();
+							if (tmp) {
+								tmp = tmp.value
+							}
 						}
 						kernel.openPopup(kernel.location.args.autopopup, tmp);
 					}
@@ -774,7 +777,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 		kernel.pageEvents = {};
 
 		function reloadPage(id, silent) {
-			if (!id || id === currentpage || ($.type(id) === 'array' && id.indexOf(currentpage) >= 0)) {
+			if (!id || id === currentpage || (dataType(id) === 'array' && id.indexOf(currentpage) >= 0)) {
 				if (!silent) {
 					clearWindow();
 				}
