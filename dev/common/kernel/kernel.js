@@ -88,8 +88,9 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				}
 			},
 			getLang: function (langs) {
+				var i;
 				if (navigator.languages) {
-					for (let i = 0; i < navigator.languages.length; i++) {
+					for (i = 0; i < navigator.languages.length; i++) {
 						if (langs.hasOwnProperty(navigator.languages[i])) {
 							return langs[navigator.languages[i]];
 						}

@@ -1,6 +1,6 @@
 'use strict';
 define(function () {
-	let chs = {
+	var chs = {
 			loading: '加载中...',
 			yes: '是',
 			no: '否',

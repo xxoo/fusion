@@ -51,7 +51,7 @@
 		head.appendChild(l);
 	} else {
 		self.onload = function () {
-			document.getElementById('loading').firstChild.firstChild.firstChild.data = '请使用IE7+、Chrome、Firefox访问';
+			document.getElementById('loading').firstChild.firstChild.firstChild.data = 'Your browser is too old, please upgrade.';
 		};
 	}
 }();
