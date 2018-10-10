@@ -274,7 +274,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			if (ani) {
 				todo = kernel.closePanel.bind(this, id);
 				result = 2;
-			} else if (activePanel && (!id || activePanel === id || (dataType(id) === 'array' && id.indexOf(activePanel) >= 0)) && hidePanel()) {
+			} else if (activePanel && (!id || activePanel === id || (dataType(id) === 'Array' && id.indexOf(activePanel) >= 0)) && hidePanel()) {
 				result = 1;
 			}
 			return result;
@@ -386,7 +386,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 		};
 		kernel.closePopup = function (id) {
 			var close;
-			if (activePopup && (!id || activePopup === id || (dataType(id) === 'array' && id.indexOf(activePopup) >= 0)) && (typeof popups[activePopup].onunload !== 'function' || !popups[activePopup].onunload())) {
+			if (activePopup && (!id || activePopup === id || (dataType(id) === 'Array' && id.indexOf(activePopup) >= 0)) && (typeof popups[activePopup].onunload !== 'function' || !popups[activePopup].onunload())) {
 				popups[activePopup].status--;
 				close = activePopup;
 				ctn.find('>.' + activePopup)[0].style.display = popup.style.display = popup.className = activePopup = '';
@@ -429,7 +429,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			w, h;
 		kernel.showPhotoView = function (contents, idx) {
 			var i;
-			if (dataType(contents) === 'array') {
+			if (dataType(contents) === 'Array') {
 				for (i = 0; i < contents.length; i++) {
 					sld.add($('<img src="' + contents[i] + '"/>'));
 					getsz(i);
@@ -667,7 +667,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				no = ctn.find('>a.no');
 				dlgCb = callback;
 				ctn.css('width', width || '400px');
-				if (dataType(text) === 'array') {
+				if (dataType(text) === 'Array') {
 					txt.text(text[0]);
 					yes.text(text[1]);
 					no.text(text[2]);
@@ -778,7 +778,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 		kernel.pageEvents = {};
 
 		function reloadPage(id, silent) {
-			if (!id || id === currentpage || (dataType(id) === 'array' && id.indexOf(currentpage) >= 0)) {
+			if (!id || id === currentpage || (dataType(id) === 'Array' && id.indexOf(currentpage) >= 0)) {
 				if (!silent) {
 					clearWindow();
 				}
