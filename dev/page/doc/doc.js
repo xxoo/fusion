@@ -18,7 +18,7 @@ define(['module', 'common/kernel/kernel'], function (module, kernel) {
 					example: `console.log(kernel.lastLocation);`
 				}],
 				methods: [{
-					title: 'appendCss(url:String):HTMLLinkElement',
+					title: 'appendCss(url:string):HTMLLinkElement',
 					desc: '用于加载样式，会自动根据当前环境来选择加载less或者由less编译成的css',
 					example: `var a = kernel.appendCss(require.toUrl('common/kernel/kernel.less'));
 console.log(a.href);
@@ -26,7 +26,7 @@ setTimeout(function(){
 	console.log(kernel.removeCss(a));
 }, 1000);`
 				}, {
-					title: 'removeCss(lnk:HTMLLinkElement):String',
+					title: 'removeCss(lnk:HTMLLinkElement):string',
 					desc: '移除已加载的less或者css',
 					example: `var a = kernel.appendCss(require.toUrl('common/kernel/kernel.less'));
 console.log(a.href);
@@ -34,15 +34,15 @@ setTimeout(function(){
 	console.log(kernel.removeCss(a));
 }, 1000);`
 				}, {
-					title: 'buildHash(loc:Object):String',
+					title: 'buildHash(loc:Object):string',
 					desc: '将loc对象转换为锚点链接字符串',
 					example: `console.log(kernel.buildHash(kernel.location));`
 				}, {
-					title: 'parseHash(hash:String):Object',
+					title: 'parseHash(hash:string):Object',
 					desc: '将锚点链接字符串转换为loc对象',
 					example: `console.log(kernel.parseHash(location.hash));`
 				}, {
-					title: 'isSameLocation(loc1:Object, loc2:Object):Bollean',
+					title: 'isSameLocation(loc1:Object, loc2:Object):boolean',
 					desc: '判断loc1和loc2是否对应同一个地址',
 					example: `console.log(kernel.isSameLocation(kernel.location, {
 	id: 'doc',
@@ -52,7 +52,7 @@ setTimeout(function(){
 	}
 }));`
 				}, {
-					title: 'replaceLocation(loc:Object):void',
+					title: 'replaceLocation(loc:Object):undefined',
 					desc: '改变当前地址，若loc和当前地址相同，则调用reloadPage',
 					example: `kernel.replaceLocation({
 	id: 'doc', args: {
@@ -61,7 +61,7 @@ setTimeout(function(){
 	}
 });`
 				}, {
-					title: 'listeners.add(o:Object, e:String, f:Function):void',
+					title: 'listeners.add(o:Object, e:string, f:Function):undefined',
 					desc: '注册监听事件',
 					example: `kernel.listeners.add(kernel.popupEvents, 'show', func);
 kernel.listeners.add(kernel.popupEvents, 'hide', func);
@@ -72,7 +72,7 @@ function func(evt){
 	console.log(evt);
 }`
 				}, {
-					title: 'listeners.list(o:Object, e?:String):Array|Object',
+					title: 'listeners.list(o:Object, e?:string):Array|Object',
 					desc: '列出已注册的监听事件',
 					example: `kernel.listeners.add(kernel.popupEvents, 'show', func);
 kernel.listeners.add(kernel.popupEvents, 'hide', func);
@@ -83,7 +83,7 @@ function func(evt){
 	console.log(evt);
 }`
 				}, {
-					title: 'listeners.remove(o:Object, e?:String, f?:Function):void',
+					title: 'listeners.remove(o:Object, e?:string, f?:Function):undefined',
 					desc: '解除已注册的监听',
 					example: `kernel.listeners.add(kernel.popupEvents, 'show', func);
 kernel.listeners.add(kernel.popupEvents, 'hide', func);
@@ -94,23 +94,23 @@ function func(evt){
 	console.log(evt);
 }`
 				}, {
-					title: 'openPanel(id:String, param:any):void',
+					title: 'openPanel(id:string, param:any):undefined',
 					desc: '打开侧边栏',
 					example: `kernel.openPanel('samplePanel');`
 				}, {
-					title: 'showPanel(id:String):0|1|2',
+					title: 'showPanel(id:string):0|1|2',
 					desc: '显示侧边栏, 只有在指定侧边栏已经加载后才可使用. 返回0表示操作失败, 返回1表示操作成功, 返回2表示操作已队列. 若失败, 原因可能是当前侧边栏的onunload方法返回true',
 					example: `kernel.showPanel('samplePanel');`
 				}, {
-					title: 'closePanel(id?:String|Array):0|1|2',
+					title: 'closePanel(id?:string|Array):0|1|2',
 					desc: '关闭侧边栏. 返回0表示操作失败, 返回1表示操作成功, 返回2表示操作已队列. 若失败, 原因可能是当前侧边栏的onunload方法返回true',
 					example: ``
 				}, {
-					title: 'destroyPanel(id:String):Boolean',
+					title: 'destroyPanel(id:string):boolean',
 					desc: '销毁已加载的指定侧边栏, 不可销毁当前侧边栏. 返回true表示销毁成功.',
 					example: `kernel.destroyPanel('samplePanel');`
 				}, {
-					title: 'openPopup(id:String, param:any):void',
+					title: 'openPopup(id:string, param:any):undefined',
 					desc: '打开弹窗',
 					example: `kernel.listeners.add(kernel.popupEvents, 'show', func);
 kernel.listeners.add(kernel.popupEvents, 'hide', func);
@@ -121,11 +121,11 @@ function func(evt){
 	console.log(evt);
 }`
 				}, {
-					title: 'showPopup(id:String):Boolean',
+					title: 'showPopup(id:string):boolean',
 					desc: '显示弹窗, 只有在指定弹窗已经加载后才可使用. 返回true表示打开成功. 若失败, 原因可能是当前弹窗的onunload方法返回true',
 					example: `kernel.showPopup('samplePopup');`
 				}, {
-					title: 'closePopup(id:String|Array):Boolean',
+					title: 'closePopup(id:string|Array):boolean',
 					desc: '关闭弹窗, 返回true表示关闭成. 若失败, 原因可能是当前弹窗的onunload方法返回true',
 					example: `kernel.listeners.add(kernel.popupEvents, 'show', func);
 kernel.listeners.add(kernel.popupEvents, 'hide', func);
@@ -136,23 +136,23 @@ function func(evt){
 	console.log(evt);
 }`
 				}, {
-					title: 'getCurrentPopup():String',
+					title: 'getCurrentPopup():string',
 					desc: '获取当前正在显示的弹窗id',
 					example: `console.log(kernel.getCurrentPopup());`
 				}, {
-					title: 'destroyPopup(id:String):Boolean',
+					title: 'destroyPopup(id:string):boolean',
 					desc: '销毁已加载的指定弹窗, 不可销毁当前弹窗. 返回true表示销毁成功.',
 					example: `kernel.destroyPopup('samplePopup');`
 				}, {
-					title: 'showPhotoView(contents:Array, idx?:Number):void',
+					title: 'showPhotoView(contents:Array, idx?:number):undefined',
 					desc: '显示图片查看器',
 					example: `kernel.showPhotoView(['http://cn.bing.com/az/hprichbg/rb/SnailsKissing_ZH-CN7861942488_1920x1080.jpg','http://cn.bing.com/az/hprichbg/rb/RestArea_ZH-CN13518721881_1920x1080.jpg']);`
 				}, {
-					title: 'hidePhotoView():void',
+					title: 'hidePhotoView():undefined',
 					desc: '关闭图片查看器, 一般不需要手动调用',
 					example: ``
 				}, {
-					title: 'showLoading(text?:String):void',
+					title: 'showLoading(text?:string):undefined',
 					desc: '显示加载中界面, 这个方法包含一个引用计数, 每次调用会+1，所以此方法必须和hideLoading成对使用',
 					example: `kernel.showLoading();
 console.log(kernel.isLoading());
@@ -163,7 +163,7 @@ function loaded(evt){
 	console.log(kernel.isLoading());
 }`
 				}, {
-					title: 'hideLoading():void',
+					title: 'hideLoading():undefined',
 					desc: '使showLoading的引用计数-1, 当到达0时才会关闭加载中界面, 并触发dialogEvents.onloaded事件',
 					example: `kernel.showLoading();
 console.log(kernel.isLoading());
@@ -174,7 +174,7 @@ function loaded(evt){
 	console.log(kernel.isLoading());
 }`
 				}, {
-					title: 'isLoading():Boolean',
+					title: 'isLoading():boolean',
 					desc: '判断加载中界面是否在显示',
 					example: `kernel.showLoading();
 console.log(kernel.isLoading());
@@ -185,48 +185,48 @@ function loaded(evt){
 	console.log(kernel.isLoading());
 }`
 				}, {
-					title: 'hint(text:String, className?:String, t?:Number)',
+					title: 'hint(text:string, className?:string, t?:number)',
 					desc: '显示提示文本',
 					example: `kernel.hint('提示文本', 'success');`
 				}, {
-					title: 'showReadable(html:String|HTMLElement|JQueryDOM, width:String, height:String, callback?:Function, className?:String):void',
+					title: 'showReadable(html:string|HTMLElement|JQueryDOM, width:string, height:string, callback?:Function, className?:string):undefined',
 					desc: '显示内容展示窗',
 					example: `kernel.showReadable('&lt;h1>title&lt;/h1>&lt;p>content&lt;/p>', '800px', '600px', function(){
 	console.log('readable window closed');
 });`
 				}, {
-					title: 'showForeign(url:String, width:String, height:String, callback?:Function):void',
+					title: 'showForeign(url:string, width:string, height:string, callback?:Function):undefined',
 					desc: '将外部链接作为iframe显示在内容展示窗内',
 					example: `kernel.showForeign('https://xxoo.github.io/fusion-mobile/', '360px', '600px', function(){
 	console.log('foreign window closed');
 });`
 				}, {
-					title: 'hideReadable():void',
+					title: 'hideReadable():undefined',
 					desc: '隐藏当前内容展示窗或外部链接窗, 一般不需要手动调用',
 					example: ``
 				}, {
-					title: 'alert(text:String, callback?:Function, width?:String, height?:String):void',
+					title: 'alert(text:string, callback?:Function, width?:string, height?:string):undefined',
 					desc: '显示提示框',
 					example: `kernel.alert('this is an alert box.');`
 				}, {
-					title: 'confirm(text:String, callback:Function, width?:String, height?:String):void',
+					title: 'confirm(text:string, callback:Function, width?:string, height?:string):undefined',
 					desc: '显示需确认的提示框',
 					example: `kernel.confirm('is this a confirm box?', function(sure){
 	console.log(sure);
 });`
 				}, {
-					title: 'hideDialog():void',
+					title: 'hideDialog():undefined',
 					desc: '关闭当前提示框, 一般不需要手动调用',
 					example: ``
 				}, {
-					title: 'init(home:String):void',
+					title: 'init(home:string):undefined',
 					desc: '启动路由或者修改默认页, 需要示例请查看site/index/index中的代码'
 				}, {
-					title: 'reloadPage(id?:String, silent?:Boolean):void',
+					title: 'reloadPage(id?:string, silent?:boolean):undefined',
 					desc: '重新加载当前页, 如果silent为true则不关闭弹窗',
 					example: `kernel.reloadPage();`
 				}, {
-					title: 'destroyPage(id:String):void',
+					title: 'destroyPage(id:string):undefined',
 					desc: '销毁已加载的指定页面, 不可销毁当前页',
 					example: `kernel.destroyPage('samplePage');`
 				}],
@@ -287,7 +287,7 @@ function loaded(evt){
 			title: 'common/slider',
 			desc: '内容循环展示模块, 在kernel.showPhotoView中使用到',
 			construct: {
-				title: 'new? slider(container:JQueryDOM, contents?:Array, idx?:Number, nav?:JQueryDOM):slider',
+				title: 'new? slider(container:JQueryDOM, contents?:Array, idx?:number, nav?:JQueryDOM):slider',
 				desc: 'container: 容器节点\ncontents: 初始内容\nidx: 默认展示的内容索引\nnav: 导航节点',
 				example: `var ctn = $('&lt;div>&lt;/div>');
 var contents = [$('&lt;div style="background-color:yellow;color:blue;font-size: 100px;">content1&lt;/div>'), $('&lt;div style="background-color:green;color:red;font-size: 100px;">content2&lt;/div>')];
@@ -303,24 +303,24 @@ s.startPlay(1000);`
 					title: 'children:Array',
 					desc: '包含所有子元素'
 				}, {
-					title: 'current:Number',
+					title: 'current:number',
 					desc: '当前显示的元素索引'
 				}],
 				methods: [{
 					title: 'add(o:JQueryDOM):number',
 					desc: '添加内容'
 				}, {
-					title: 'remove(i:JQueryDOM|Number):JQueryDOM',
+					title: 'remove(i:JQueryDOM|number):JQueryDOM',
 					desc: '移除指定内容节点'
 				}, {
-					title: 'slideTo(i:Number, silent?:Boolean):Boolean',
+					title: 'slideTo(i:number, silent?:boolean):boolean',
 					desc: '将当前显示的内容切换至第i项'
 				}, {
-					title: 'startPlay(delay:Number):void',
-					desc: '开始自动播放, 并将切换延时设置为delay毫秒'
+					title: 'startPlay(delay:number):undefined',
+					desc: '开始自动轮播, 并将切换延时设置为delay毫秒'
 				}, {
-					title: 'stopPlay():Boolean',
-					desc: '停止自动播放'
+					title: 'stopPlay():boolean',
+					desc: '停止自动轮播'
 				}],
 				events: [{
 					title: 'onchange',
