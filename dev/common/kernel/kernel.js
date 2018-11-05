@@ -279,6 +279,10 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			}
 			return result;
 		};
+		// 获取当前显示的 panel id
+		kernel.getCurrentPanel = function () {
+			return activePanel;
+		};
 		kernel.destroyPanel = function (id) {
 			if (panels[id].status === 2) {
 				destroy(panels[id], 'panel', id);
