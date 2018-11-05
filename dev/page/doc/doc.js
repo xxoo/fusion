@@ -106,6 +106,10 @@ function func(evt){
 					desc: '关闭侧边栏. 返回0表示操作失败, 返回1表示操作成功, 返回2表示操作已队列. 若失败, 原因可能是当前侧边栏的onunload方法返回true',
 					example: ``
 				}, {
+					title: 'getCurrentPanel():string',
+					desc: '获取当前正在显示的侧边栏id',
+					example: `console.log(kernel.getCurrentPanel());`
+				}, {
 					title: 'destroyPanel(id:string):boolean',
 					desc: '销毁已加载的指定侧边栏, 不可销毁当前侧边栏. 返回true表示销毁成功.',
 					example: `kernel.destroyPanel('samplePanel');`
