@@ -849,25 +849,28 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 	return kernel;
 
 	function destroy(cfg, type, id) {
-		var o, n = type + '/' + id + '/';
-		if (typeof cfg.ondestroy === 'function') {
-			cfg.ondestroy();
-		}
-		sel(type, id).remove();
-		if (cfg.css && typeof cfg.css !== 'string') {
-			cfg.css = kernel.removeCss(cfg.css).substr(require.toUrl(n).length);
-		}
-		if (cfg.js) {
-			n += cfg.js;
-			if (require.defined(n)) {
-				o = require(n);
-				require.undef(n);
-				if (o) {
-					for (n in o) {
-						delete cfg[n];
+		var o = sel(type, id),
+			n = type + '/' + id + '/';
+		if (o.length) {
+			if (typeof cfg.ondestroy === 'function') {
+				cfg.ondestroy();
+			}
+			o.remove();
+			if (cfg.js) {
+				n += cfg.js;
+				if (require.defined(n)) {
+					o = require(n);
+					require.undef(n);
+					if (o) {
+						for (n in o) {
+							delete cfg[n];
+						}
 					}
 				}
 			}
+		}
+		if (cfg.css && typeof cfg.css !== 'string') {
+			cfg.css = kernel.removeCss(cfg.css).substr(require.toUrl(n).length);
 		}
 		delete cfg.status;
 	}
