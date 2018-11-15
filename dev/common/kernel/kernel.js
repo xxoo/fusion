@@ -644,19 +644,14 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 		kernel.hideDialog = function (param) {
 			var f;
 			if (typeof dlgCb === 'function') {
-				if (dlgCtn[0].className === 'isConfirm') {
-					dlgCb(param);
-				} else if (dlgCtn[0].className === 'isAlert') {
-					dlgCb();
-				}
+				f = dlgCb;
 				dlgCb = undefined;
+				f(dlgCtn[0].className === 'isConfirm' ? param : undefined);
 			}
 			dlgCtn[0].className = '';
-			if (dlgStack.length > 0) {
-				f = dlgStack[0][0];
-				dlgStack[0].shift();
-				kernel[f].apply(this, dlgStack[0]);
-				dlgStack.shift();
+			if (dlgStack.length) {
+				f = dlgStack.shift();
+				kernel[f.shift()].apply(kernel, f);
 			}
 		};
 		kernel.showForeign = function (url, width, height, callback) {
@@ -664,7 +659,9 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 		};
 		kernel.confirm = function (text, callback, width) {
 			var ctn, txt, yes, no;
-			if (dlgCtn[0].className === '') {
+			if (dlgCtn[0].className) {
+				dlgStack.push(['confirm', text, callback, width]);
+			} else {
 				ctn = dlgCtn.find('>div');
 				txt = ctn.find('>div>div');
 				yes = ctn.find('>a.yes');
@@ -682,13 +679,13 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				}
 				dlgCtn[0].className = 'isConfirm';
 				ctn.css('height', txt.outerHeight() + Math.max(yes.outerHeight(), no.outerHeight()) + 76 + 'px');
-			} else {
-				dlgStack.push(['confirm', text, callback, width]);
 			}
 		};
 		kernel.alert = function (text, callback, width) {
 			var ctn, txt;
-			if (dlgCtn[0].className === '') {
+			if (dlgCtn[0].className) {
+				dlgStack.push(['alert', text, callback, width]);
+			} else {
 				ctn = dlgCtn.find('>div');
 				txt = ctn.find('>div>div');
 				dlgCb = callback;
@@ -696,8 +693,6 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				txt.text(text);
 				dlgCtn[0].className = 'isAlert';
 				ctn.css('height', txt.outerHeight() + 46 + 'px');
-			} else {
-				dlgStack.push(['alert', text, callback, width]);
 			}
 		};
 		readable.find('>div>a').on('click', kernel.hideReadable);
