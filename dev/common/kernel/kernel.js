@@ -644,19 +644,14 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 		kernel.hideDialog = function (param) {
 			var f;
 			if (typeof dlgCb === 'function') {
-				if (dlgCtn[0].className === 'isConfirm') {
-					dlgCb(param);
-				} else if (dlgCtn[0].className === 'isAlert') {
-					dlgCb();
-				}
+				f = dlgCb;
 				dlgCb = undefined;
+				f(dlgCtn[0].className === 'isConfirm' ? param : undefined);
 			}
 			dlgCtn[0].className = '';
-			if (dlgStack.length > 0) {
-				f = dlgStack[0][0];
-				dlgStack[0].shift();
-				kernel[f].apply(this, dlgStack[0]);
-				dlgStack.shift();
+			if (dlgStack.length) {
+				f = dlgStack.shift();
+				kernel[f.shift()].apply(kernel, f);
 			}
 		};
 		kernel.showForeign = function (url, width, height, callback) {
@@ -664,7 +659,9 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 		};
 		kernel.confirm = function (text, callback, width) {
 			var ctn, txt, yes, no;
-			if (dlgCtn[0].className === '') {
+			if (dlgCtn[0].className) {
+				dlgStack.push(['confirm', text, callback, width]);
+			} else {
 				ctn = dlgCtn.find('>div');
 				txt = ctn.find('>div>div');
 				yes = ctn.find('>a.yes');
@@ -682,13 +679,13 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				}
 				dlgCtn[0].className = 'isConfirm';
 				ctn.css('height', txt.outerHeight() + Math.max(yes.outerHeight(), no.outerHeight()) + 76 + 'px');
-			} else {
-				dlgStack.push(['confirm', text, callback, width]);
 			}
 		};
 		kernel.alert = function (text, callback, width) {
 			var ctn, txt;
-			if (dlgCtn[0].className === '') {
+			if (dlgCtn[0].className) {
+				dlgStack.push(['alert', text, callback, width]);
+			} else {
 				ctn = dlgCtn.find('>div');
 				txt = ctn.find('>div>div');
 				dlgCb = callback;
@@ -696,8 +693,6 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				txt.text(text);
 				dlgCtn[0].className = 'isAlert';
 				ctn.css('height', txt.outerHeight() + 46 + 'px');
-			} else {
-				dlgStack.push(['alert', text, callback, width]);
 			}
 		};
 		readable.find('>div>a').on('click', kernel.hideReadable);
@@ -849,25 +844,28 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 	return kernel;
 
 	function destroy(cfg, type, id) {
-		var o, n = type + '/' + id + '/';
-		if (typeof cfg.ondestroy === 'function') {
-			cfg.ondestroy();
-		}
-		sel(type, id).remove();
-		if (cfg.css && typeof cfg.css !== 'string') {
-			cfg.css = kernel.removeCss(cfg.css).substr(require.toUrl(n).length);
-		}
-		if (cfg.js) {
-			n += cfg.js;
-			if (require.defined(n)) {
-				o = require(n);
-				require.undef(n);
-				if (o) {
-					for (n in o) {
-						delete cfg[n];
+		var o = sel(type, id),
+			n = type + '/' + id + '/';
+		if (o.length) {
+			if (typeof cfg.ondestroy === 'function') {
+				cfg.ondestroy();
+			}
+			o.remove();
+			if (cfg.js) {
+				n += cfg.js;
+				if (require.defined(n)) {
+					o = require(n);
+					require.undef(n);
+					if (o) {
+						for (n in o) {
+							delete cfg[n];
+						}
 					}
 				}
 			}
+		}
+		if (cfg.css && typeof cfg.css !== 'string') {
+			cfg.css = kernel.removeCss(cfg.css).substr(require.toUrl(n).length);
 		}
 		delete cfg.status;
 	}

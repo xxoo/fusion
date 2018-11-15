@@ -3,10 +3,10 @@
 #dialog,
 #hint,
 #loading,
-#page > div,
+#page>div,
 #photoview,
 #popup,
-#popup > div > div > div,
+#popup>div>div>div,
 #readable {
 	display: none;
 }
@@ -34,20 +34,21 @@
 	.trans;
 }
 
-#dialog > div,
-#loading > div,
-#popup > div,
-#readable > div {
+#dialog>div,
+#loading>div,
+#popup>div,
+#readable>div {
 	overflow: visible;
 	position: absolute;
 	top: 50%;
 	left: 50%;
 }
 
-#loading > div {
+#loading>div {
 	width: 280px;
 	height: 160px;
-	> div {
+
+	>div {
 		background-image: url("loading.gif");
 		background-repeat: no-repeat;
 		background-position: 50% 14px;
@@ -59,10 +60,10 @@
 	}
 }
 
-#dialog > div > div,
-#loading > div > div,
-#popup > div > div,
-#readable > div > div {
+#dialog>div>div,
+#loading>div>div,
+#popup>div>div,
+#readable>div>div {
 	position: absolute;
 	top: -50%;
 	left: -50%;
@@ -70,25 +71,25 @@
 	background-color: @dialogBackgroundColor;
 }
 
-#dialog > div > div,
-#popup > div > div,
-#readable > div > div {
+#dialog>div>div,
+#popup>div>div,
+#readable>div>div {
 	height: 100%;
 }
 
-#readable > div > div {
+#readable>div>div {
 	overflow: auto;
 }
 
-#readable.foreign > div > div > iframe{
+#readable.foreign>div>div>iframe {
 	width: 100%;
 	height: 100%;
 	display: block;
 }
 
-#dialog > div > .close,
-#popup > div > .close,
-#readable > div > .close {
+#dialog>div>.close,
+#popup>div>.close,
+#readable>div>.close {
 	position: absolute;
 	right: 50%;
 	top: -50%;
@@ -104,19 +105,19 @@
 	text-decoration: none;
 }
 
-#dialog > div > div > div,
-#popup > div > div > div {
+#dialog>div>div>div,
+#popup>div>div>div {
 	position: absolute;
 }
 
-#popup > div > div > div {
+#popup>div>div>div {
 	top: 0;
 	left: 0;
 	right: 0;
 	bottom: 0;
 }
 
-#dialog > div > div > div {
+#dialog>div>div>div {
 	white-space: pre-wrap;
 	*white-space: pre;
 	*word-wrap: break-word;
@@ -129,15 +130,15 @@
 	text-align: justify;
 }
 
-#dialog > div > a {
+#dialog>div>a {
 	display: none;
 }
 
 #dialog.isConfirm {
 	display: block;
 
-	 > div > .no,
-	> div > .yes {
+	>div>.no,
+	>div>.yes {
 		display: block;
 		position: absolute;
 		bottom: 50%;
@@ -146,14 +147,14 @@
 		padding: 0 24px;
 	}
 
-	> div > .yes {
+	>div>.yes {
 		right: 100%;
 		margin-right: 15px;
 		background-color: @dialogYesBackgroundColor;
 		color: @dialogYesTextColor;
 	}
 
-	> div > .no {
+	>div>.no {
 		left: 0;
 		margin-left: 15px;
 		background-color: @dialogNoBackgroundColor;
@@ -164,7 +165,7 @@
 #dialog.isAlert {
 	display: block;
 
-	> div > .close {
+	>div>.close {
 		display: block;
 	}
 }
@@ -183,7 +184,7 @@
 	right: 0;
 	pointer-events: none;
 
-	> span {
+	>span {
 		padding: 10px 20px;
 		font-size: 16px;
 		display: inline-block;
@@ -195,19 +196,19 @@
 		color: @infoTextColor;
 	}
 
-	&.success > span {
+	&.success>span {
 		background-color: @successBackgroundColor;
 		border-color: @successBorderColor;
 		color: @successTextColor;
 	}
 
-	&.warning > span {
+	&.warning>span {
 		background-color: @warningBackgroundColor;
 		border-color: @warningBorderColor;
 		color: @warningTextColor;
 	}
 
-	&.error > span {
+	&.error>span {
 		background-color: @errorBackgroundColor;
 		border-color: @errorBorderColor;
 		color: @errorTextColor;
@@ -215,12 +216,12 @@
 }
 
 #photoview {
-	> div {
+	>div {
 		height: 100%;
 		overflow: auto;
 		position: relative;
 
-		> img {
+		>img {
 			position: absolute;
 			visibility: hidden;
 			transition-duration: 200ms;
@@ -229,7 +230,7 @@
 		}
 	}
 
-	> a {
+	>a {
 		position: absolute;
 		text-align: center;
 		text-shadow: 0 0 3px @photoViewBtnShadowColor;
@@ -239,7 +240,7 @@
 		text-decoration: none;
 	}
 
-	> .close {
+	>.close {
 		top: 0;
 		right: 0;
 		font-size: 40px;
@@ -247,23 +248,25 @@
 		height: 40px;
 	}
 
-	> .rotate {
+	>.rotate {
 		display: none;
 		bottom: 0;
 		left: 50%;
 		font-size: 100px;
 		width: 100px;
 		height: 100px;
-		&.n{
+
+		&.n {
 			margin-left: -100px;
 		}
-		&.p{
-			transform:scaleX(-1);
+
+		&.p {
+			transform: scaleX(-1);
 		}
 	}
 
-	 > .next,
-	> .prev {
+	>.next,
+	>.prev {
 		top: 50%;
 		margin-top: -50px;
 		font-size: 100px;
@@ -272,11 +275,11 @@
 		display: none;
 	}
 
-	> .prev {
+	>.prev {
 		left: 0;
 	}
 
-	> .next {
+	>.next {
 		right: 0;
 	}
 }
@@ -290,7 +293,7 @@
 	left: 0;
 	display: none;
 
-	> .mask {
+	>.mask {
 		.trans;
 		position: absolute;
 		top: 0;
@@ -299,18 +302,18 @@
 		left: 0;
 	}
 
-	> .contents {
+	>.contents {
 		position: absolute;
 		left: 100%;
 		height: 100%;
 
-		> div {
+		>div {
 			position: relative;
 			height: 100%;
 			width: 100%;
 			background-color: @dialogBackgroundColor;
 
-			> div {
+			>div {
 				position: absolute;
 				top: 0;
 				left: 0;
@@ -319,7 +322,7 @@
 				display: none;
 			}
 
-			> .close {
+			>.close {
 				position: absolute;
 				right: 2px;
 				top: 2px;
@@ -342,7 +345,7 @@
 	background-repeat: no-repeat;
 	background-position: 50% 50%;
 
-	> * {
+	>* {
 		visibility: hidden;
 	}
 }
