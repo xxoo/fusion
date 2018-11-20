@@ -3,8 +3,8 @@
 'use strict';
 define({
 	doc: {
-		js: 'doc',
-		html: 'doc.html',
-		css: 'doc.less'
+		js: true,
+		html: true,
+		css: true
 	}
 });

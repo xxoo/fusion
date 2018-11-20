@@ -2,8 +2,8 @@
 'use strict';
 define({
 	samplePopup: {
-		js: 'samplePopup',
-		html: 'samplePopup.html',
-		css: 'samplePopup.less'
+		js: true,
+		html: true,
+		css: true
 	}
 });
