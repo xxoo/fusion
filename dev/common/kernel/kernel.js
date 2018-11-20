@@ -5,19 +5,14 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 		kernel = {
 			appendCss: function (url) { //自动根据当前环境添加css或less
 				var csslnk = document.createElement('link');
-				if (/\.less$/.test(url)) {
-					if (typeof less === 'object') {
-						csslnk.rel = 'stylesheet/less';
-						csslnk.href = url;
-						less.sheets.push(csslnk);
-						less.refresh();
-					} else {
-						csslnk.rel = 'stylesheet';
-						csslnk.href = url.replace(/less$/, 'css');
-					}
+				if (typeof less === 'object') {
+					csslnk.rel = 'stylesheet/less';
+					csslnk.href = url + '.less';
+					less.sheets.push(csslnk);
+					less.refresh();
 				} else {
 					csslnk.rel = 'stylesheet';
-					csslnk.href = url;
+					csslnk.href = url + '.css';
 				}
 				return (document.head || document.getElementsByTagName('head')[0]).appendChild(csslnk);
 			},
@@ -864,8 +859,9 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				}
 			}
 		}
-		if (cfg.css && typeof cfg.css !== 'string') {
-			cfg.css = kernel.removeCss(cfg.css).substr(require.toUrl(n).length);
+		if (cfg.css && cfg.css.href) {
+			cfg.css = true;
+			kernel.removeCss(cfg.css);
 		}
 		delete cfg.status;
 	}
@@ -893,11 +889,11 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			n = type + '/' + id + '/';
 			m = require.toUrl(n);
 			isPage = type === 'page';
-			if (typeof oldcfg.css === 'string') {
-				oldcfg.css = kernel.appendCss(m + oldcfg.css);
+			if (oldcfg.css) {
+				oldcfg.css = kernel.appendCss(m + id);
 			}
-			if ('html' in oldcfg) {
-				url = m + oldcfg.html;
+			if (oldcfg.html) {
+				url = m + id + '.html';
 				$.ajax({
 					url: url,
 					type: 'get',
@@ -925,9 +921,9 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 
 		function loadJs() {
 			var js;
-			if ('js' in oldcfg) {
+			if (oldcfg.js) {
 				kernel.showLoading();
-				js = n + oldcfg.js;
+				js = n + id;
 				require([js], function (cfg) {
 					if (cfg) {
 						Object.assign(oldcfg, cfg);
