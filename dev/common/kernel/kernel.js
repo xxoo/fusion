@@ -22,7 +22,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 					less.sheets.splice(less.sheets.indexOf(lnk), 1);
 					less.refresh();
 				}
-				return lnk.getAttribute('href');
+				return lnk.getAttribute('href').replace(/\.(le|c)ss$/, '');
 			},
 			buildHash: function (loc) {
 				var n, hash = '#!' + encodeURIComponent(loc.id);
@@ -860,8 +860,8 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			}
 		}
 		if (cfg.css && cfg.css.href) {
-			cfg.css = true;
 			kernel.removeCss(cfg.css);
+			cfg.css = true;
 		}
 		delete cfg.status;
 	}
