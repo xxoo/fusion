@@ -879,12 +879,11 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 	}
 
 	function initLoad(type, oldcfg, id, callback) {
-		var url, ctn, n, m, isPage;
+		var url, n, m, isPage;
 		if (oldcfg.status > 1) {
 			callback();
 		} else if (!oldcfg.status) {
 			oldcfg.status = 1;
-			ctn = sel(type)[0];
 			n = type + '/' + id + '/';
 			m = require.toUrl(n);
 			isPage = type === 'page';
@@ -915,7 +914,8 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 		}
 
 		function loadJs(html) {
-			var js, dom;
+			var js, dom,
+				ctn = sel(type)[0];
 			ctn.insertAdjacentHTML('beforeEnd', '<div class="' + id + '">' + html + '</div>');
 			if (oldcfg.js) {
 				dom = ctn.lastChild;
