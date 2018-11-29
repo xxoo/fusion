@@ -839,15 +839,14 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 	return kernel;
 
 	function destroy(cfg, type, id) {
-		var o = sel(type, id),
-			n = type + '/' + id + '/';
+		var n, o = sel(type, id);
 		if (o.length) {
 			if (typeof cfg.ondestroy === 'function') {
 				cfg.ondestroy();
 			}
 			o.remove();
 			if (cfg.js) {
-				n += cfg.js;
+				n = type + '/' + id + '/' + id;
 				if (require.defined(n)) {
 					o = require(n);
 					require.undef(n);
@@ -880,12 +879,11 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 	}
 
 	function initLoad(type, oldcfg, id, callback) {
-		var url, ctn, n, m, isPage;
+		var url, n, m, isPage;
 		if (oldcfg.status > 1) {
 			callback();
 		} else if (!oldcfg.status) {
 			oldcfg.status = 1;
-			ctn = sel(type)[0];
 			n = type + '/' + id + '/';
 			m = require.toUrl(n);
 			isPage = type === 'page';
@@ -898,10 +896,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 					url: url,
 					type: 'get',
 					dataType: 'text',
-					success: function (text) {
-						ctn.insertAdjacentHTML('afterBegin', '<div class="' + id + '">' + text + '</div>');
-						loadJs();
-					},
+					success: loadJs,
 					error: function (xhr) {
 						destroy(oldcfg, type, id);
 						if (VERSION === 'dev' || xhr.status !== 404) {
@@ -914,15 +909,19 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				});
 				kernel.showLoading();
 			} else {
-				ctn.insertAdjacentHTML('afterBegin', '<div class="' + id + '"></div>');
-				loadJs();
+				loadJs('');
 			}
 		}
 
-		function loadJs() {
-			var js;
+		function loadJs(html) {
+			var js, dom,
+				ctn = sel(type)[0];
+			ctn.insertAdjacentHTML('beforeEnd', '<div class="' + id + '">' + html + '</div>');
 			if (oldcfg.js) {
+				dom = ctn.lastChild;
+				dom.style.visibility = 'hidden';
 				kernel.showLoading();
+				kernel.listeners.add(kernel.dialogEvents, 'loaded', loaded);
 				js = n + id;
 				require([js], function (cfg) {
 					if (cfg) {
@@ -943,6 +942,11 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			} else {
 				oldcfg.status++;
 				callback(true);
+			}
+
+			function loaded(evt) {
+				kernel.listeners.remove(this, evt.type, loaded);
+				dom.style.visibility = '';
 			}
 		}
 
