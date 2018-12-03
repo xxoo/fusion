@@ -1,6 +1,6 @@
 ! function () {
 	'use strict';
-	var src, prefix, cfg, head, l, m, n;
+	var src, prefix, cfg, head, n;
 	if (self.XMLHttpRequest) {
 		src = (document.currentScript || document.scripts[document.scripts.length - 1]).getAttribute('src');
 		prefix = src.replace(/framework\/[^\/]+$/, '');
@@ -21,16 +21,27 @@
 			}).then(function (registration) {
 				var controller = registration.installing || registration.waiting || registration.active;
 				RES_TO_CACHE.push(src);
-				controller.postMessage({
+				controller.postMessage(VERSION === 'dev' ? prefix : {
 					framework: RES_TO_CACHE,
 					modules: Object.values(MODULES)
 				});
+				init();
 			}, function (err) {
 				console.log('unable to register ServiceWorker: ' + err);
+				init();
 			});
+		} else {
+			init();
 		}
-		l = document.createElement('link');
-		m = document.createElement('link');
+	} else {
+		self.onload = function () {
+			document.getElementById('loading').firstChild.firstChild.firstChild.data = 'Your browser is too old, please upgrade.';
+		};
+	}
+
+	function init(){
+		var l = document.createElement('link'),
+			m = document.createElement('link');
 		if (VERSION === 'dev') {
 			l.rel = m.rel = 'stylesheet/less';
 			l.href = require.toUrl('site/index/index.less');
@@ -49,9 +60,5 @@
 		head = document.head || document.getElementsByTagName('head')[0];
 		head.appendChild(m);
 		head.appendChild(l);
-	} else {
-		self.onload = function () {
-			document.getElementById('loading').firstChild.firstChild.firstChild.data = 'Your browser is too old, please upgrade.';
-		};
 	}
 }();
