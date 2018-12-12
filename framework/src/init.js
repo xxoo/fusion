@@ -39,7 +39,7 @@
 		};
 	}
 
-	function init(){
+	function init() {
 		var l = document.createElement('link'),
 			m = document.createElement('link');
 		if (VERSION === 'dev') {
@@ -47,18 +47,30 @@
 			l.href = require.toUrl('site/index/index.less');
 			m.href = require.toUrl('common/kernel/kernel.less');
 			require([prefix + 'framework/less.js'], function () {
-				less.pageLoadFinished.then(function () {
-					require(['site/index/index']);
-				});
+				less.pageLoadFinished.then(start);
 			});
 		} else {
 			l.rel = m.rel = 'stylesheet';
 			l.href = require.toUrl('site/index/index.css');
 			m.href = require.toUrl('common/kernel/kernel.css');
-			require(['site/index/index']);
+			l.onload = m.onload = trystart;
+			n = false;
 		}
 		head = document.head || document.getElementsByTagName('head')[0];
 		head.appendChild(m);
 		head.appendChild(l);
+	}
+
+	function start() {
+		require(['site/index/index']);
+	}
+
+	function trystart() {
+		this.onload = null;
+		if (n) {
+			start();
+		} else {
+			n = true;
+		}
 	}
 }();
