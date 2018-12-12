@@ -1,6 +1,7 @@
 ! function () {
 	'use strict';
-	var src, prefix, cfg, head, n;
+	var swfile = 'sw.js',
+		src, prefix, cfg, head, n;
 	if (self.XMLHttpRequest) {
 		src = (document.currentScript || document.scripts[document.scripts.length - 1]).getAttribute('src');
 		prefix = src.replace(/framework\/[^\/]+$/, '');
@@ -16,20 +17,17 @@
 		}
 		require.config(cfg);
 		if (navigator.serviceWorker) {
-			navigator.serviceWorker.register('sw.js', {
-				scope: './'
-			}).then(function (registration) {
-				var controller = registration.installing || registration.waiting || registration.active;
-				RES_TO_CACHE.push(src);
-				controller.postMessage(VERSION === 'dev' ? prefix : {
-					framework: RES_TO_CACHE,
-					modules: Object.values(MODULES)
-				});
+			if (navigator.serviceWorker.controller && navigator.serviceWorker.controller.scriptURL === new URL(swfile, location.href).href) {
+				postmsg(navigator.serviceWorker.controller);
 				init();
-			}, function (err) {
-				console.log('unable to register ServiceWorker: ' + err);
-				init();
-			});
+			} else {
+				navigator.serviceWorker.register(swfile, {
+					scope: './'
+				}).then(function (registration) {
+					postmsg(registration.installing || registration.waiting || registration.active);
+					location.reload();
+				}, init);
+			}
 		} else {
 			init();
 		}
@@ -37,6 +35,13 @@
 		self.onload = function () {
 			document.getElementById('loading').firstChild.firstChild.firstChild.data = 'Your browser is too old, please upgrade.';
 		};
+	}
+
+	function postmsg(controller) {
+		controller.postMessage(VERSION === 'dev' ? prefix : {
+			framework: RES_TO_CACHE,
+			modules: Object.values(MODULES)
+		});
 	}
 
 	function init() {
