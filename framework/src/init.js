@@ -9,7 +9,7 @@
 			waitSeconds: 0,
 			baseUrl: prefix + 'dev/'
 		};
-		if (VERSION !== 'dev') {
+		if (BUILD) {
 			for (n in MODULES) {
 				MODULES[n] = prefix + 'dist/' + n + '/' + MODULES[n];
 			}
@@ -39,9 +39,7 @@
 
 	function postmsg(controller) {
 		var msg;
-		if (VERSION === 'dev') {
-			msg = prefix;
-		} else {
+		if (BUILD) {
 			RES_TO_CACHE.push(src);
 			msg = {
 				prefix: prefix,
@@ -51,6 +49,8 @@
 			for (n in MODULES) {
 				msg.modules.push(MODULES[n]);
 			}
+		} else {
+			msg = prefix;
 		}
 		controller.postMessage(msg);
 	}
@@ -58,19 +58,19 @@
 	function init() {
 		var l = document.createElement('link'),
 			m = document.createElement('link');
-		if (VERSION === 'dev') {
+		if (BUILD) {
+			l.rel = m.rel = 'stylesheet';
+			l.href = require.toUrl('site/index/index.css');
+			m.href = require.toUrl('common/kernel/kernel.css');
+			l.onload = m.onload = trystart;
+			n = false;
+		} else {
 			l.rel = m.rel = 'stylesheet/less';
 			l.href = require.toUrl('site/index/index.less');
 			m.href = require.toUrl('common/kernel/kernel.less');
 			require([prefix + 'framework/less.js'], function () {
 				less.pageLoadFinished.then(start);
 			});
-		} else {
-			l.rel = m.rel = 'stylesheet';
-			l.href = require.toUrl('site/index/index.css');
-			m.href = require.toUrl('common/kernel/kernel.css');
-			l.onload = m.onload = trystart;
-			n = false;
 		}
 		head = document.head || document.getElementsByTagName('head')[0];
 		head.appendChild(m);
