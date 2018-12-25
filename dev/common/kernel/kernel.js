@@ -899,10 +899,10 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 					success: loadJs,
 					error: function (xhr) {
 						destroy(oldcfg, type, id);
-						if (VERSION === 'dev' || xhr.status !== 404) {
-							errorOccurs(url, xhr.status);
-						} else {
+						if (BUILD && xhr.status === 404) {
 							updated();
+						} else {
+							errorOccurs(url, xhr.status);
 						}
 					},
 					complete: kernel.hideLoading
@@ -930,7 +930,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 					oldcfg.status++;
 					callback(true);
 					kernel.hideLoading();
-				}, VERSION === 'dev' ? undefined : function (error) {
+				}, BUILD && function (error) {
 					destroy(oldcfg, type, id);
 					if ((error.requireType && error.requireType !== 'scripterror' && error.requireType !== 'nodefine') || (error.xhr && error.xhr.status !== 404)) {
 						errorOccurs(js, error.message);

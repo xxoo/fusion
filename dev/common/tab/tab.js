@@ -79,10 +79,10 @@ define(['common/kernel/kernel', './lang'], function (kernel, lang) {
 										self.cfg[o.id].oncomplete({
 											type: 'complete'
 										});
-										if (VERSION == 'dev' || xhr.status !== 404) {
-											errorOccurs(url, xhr.status);
-										} else {
+										if (BUILD && xhr.status === 404) {
 											updated();
+										} else {
+											errorOccurs(url, xhr.status);
 										}
 									},
 									complete: kernel.hideLoading
@@ -130,7 +130,7 @@ define(['common/kernel/kernel', './lang'], function (kernel, lang) {
 								type: 'complete'
 							});
 							kernel.hideLoading();
-						}, VERSION == 'dev' ? undefined : function (error) {
+						}, BUILD && function (error) {
 							require.undef(js);
 							self.cfg[o.id].status = 0;
 							self.cfg[o.id].oncomplete({
