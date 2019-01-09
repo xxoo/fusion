@@ -3,9 +3,9 @@
 define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/panels/panels', './lang'], function (slider, pages, popups, panels, lang) {
 	var homePage,
 		kernel = {
-			appendCss: function (url) { //自动根据当前环境添加css或less
+			appendCss: function (url, forcecss) { //自动根据当前环境添加css或less
 				var csslnk = document.createElement('link');
-				if (typeof less === 'object') {
+				if (typeof less === 'object' && !forcecss) {
 					csslnk.rel = 'stylesheet/less';
 					csslnk.href = url + '.less';
 					less.sheets.push(csslnk);
@@ -22,7 +22,6 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 					less.sheets.splice(less.sheets.indexOf(lnk), 1);
 					less.refresh();
 				}
-				return lnk.getAttribute('href').replace(/\.(le|c)ss$/, '');
 			},
 			buildHash: function (loc) {
 				var n, hash = '#!' + encodeURIComponent(loc.id);
@@ -914,12 +913,11 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 		}
 
 		function loadJs(html) {
-			var js, dom,
-				ctn = sel(type)[0];
-			ctn.insertAdjacentHTML('beforeEnd', '<div class="' + id + '">' + html + '</div>');
+			var js,
+				ctn = sel(type);
+			ctn[0].insertAdjacentHTML('beforeEnd', '<div class="' + id + '">' + html + '</div>');
 			if (oldcfg.js) {
-				dom = ctn.lastChild;
-				dom.style.visibility = 'hidden';
+				ctn[0].lastChild.style.visibility = 'hidden';
 				kernel.showLoading();
 				kernel.listeners.add(kernel.dialogEvents, 'loaded', loaded);
 				js = n + id;
@@ -946,7 +944,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 
 			function loaded(evt) {
 				kernel.listeners.remove(this, evt.type, loaded);
-				dom.style.visibility = '';
+				ctn.find('>.' + id)[0].style.visibility = '';
 			}
 		}
 
