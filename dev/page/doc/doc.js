@@ -18,20 +18,20 @@ define(['module', 'common/kernel/kernel'], function (module, kernel) {
 					example: `console.log(kernel.lastLocation);`
 				}],
 				methods: [{
-					title: 'appendCss(url:string):HTMLLinkElement',
+					title: 'appendCss(url:string, forcecss:bool):HTMLLinkElement',
 					desc: '用于加载样式，会自动根据当前环境来选择加载less或者由less编译成的css',
-					example: `var a = kernel.appendCss(require.toUrl('common/kernel/kernel.less'));
+					example: `var a = kernel.appendCss(require.toUrl('common/kernel/kernel'));
 console.log(a.href);
 setTimeout(function(){
-	console.log(kernel.removeCss(a));
+	kernel.removeCss(a);
 }, 1000);`
 				}, {
-					title: 'removeCss(lnk:HTMLLinkElement):string',
+					title: 'removeCss(lnk:HTMLLinkElement):undefined',
 					desc: '移除已加载的less或者css',
-					example: `var a = kernel.appendCss(require.toUrl('common/kernel/kernel.less'));
+					example: `var a = kernel.appendCss(require.toUrl('common/kernel/kernel'));
 console.log(a.href);
 setTimeout(function(){
-	console.log(kernel.removeCss(a));
+	kernel.removeCss(a);
 }, 1000);`
 				}, {
 					title: 'buildHash(loc:Object):string',
