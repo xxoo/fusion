@@ -330,7 +330,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 	! function () {
 		var activePopup,
 			popup = document.getElementById('popup'),
-			ctn = $(popup).find('>div>div');
+			ctn = $(popup).find('>div');
 		kernel.openPopup = function (id, param) {
 			if (popups.hasOwnProperty(id)) {
 				initLoad('popup', popups[id], id, function () {
@@ -347,7 +347,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			var result;
 			if (popups[id].status > 1) {
 				if (!activePopup) {
-					ctn.find('>.' + id)[0].style.display = popup.style.display = 'block';
+					ctn.find('>div.' + id)[0].style.display = popup.style.display = 'block';
 					popup.className = activePopup = id;
 					if (typeof kernel.popupEvents.onshow === 'function') {
 						kernel.popupEvents.onshow({
@@ -367,11 +367,11 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 					result = true;
 				} else if (typeof popups[activePopup].onunload !== 'function' || !popups[activePopup].onunload()) {
 					popups[activePopup].status--;
-					ctn.find('>.' + activePopup).css('display', '');
+					ctn.find('>div.' + activePopup).css('display', '');
 					if (popups[activePopup].autoDestroy) {
 						destroy(popups[activePopup], 'popup', activePopup);
 					}
-					ctn.find('>.' + id).css('display', 'block');
+					ctn.find('>div.' + id).css('display', 'block');
 					popup.className = activePopup = id;
 					popups[id].status++;
 					if (typeof popups[id].onload === 'function') {
@@ -387,7 +387,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			if (activePopup && (!id || activePopup === id || (dataType(id) === 'Array' && id.indexOf(activePopup) >= 0)) && (typeof popups[activePopup].onunload !== 'function' || !popups[activePopup].onunload())) {
 				popups[activePopup].status--;
 				close = activePopup;
-				ctn.find('>.' + activePopup)[0].style.display = popup.style.display = popup.className = activePopup = '';
+				ctn.find('>div.' + activePopup)[0].style.display = popup.style.display = popup.className = activePopup = '';
 				if (popups[close].autoDestroy) {
 					destroy(popups[close], 'popup', activePopup);
 				}
@@ -867,7 +867,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 	function sel(type, id) {
 		var result = '#' + type;
 		if (type === 'popup') {
-			result += '>div>div';
+			result += '>div';
 		} else if (type === 'panel') {
 			result += '>.contents>div';
 		}
@@ -915,9 +915,9 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 		function loadJs(html) {
 			var js,
 				ctn = sel(type);
-			ctn[0].insertAdjacentHTML('beforeEnd', '<div class="' + id + '">' + html + '</div>');
+			ctn[0].insertAdjacentHTML('afterBegin', '<div class="' + id + '">' + html + '</div>');
 			if (oldcfg.js) {
-				ctn[0].lastChild.style.visibility = 'hidden';
+				ctn[0].firstChild.style.visibility = 'hidden';
 				kernel.showLoading();
 				kernel.listeners.add(kernel.dialogEvents, 'loaded', loaded);
 				js = n + id;
