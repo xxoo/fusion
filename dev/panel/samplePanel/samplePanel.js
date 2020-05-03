@@ -1,8 +1,7 @@
 'use strict';
 define(['module', 'common/kernel/kernel'], function(module, kernel) {
-	var thisPanel = module.id.replace(/^[^/]+\/|\/[^/]+/g, ''),
-		dom = $('#panel>.contents>div>.' + thisPanel);
-	//var o = dom.find('>.content>span');
+	let thisPanel = module.id.replace(/^[^/]+\/|\/[^/]+/g, ''),
+		dom = document.querySelector('#panel>.contents>div>.' + thisPanel);
 	return {
 		onload: function() {
 			console.log('opening ' + thisPanel);
@@ -18,7 +17,6 @@ define(['module', 'common/kernel/kernel'], function(module, kernel) {
 		},
 		ondestroy: function() {
 			console.log('do clean up stuff here');
-		},
-		autoDestroy: true
+		}
 	};
 });

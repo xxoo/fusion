@@ -1,9 +1,9 @@
 'use strict';
 define(['module', 'common/kernel/kernel'], function (module, kernel) {
-	var thisPage = module.id.replace(/^[^/]+\/|\/[^/]+/g, ''),
-		dom = $('#page>.' + thisPage),
-		menu = dom.find('.menu'),
-		content = dom.find('.content'),
+	let thisPage = module.id.replace(/^[^/]+\/|\/[^/]+/g, ''),
+		dom = document.querySelector('#page>.' + thisPage),
+		menu = dom.querySelector('.menu'),
+		content = dom.querySelector('.content'),
 		tree = [{
 			title: 'common/kernel',
 			desc: '核心模块，包含框架中的主要接口',
@@ -20,7 +20,7 @@ define(['module', 'common/kernel/kernel'], function (module, kernel) {
 				methods: [{
 					title: 'appendCss(url:string, forcecss:bool):HTMLLinkElement',
 					desc: '用于加载样式，会自动根据当前环境来选择加载less或者由less编译成的css',
-					example: `var a = kernel.appendCss(require.toUrl('common/kernel/kernel'));
+					example: `let a = kernel.appendCss(require.toUrl('common/kernel/kernel'));
 console.log(a.href);
 setTimeout(function(){
 	kernel.removeCss(a);
@@ -28,7 +28,7 @@ setTimeout(function(){
 				}, {
 					title: 'removeCss(lnk:HTMLLinkElement):undefined',
 					desc: '移除已加载的less或者css',
-					example: `var a = kernel.appendCss(require.toUrl('common/kernel/kernel'));
+					example: `let a = kernel.appendCss(require.toUrl('common/kernel/kernel'));
 console.log(a.href);
 setTimeout(function(){
 	kernel.removeCss(a);
@@ -193,7 +193,7 @@ function loaded(evt){
 					desc: '显示提示文本',
 					example: `kernel.hint('提示文本', 'success');`
 				}, {
-					title: 'showReadable(html:string|HTMLElement|JQueryDOM, width:string, height:string, callback?:Function, className?:string):undefined',
+					title: 'showReadable(html:string|HTMLElement, width:string, height:string, callback?:Function, className?:string):undefined',
 					desc: '显示内容展示窗',
 					example: `kernel.showReadable('&lt;h1>title&lt;/h1>&lt;p>content&lt;/p>', '800px', '600px', function(){
 	console.log('readable window closed');
@@ -291,12 +291,12 @@ function loaded(evt){
 			title: 'common/slider',
 			desc: '内容循环展示模块, 在kernel.showPhotoView中使用到',
 			construct: {
-				title: 'new? slider(container:JQueryDOM, contents?:Array, idx?:number, nav?:JQueryDOM):slider',
+				title: 'new? slider(container:HTMLElement, contents?:Array, idx?:number, nav?:HTMLElement):slider',
 				desc: 'container: 容器节点\ncontents: 初始内容\nidx: 默认展示的内容索引\nnav: 导航节点',
-				example: `var ctn = $('&lt;div>&lt;/div>');
-var contents = [$('&lt;div style="background-color:yellow;color:blue;font-size: 100px;">content1&lt;/div>'), $('&lt;div style="background-color:green;color:red;font-size: 100px;">content2&lt;/div>')];
-var slider = require('common/slider/slider');
-var s = slider(ctn, contents);
+				example: `let ctn = $('&lt;div>&lt;/div>');
+let contents = [$('&lt;div style="background-color:yellow;color:blue;font-size: 100px;">content1&lt;/div>'), $('&lt;div style="background-color:green;color:red;font-size: 100px;">content2&lt;/div>')];
+let slider = require('common/slider/slider');
+let s = slider(ctn, contents);
 kernel.showReadable(ctn, '800px', '400px', function(){
 	s.stopPlay();
 });
@@ -311,10 +311,10 @@ s.startPlay(1000);`
 					desc: '当前显示的元素索引'
 				}],
 				methods: [{
-					title: 'add(o:JQueryDOM):number',
+					title: 'add(o:HTMLElement):number',
 					desc: '添加内容'
 				}, {
-					title: 'remove(i:JQueryDOM|number):JQueryDOM',
+					title: 'remove(i:HTMLElement|number):HTMLElement',
 					desc: '移除指定内容节点'
 				}, {
 					title: 'slideTo(i:number, silent?:boolean):boolean',
@@ -342,12 +342,14 @@ s.startPlay(1000);`
 			events: '事件'
 		},
 		mod, section, api;
-	content.on('click', '.code>a', function(){
-		eval('var kernel = require("common/kernel/kernel");' + this.parentNode.firstChild.data);
+	content.addEventListener('click', function(evt) {
+		if (evt.target.nodeName === 'A' && evt.target.parentNode.className === 'code') {
+			eval('let kernel = require("common/kernel/kernel");' + evt.target.parentNode.firstChild.data);
+		}
 	});
 	return {
 		onload: function (force) {
-			var i, j;
+			let i, j;
 			mod = 0;
 			for (i = 0; i < tree.length; i++) {
 				if (kernel.location.args.mod === tree[i].title) {
@@ -375,7 +377,7 @@ s.startPlay(1000);`
 	};
 
 	function makeMenu() {
-		var i, j, k, s = '';
+		let i, j, k, s = '';
 		for (i = 0; i < tree.length; i++) {
 			s += '<a';
 			if (i !== mod) {
@@ -399,11 +401,11 @@ s.startPlay(1000);`
 			}
 			s += '</div>';
 		}
-		menu.html(s);
+		menu.innerHTML = s;
 	}
 
 	function showContent() {
-		var i, j, s = '<div class="title">' + tree[mod].title + '</div><div class="desc">' + tree[mod].desc + '</div>';
+		let i, j, s = '<div class="title">' + tree[mod].title + '</div><div class="desc">' + tree[mod].desc + '</div>';
 		if (tree[mod].construct) {
 			s += '<div class="subTitle">构造方法</div>' + makeContent(tree[mod].construct);
 		}
@@ -417,19 +419,17 @@ s.startPlay(1000);`
 				}
 			}
 		}
-		content.html(s);
+		content.innerHTML = s;
 		if (typeof api === 'number') {
-			s = Math.min(content.find('>.field[data-name="' + getShotTitle(tree[mod].api[section][api].title) + '"]')[0].offsetTop, content[0].scrollHeight - content[0].clientHeight);
-			if (s !== content[0].scrollTop) {
-				content.animate({
-					scrollTop: s
-				});
-			}
+			content.querySelector(':scope>.field[data-name="' + getShotTitle(tree[mod].api[section][api].title) + '"]').scrollIntoView({
+				block: 'start',
+				behavior: 'smooth'
+			});
 		}
 	}
 
 	function makeContent(o, active) {
-		var s = '<div class="field" data-name="' + getShotTitle(o.title) + '"><div class="name">' + o.title + '</div><div class="desc">' + o.desc + '</div>';
+		let s = '<div class="field" data-name="' + getShotTitle(o.title) + '"><div class="name">' + o.title + '</div><div class="desc">' + o.desc + '</div>';
 		if (o.example) {
 			s += '<div class="code">' + o.example + '<a href="javascript:;">执行</a></div>';
 		}

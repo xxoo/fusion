@@ -1,49 +1,50 @@
 /* slider 0.1
  * requires jquery
  * usage:
- * var slider = require('path/to/slider');
- * var slider = [new] silder($container, contents, idx, $nav);
- * slider.add($content);
+ * let Slider = require('path/to/slider');
+ * let slider = [new] Silder(container, contents, idx, nav);
+ * slider.add(content);
  * slider.onchange = function(){
- *   var current = slider.current;
+ *   let current = this.current;
  *   ...
  * };
  */
 
 'use strict';
-define(function(pointerevents) {
-	var slider = function(container, contents, idx, nav) {
-		var i, navItem, that, delay;
-		if (this instanceof slider) {
+define(function () {
+	let Slider = function (container, contents, idx, nav) {
+		let i, navItem, that, delay;
+		if (this instanceof Slider) {
 			that = this;
 			this.pushStack = []; //for adding elements while sliding
 			this.removeStack = []; //for removing elements while sliding
 			this.container = container;
 			this.nav = nav;
-			container.on('mouseover', function(evt) {
+			container.addEventListener('mouseover', function () {
 				delay = that.delay;
 				that.stopPlay();
 			});
-			container.on('mouseout', function(evt) {
+			container.addEventListener('mouseout', function () {
 				that.startPlay(delay);
 				delay = undefined;
 			});
 			if (nav) {
-				nav.css('display', 'none');
-				nav.on('click', '>a', function() {
-					var i, a;
-					if (!$(this).hasClass('current')) {
-						a = nav.find('>a');
-						for (i = 0; i < a.length; i++) {
-							if (a[i] === this) {
-								that.slideTo(i);
-								break;
+				nav.style.display = 'none';
+				nav.addEventListener('click', function (evt) {
+					if (evt.target.nodeName === 'A') {
+						if (!evt.target.classList.contains('current')) {
+							let a = this.querySelectorAll(':scope>a');
+							for (let i = 0; i < a.length; i++) {
+								if (a[i] === evt.target) {
+									that.slideTo(i);
+									break;
+								}
 							}
 						}
 					}
 				});
 			}
-			if (contents instanceof Array && contents.length > 0) {
+			if (Array.isArray(contents) && contents.length > 0) {
 				this.children = contents;
 				if (typeof idx === 'number' && idx >= 0 && idx < contents.length) {
 					this.current = idx;
@@ -51,55 +52,57 @@ define(function(pointerevents) {
 					this.current = 0;
 				}
 				for (i = 0; i < contents.length; i++) {
-					container.append(contents[i]);
+					container.appendChild(contents[i]);
 					if (nav) {
-						navItem = $('<a href="javascript:;"></a>');
-						nav.append(navItem);
+						nav.insertAdjacentHTML('<a href="javascript:;"></a>');
+						navItem = nav.lastChild;
 					}
 					if (i !== this.current) {
-						contents[i].css('display', 'none');
+						contents[i].style.display = 'none';
 					} else {
 						if (navItem) {
-							navItem.addClass('current');
+							navItem.classList.add('current');
 						}
 					}
 				}
 				if (nav && contents.length > 1) {
-					nav.css('display', '');
+					nav.style.display = '';
 				}
 			} else {
 				this.current = undefined;
 				this.children = [];
 			}
 		} else {
-			return new slider(container, contents, idx, nav);
+			return new Slider(container, contents, idx, nav);
 		}
 	};
-	slider.prototype.add = function(o) {
-		var result, navItem;
+	Slider.prototype.add = function (o) {
+		let result, navItem;
 		if (this.sliding) { //will push to children when sliding ends
 			this.pushStack.push(o);
 		} else {
 			result = this.children.length;
-			this.container.append(o);
+			this.container.appendChild(o);
 			this.children.push(o);
 			if (this.nav) {
-				navItem = $('<a href="javascript:;"></a>');
-				this.nav.append(navItem);
+				this.nav.insertAdjacentHTML('<a href="javascript:;"></a>');
+				navItem = this.nav.lastChild;
 			}
 			if (result === 0) {
 				this.current = 0;
-				this.nav && navItem.addClass('current');
+				this.nav && navItem.classList.add('current');
 				fireEvent(this, 'change');
 			} else {
-				o.css('display', 'none');
-				this.nav && this.nav.css('display', '');
+				o.style.display = 'none';
+				if (this.nav) {
+					this.nav.style.display = '';
+				}
 			}
 		}
 		return result;
 	};
-	slider.prototype.remove = function(i) {
-		var result, a;
+	Slider.prototype.remove = function (i) {
+		let result;
 		if (this.sliding) {
 			this.removeStack.push(typeof i === 'number' ? this.children[i] : i);
 		} else if (this.children.length > 0) {
@@ -110,26 +113,26 @@ define(function(pointerevents) {
 			result = this.children.splice(i, 1)[0];
 			result.remove();
 			if (this.nav) {
-				a = this.nav.find('>a').eq(i).remove();
+				this.nav.querySelectorAll(':scope>a')[i].remove();
 			}
 			if (this.current === i || this.current === this.children.length) {
 				if (this.children.length > 0) {
 					this.current = getPos(i, this.children.length);
-					this.children[this.current].css('display', '');
-					this.nav && this.nav.find('>a').eq(this.current).addClass('current');
+					this.children[this.current].style.display = '';
+					this.nav && this.nav.querySelectorAll(':scope>a')[this.current].classList.add('current');
 				} else {
 					this.current = undefined;
 				}
 				fireEvent(this, 'change');
 			}
-			if (this.children.length === 1) {
-				this.nav && this.nav.css('display', 'none');
+			if (this.children.length === 1 && this.nav) {
+				this.nav.style.display = 'none';
 			}
 		}
 		return result;
 	};
-	slider.prototype.slideTo = function(i, silent) {
-		var result, a, that = this;
+	Slider.prototype.slideTo = function (i, silent) {
+		let result, that = this;
 		if (!this.sliding && this.children.length > 1) {
 			i = getPos(i, this.children.length);
 			if (i !== this.current) {
@@ -138,22 +141,40 @@ define(function(pointerevents) {
 					this.timer = undefined;
 				}
 				if (silent) {
-					this.children[this.current].css('display', 'none');
-					this.children[i].css('display', '');
+					this.children[i].style.display = '';
+					this.children[this.current].style.display = 'none';
 					restartTimer(this);
 				} else {
 					this.sliding = true;
-					this.children[this.current].fadeOut(function() {
-						that.children[that.current].fadeIn(function() {
+					this.children[this.current].animate([{
+						opacity: 1
+					}, {
+						opacity: 0
+					}], {
+						duration: 400,
+						easing: 'ease-in-out'
+					}).onfinish = function () {
+						this.onfinish = null;
+						this.effect.target.style.display = 'none';
+						that.children[that.current].style.display = '';
+						that.children[that.current].animate([{
+							opacity: 0
+						}, {
+							opacity: 1
+						}], {
+							duration: 400,
+							easing: 'ease-in-out'
+						}).onfinish = function () {
+							this.onfinish = null;
 							that.sliding = false;
 							restartTimer(that);
-						});
-					});
+						};
+					};
 				}
 				if (this.nav) {
-					a = this.nav.find('>a');
-					$(a[this.current]).removeClass('current');
-					$(a[i]).addClass('current');
+					let a = this.nav.querySelectorAll(':scope>a');
+					a[this.current].classList.remove('current');
+					a[i].classList.add('current');
 				}
 				this.current = i;
 				fireEvent(this, 'change');
@@ -166,13 +187,13 @@ define(function(pointerevents) {
 		}
 		return result;
 	};
-	slider.prototype.startPlay = function(delay) {
+	Slider.prototype.startPlay = function (delay) {
 		this.stopPlay();
 		this.delay = delay;
 		restartTimer(this);
 	};
-	slider.prototype.stopPlay = function() {
-		var result;
+	Slider.prototype.stopPlay = function () {
+		let result;
 		if (this.delay) {
 			delete this.delay;
 			if (this.timer) {
@@ -185,10 +206,10 @@ define(function(pointerevents) {
 		}
 		return result;
 	};
-	return slider;
+	return Slider;
 
 	function getPos(c, t) {
-		var s = c % t;
+		let s = c % t;
 		if (s < 0) {
 			s += t;
 		}
@@ -196,7 +217,7 @@ define(function(pointerevents) {
 	}
 
 	function fireEvent(obj, name) {
-		var funcName = 'on' + name;
+		let funcName = 'on' + name;
 		if (typeof obj[funcName] === 'function') {
 			obj[funcName]({
 				type: name
@@ -206,7 +227,7 @@ define(function(pointerevents) {
 
 	function restartTimer(obj) {
 		if (obj.delay) {
-			obj.timer = setTimeout(function() {
+			obj.timer = setTimeout(function () {
 				delete obj.timer;
 				obj.slideTo(obj.current + 1);
 			}, obj.delay);

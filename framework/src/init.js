@@ -1,9 +1,9 @@
 ! function () {
 	'use strict';
 	var swfile = 'sw.js',
-		src, prefix, cfg, head, n;
-	if (self.XMLHttpRequest) {
-		src = (document.currentScript || document.scripts[document.scripts.length - 1]).getAttribute('src');
+		src, prefix, cfg, n;
+	if (document.documentElement.animate) {
+		src = document.currentScript.getAttribute('src');
 		prefix = src.replace(/framework\/[^\/]+$/, '');
 		cfg = {
 			waitSeconds: 0,
@@ -72,9 +72,8 @@
 				less.pageLoadFinished.then(start);
 			});
 		}
-		head = document.head || document.getElementsByTagName('head')[0];
-		head.appendChild(m);
-		head.appendChild(l);
+		document.head.appendChild(m);
+		document.head.appendChild(l);
 	}
 
 	function start() {

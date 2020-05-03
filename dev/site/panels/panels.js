@@ -4,6 +4,7 @@ define({
 	samplePanel: {
 		js: true,
 		html: true,
-		css: true
+		css: true,
+		autoDestroy: true
 	}
 });

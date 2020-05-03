@@ -1,11 +1,11 @@
 'use strict';
 define(['module', 'common/kernel/kernel'], function(module, kernel) {
-	var thisPopup = module.id.replace(/^[^/]+\/|\/[^/]+/g, ''),
-		dom = $('#popup>div>.' + thisPopup);
-	var o = dom.find('>.content>span');
+	let thisPopup = module.id.replace(/^[^/]+\/|\/[^/]+/g, ''),
+		dom = document.querySelector('#popup>div>.' + thisPopup),
+		o = dom.querySelector(':scope>.content>span');
 	return {
 		open: function(param) {
-			o.text(param);
+			o.textContent = param;
 			kernel.showPopup(thisPopup);
 		},
 		onunload: function() {
