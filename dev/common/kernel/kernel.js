@@ -1,11 +1,11 @@
 // kernel
 'use strict';
 define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/panels/panels', './lang'], function (slider, pages, popups, panels, lang) {
-	var homePage,
+	let homePage,
 		kernel = {
 			appendCss: function (url, forcecss) { //自动根据当前环境添加css或less
-				var csslnk = document.createElement('link');
-				if (typeof less === 'object' && !forcecss) {
+				let csslnk = document.createElement('link');
+				if (self.less && !forcecss) {
 					csslnk.rel = 'stylesheet/less';
 					csslnk.href = url + '.less';
 					less.sheets.push(csslnk);
@@ -14,35 +14,35 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 					csslnk.rel = 'stylesheet';
 					csslnk.href = url + '.css';
 				}
-				return (document.head || document.getElementsByTagName('head')[0]).appendChild(csslnk);
+				return document.head.appendChild(csslnk);
 			},
 			removeCss: function (lnk) {
-				$(lnk).remove();
+				lnk.remove();
 				if (lnk.rel === 'stylesheet/less') {
 					less.sheets.splice(less.sheets.indexOf(lnk), 1);
 					less.refresh();
 				}
 			},
 			buildHash: function (loc) {
-				var n, hash = '#!' + encodeURIComponent(loc.id);
-				for (n in loc.args) {
+				let hash = '#!' + encodeURIComponent(loc.id);
+				for (let n in loc.args) {
 					hash += loc.args[n] === undefined ? '&' + encodeURIComponent(n) : '&' + encodeURIComponent(n) + '=' + encodeURIComponent(loc.args[n]);
 				}
 				return hash;
 			},
 			parseHash: function (hash) {
-				var i, a, s, nl = {
+				let nl = {
 					id: homePage,
 					args: {}
 				};
 				hash = hash.substr(1).replace(/[#?].*$/, '');
-				s = hash.match(/[^=&]+(=[^&]*)?/g);
+				let s = hash.match(/[^=&]+(=[^&]*)?/g);
 				if (s && s[0].charAt(0) === '!') {
-					a = decodeURIComponent(s[0].substr(1));
+					let a = decodeURIComponent(s[0].substr(1));
 					if (pages.hasOwnProperty(a)) {
 						nl.id = a;
 					}
-					for (i = 1; i < s.length; i++) {
+					for (let i = 1; i < s.length; i++) {
 						a = s[i].match(/^([^=]+)(=)?(.+)?$/);
 						if (a) {
 							nl.args[decodeURIComponent(a[1])] = a[2] ? decodeURIComponent(a[3] || '') : undefined;
@@ -52,9 +52,8 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				return nl;
 			},
 			isSameLocation: function (loc1, loc2) {
-				var n;
 				if (loc1.id === loc2.id && Object.keys(loc1.args).length === Object.keys(loc2.args).length) {
-					for (n in loc1.args) {
+					for (let n in loc1.args) {
 						if (loc2.args.hasOwnProperty(n)) {
 							if (loc1.args[n] === undefined) {
 								if (loc1.args[n] !== loc2.args[n]) {
@@ -82,9 +81,8 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				}
 			},
 			getLang: function (langs) {
-				var i;
 				if (navigator.languages) {
-					for (i = 0; i < navigator.languages.length; i++) {
+					for (let i = 0; i < navigator.languages.length; i++) {
 						if (langs.hasOwnProperty(navigator.languages[i])) {
 							return langs[navigator.languages[i]];
 						}
@@ -100,10 +98,10 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 	lang = kernel.getLang(lang);
 	//事件处理
 	! function () {
-		var key = typeof Symbol === 'function' ? Symbol('xEvents') : 'xEvents';
+		let key = typeof Symbol === 'function' ? Symbol('xEvents') : 'xEvents';
 		kernel.listeners = {
 			add: function (o, e, f) {
-				var result = 0;
+				let result = 0;
 				if (typeof f === 'function') {
 					if (!o.hasOwnProperty(key)) {
 						o[key] = {};
@@ -127,13 +125,13 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				return result;
 			},
 			list: function (o, e) {
-				var i, result;
+				let result;
 				if (e) {
 					result = o.hasOwnProperty(key) && o[key].hasOwnProperty(e) ? o[key][e].heap.slice(0) : [];
 				} else {
 					result = {};
 					if (o.hasOwnProperty(key)) {
-						for (i in o[key]) {
+						for (let i in o[key]) {
 							result[i] = o[key][i].heap.slice(0);
 						}
 					}
@@ -141,7 +139,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				return result;
 			},
 			remove: function (o, e, f) {
-				var i, result = 0;
+				let result = 0;
 				if (o.hasOwnProperty(key)) {
 					if (e) {
 						if (o[key].hasOwnProperty(e)) {
@@ -149,7 +147,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 								o[key][e].stack.push(f);
 								result = 2;
 							} else if (typeof f === 'function') {
-								i = o[key][e].heap.indexOf(f);
+								let i = o[key][e].heap.indexOf(f);
 								if (i >= 0) {
 									o[key][e].heap.splice(i, 1);
 									cleanup(o, e);
@@ -161,7 +159,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 							}
 						}
 					} else {
-						for (i in o[key]) {
+						for (let i in o[key]) {
 							if (o[key][i].locked) {
 								o[key][i].stack.push(undefined);
 								result = 2;
@@ -179,16 +177,15 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 		};
 
 		function xEventProcessor(evt) {
-			var i;
 			this[key][evt.type].locked = true;
-			for (i = 0; i < this[key][evt.type].heap.length; i++) {
+			for (let i = 0; i < this[key][evt.type].heap.length; i++) {
 				this[key][evt.type].heap[i].call(this, evt);
 			}
 			this[key][evt.type].locked = false;
 			while (this[key][evt.type].stack.length) {
 				if (this[key][evt.type].stack[0]) {
 					if (typeof this[key][evt.type].stack[0] === 'function') {
-						i = this[key][evt.type].heap.indexOf(this[key][evt.type].stack[0]);
+						let i = this[key][evt.type].heap.indexOf(this[key][evt.type].stack[0]);
 						if (i >= 0) {
 							this[key][evt.type].heap.splice(i, 1);
 						}
@@ -213,9 +210,9 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 
 	//panel
 	! function () {
-		var activePanel, ani, todo,
-			panelCtn = $('#panel'),
-			ctn = panelCtn.find('>.contents>div');
+		let activePanel, ani, todo,
+			panelCtn = document.querySelector('#panel'),
+			ctn = panelCtn.querySelector(':scope>.contents>div');
 		kernel.openPanel = function (id, param) {
 			if (panels.hasOwnProperty(id)) {
 				initLoad('panel', panels[id], id, function () {
@@ -229,7 +226,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			}
 		};
 		kernel.showPanel = function (id) {
-			var result = 0;
+			let result = 0;
 			if (panels[id].status > 1) {
 				if (ani) {
 					todo = kernel.showPanel.bind(this, id);
@@ -239,8 +236,8 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 					if (typeof panels[id].onload === 'function') {
 						panels[id].onload();
 					}
-					panelCtn[0].className = activePanel = id;
-					panelCtn[0].style.display = ctn.find('>.' + id)[0].style.display = 'block';
+					panelCtn.className = activePanel = id;
+					panelCtn.style.display = ctn.querySelector(':scope>div.' + id).style.display = 'block';
 					startAni(function () {
 						if (typeof panels[id].onloadend === 'function') {
 							panels[id].onloadend();
@@ -264,11 +261,11 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			return result;
 		};
 		kernel.closePanel = function (id) {
-			var result = 0;
+			let result = 0;
 			if (ani) {
 				todo = kernel.closePanel.bind(this, id);
 				result = 2;
-			} else if (activePanel && (!id || activePanel === id || (dataType(id) === 'Array' && id.indexOf(activePanel) >= 0)) && hidePanel()) {
+			} else if (activePanel && (!id || activePanel === id || (Array.isArray(id) && id.indexOf(activePanel) >= 0)) && hidePanel()) {
 				result = 1;
 			}
 			return result;
@@ -284,27 +281,39 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			}
 		};
 		todo = kernel.closePanel.bind(kernel, undefined);
-		ctn.find('>.close').on('click', todo);
-		panelCtn.find('>.mask').on('click', todo);
+		ctn.querySelector(':scope>a.close').addEventListener('click', todo);
+		panelCtn.querySelector(':scope>.mask').addEventListener('click', todo);
 		todo = undefined;
 
 		function startAni(cb, show) {
+			let	a, b;
 			ani = true;
-			ctn.animate({
-				'margin-left': show ? '-100%' : '0%'
+			if (show) {
+				a = 0;
+				b = '-100%';
+				ctn.style.marginLeft = b;
+			} else {
+				a = '-100%';
+				b = 0;
+				ctn.style.marginLeft = '';
+			}
+			ctn.animate([{
+				marginLeft: a
 			}, {
+				marginLeft: b
+			}], {
 				duration: 200,
-				complete: function () {
-					var tmp;
-					ani = false;
-					cb();
-					if (typeof todo === 'function') {
-						tmp = todo;
-						todo = undefined;
-						tmp();
-					}
+				easing: 'ease-in-out'
+			}).onfinish = function () {
+				this.onfinish = null;
+				ani = false;
+				cb();
+				if (typeof todo === 'function') {
+					let tmp = todo;
+					todo = undefined;
+					tmp();
 				}
-			});
+			};
 		}
 
 		function hidePanel() {
@@ -315,7 +324,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 						panels[activePanel].onunloadend();
 					}
 					panels[activePanel].status--;
-					ctn.find('>.' + activePanel)[0].style.display = panelCtn[0].style.display = '';
+					ctn.querySelector(':scope>div.' + activePanel).style.display = panelCtn.style.display = '';
 					if (panels[activePanel].autoDestroy) {
 						destroy(panels[activePanel], 'panel', activePanel);
 					}
@@ -328,9 +337,9 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 
 	//弹出窗口
 	! function () {
-		var activePopup,
+		let activePopup,
 			popup = document.getElementById('popup'),
-			ctn = $(popup).find('>div');
+			ctn = popup.querySelector(':scope>div');
 		kernel.openPopup = function (id, param) {
 			if (popups.hasOwnProperty(id)) {
 				initLoad('popup', popups[id], id, function () {
@@ -344,10 +353,10 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			}
 		};
 		kernel.showPopup = function (id) {
-			var result;
+			let result;
 			if (popups[id].status > 1) {
 				if (!activePopup) {
-					ctn.find('>div.' + id)[0].style.display = popup.style.display = 'block';
+					ctn.querySelector(':scope>div.' + id).style.display = popup.style.display = 'block';
 					popup.className = activePopup = id;
 					if (typeof kernel.popupEvents.onshow === 'function') {
 						kernel.popupEvents.onshow({
@@ -367,11 +376,11 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 					result = true;
 				} else if (typeof popups[activePopup].onunload !== 'function' || !popups[activePopup].onunload()) {
 					popups[activePopup].status--;
-					ctn.find('>div.' + activePopup).css('display', '');
+					ctn.querySelector(':scope>div.' + activePopup).style.display = '';
 					if (popups[activePopup].autoDestroy) {
 						destroy(popups[activePopup], 'popup', activePopup);
 					}
-					ctn.find('>div.' + id).css('display', 'block');
+					ctn.querySelector(':scope>div.' + id).style.display = 'block';
 					popup.className = activePopup = id;
 					popups[id].status++;
 					if (typeof popups[id].onload === 'function') {
@@ -383,11 +392,11 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			return result;
 		};
 		kernel.closePopup = function (id) {
-			var close;
-			if (activePopup && (!id || activePopup === id || (dataType(id) === 'Array' && id.indexOf(activePopup) >= 0)) && (typeof popups[activePopup].onunload !== 'function' || !popups[activePopup].onunload())) {
+			let close;
+			if (activePopup && (!id || activePopup === id || (Array.isArray(id) && id.indexOf(activePopup) >= 0)) && (typeof popups[activePopup].onunload !== 'function' || !popups[activePopup].onunload())) {
 				popups[activePopup].status--;
 				close = activePopup;
-				ctn.find('>div.' + activePopup)[0].style.display = popup.style.display = popup.className = activePopup = '';
+				ctn.querySelector(':scope>div.' + activePopup).style.display = popup.style.display = popup.className = activePopup = '';
 				if (popups[close].autoDestroy) {
 					destroy(popups[close], 'popup', activePopup);
 				}
@@ -411,36 +420,35 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			}
 		};
 		kernel.popupEvents = {};
-		$(popup).find('>div>a').on('click', kernel.closePopup.bind(kernel, undefined));
+		popup.querySelector(':scope>div>a').addEventListener('click', kernel.closePopup.bind(kernel, undefined));
 	}();
 	//图片展示
 	! function () {
-		var ctn = $('#photoview'),
-			close = ctn.find('.close'),
-			prev = ctn.find('.prev'),
-			next = ctn.find('.next'),
-			rp = ctn.find('.rotate.p'),
-			rn = ctn.find('.rotate.n'),
-			sld = slider(ctn.find('>div')),
+		let ctn = document.querySelector('#photoview'),
+			close = ctn.querySelector('a.close'),
+			prev = ctn.querySelector('a.prev'),
+			next = ctn.querySelector('a.next'),
+			rp = ctn.querySelector('a.rotate.p'),
+			rn = ctn.querySelector('a.rotate.n'),
+			sld = slider(ctn.querySelector(':scope>div')),
 			siz = [],
 			deg = [],
 			w, h;
 		kernel.showPhotoView = function (contents, idx) {
-			var i;
-			if (dataType(contents) === 'Array') {
-				for (i = 0; i < contents.length; i++) {
-					sld.add($('<img src="' + contents[i] + '"/>'));
+			if (Array.isArray(contents)) {
+				for (let i = 0; i < contents.length; i++) {
+					let img = document.createElement('img');
+					img.src = contents[i];
+					sld.add(img);
 					getsz(i);
 				}
 				if (idx >= 0 && idx < sld.children.length) {
 					sld.slideTo(idx, true);
 				}
 				if (sld.children.length > 1) {
-					prev.css('display', 'block');
-					next.css('display', 'block');
+					prev.style.display = next.style.display = 'block';
 				} else {
-					prev.css('display', '');
-					next.css('display', '');
+					prev.style.display = next.style.display = '';
 				}
 			}
 		};
@@ -450,71 +458,74 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				sld.remove(0);
 			}
 		};
-		ctn.on('click', '>div>img', function () {
-			var d;
-			if (this.style.cursor === 'zoom-in') {
-				d = deg[sld.current] % 2;
-				if (d) {
-					this.style.top = siz[sld.current].w > h ? (siz[sld.current].w - siz[sld.current].h) / 2 + 'px' : (h - siz[sld.current].h) / 2 + 'px';
-					this.style.left = siz[sld.current].h > w ? (siz[sld.current].h - siz[sld.current].w) / 2 + 'px' : (w - siz[sld.current].w) / 2 + 'px';
-				} else {
-					this.style.top = siz[sld.current].h > h ? 0 : (h - siz[sld.current].h) / 2 + 'px';
-					this.style.left = siz[sld.current].w > w ? 0 : (w - siz[sld.current].w) / 2 + 'px';
+		ctn.addEventListener('click', function (evt) {
+			if (evt.target.nodeName === 'IMG') {
+				if (evt.target.style.cursor === 'zoom-in') {
+					let d = deg[sld.current] % 2;
+					if (d) {
+						evt.target.style.top = siz[sld.current].w > h ? (siz[sld.current].w - siz[sld.current].h) / 2 + 'px' : (h - siz[sld.current].h) / 2 + 'px';
+						evt.target.style.left = siz[sld.current].h > w ? (siz[sld.current].h - siz[sld.current].w) / 2 + 'px' : (w - siz[sld.current].w) / 2 + 'px';
+					} else {
+						evt.target.style.top = siz[sld.current].h > h ? 0 : (h - siz[sld.current].h) / 2 + 'px';
+						evt.target.style.left = siz[sld.current].w > w ? 0 : (w - siz[sld.current].w) / 2 + 'px';
+					}
+					evt.target.style.width = siz[sld.current].w + 'px';
+					evt.target.style.height = siz[sld.current].h + 'px';
+					evt.target.style.cursor = 'zoom-out';
+				} else if (evt.target.style.cursor === 'zoom-out') {
+					chksz(sld.current);
 				}
-				this.style.width = siz[sld.current].w + 'px';
-				this.style.height = siz[sld.current].h + 'px';
-				this.style.cursor = 'zoom-out';
-			} else if (this.style.cursor === 'zoom-out') {
-				chksz(sld.current);
 			}
 		});
-		$(self).on('resize', rsz);
-		prev.on('click', function () {
+		self.addEventListener('resize', rsz);
+		prev.addEventListener('click', function () {
 			sld.slideTo(sld.current - 1);
 		});
-		next.on('click', function () {
+		next.addEventListener('click', function () {
 			sld.slideTo(sld.current + 1);
 		});
-		rp.on('click', function () {
+		rp.addEventListener('click', function () {
 			if (typeof deg[sld.current] === 'number') {
 				deg[sld.current]++;
 				chksz(sld.current);
 			}
 		});
-		rn.on('click', function () {
+		rn.addEventListener('click', function () {
 			if (typeof deg[sld.current] === 'number') {
 				deg[sld.current]--;
 				chksz(sld.current);
 			}
 		});
-		close.on('click', kernel.hidePhotoView);
+		close.addEventListener('click', kernel.hidePhotoView);
 		sld.onchange = function () {
 			if (this.current === undefined) {
-				ctn.css('display', '');
+				ctn.style.display = '';
 			} else {
 				if (siz[this.current]) {
 					chksz(this.current);
 				}
-				ctn.css('display', 'block');
+				ctn.style.display = 'block';
 			}
 		};
 		if ('transform' in document.documentElement.style) {
-			rp.css('display', 'block');
-			rn.css('display', 'block');
+			rp.style.display = 'block';
+			rn.style.display = 'block';
 		}
 		rsz();
 
 		function rsz() {
-			var win = $(self);
-			w = win.innerWidth();
-			h = win.innerHeight();
+			w = self.innerWidth;
+			h = self.innerHeight;
 			if (typeof sld.current === 'number' && siz[sld.current]) {
 				chksz(sld.current);
 			}
 		}
 
 		function getsz(i) {
-			sld.children[i].one('load', function () {
+			sld.children[i].addEventListener('load', load);
+
+			function load() {
+				this.removeEventListener('load', load);
 				siz[i] = {
 					w: this.width,
 					h: this.height
@@ -524,11 +535,11 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 					chksz(i);
 				}
 				this.style.visibility = 'visible';
-			});
+			}
 		}
 
 		function chksz(i) {
-			var r, cw, ch, dw, dh,
+			let r, cw, ch, dw, dh,
 				d = deg[i] % 2;
 			if (d) {
 				dw = siz[i].h;
@@ -553,35 +564,33 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 					dw = cw;
 					dh = ch;
 				}
-				sld.children[i].css('cursor', 'zoom-in');
+				sld.children[i].style.cursor = 'zoom-in';
 			} else {
 				dw = siz[i].w;
 				dh = siz[i].h;
-				sld.children[i].css('cursor', '');
+				sld.children[i].style.cursor = '';
 			}
-			sld.children[i].css({
-				top: (h - dh) / 2 + 'px',
-				left: (w - dw) / 2 + 'px',
-				width: dw + 'px',
-				height: dh + 'px',
-				transform: 'rotate(' + 90 * deg[i] + 'deg)'
-			});
+			sld.children[i].style.top = (h - dh) / 2 + 'px';
+			sld.children[i].style.left = (w - dw) / 2 + 'px';
+			sld.children[i].style.width = dw + 'px';
+			sld.children[i].style.height = dh + 'px';
+			sld.children[i].style.transform = 'rotate(' + 90 * deg[i] + 'deg)';
 		}
 	}();
 	//对话框及提示功能
 	! function () {
-		var hintmo,
+		let hintmo,
 			loadingRT = 0,
-			hint = $('#hint'),
-			readable = $('#readable'),
-			dlgCtn = $('#dialog'),
-			loading = $('#loading'),
+			hint = document.querySelector('#hint'),
+			readable = document.querySelector('#readable'),
+			dlgCtn = document.querySelector('#dialog'),
+			loading = document.querySelector('#loading'),
 			dlgStack = [],
 			dlgCb, raCb; //callbacks
 		kernel.showLoading = function (text) { //loading提示框, 每次调用引用计数＋1所以showLoading和hideLoading必须成对使用
-			loading.find('>div>div').text(text ? text : lang.loading);
+			loading.querySelector(':scope>div>div').textContent = text ? text : lang.loading;
 			if (loadingRT === 0) {
-				loading.css('display', 'block');
+				loading.style.display = 'block';
 			}
 			loadingRT += 1;
 		};
@@ -589,7 +598,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			if (loadingRT > 0) {
 				loadingRT -= 1;
 				if (loadingRT === 0) {
-					loading.css('display', '');
+					loading.style.display = '';
 					if (typeof kernel.dialogEvents.onloaded === 'function') {
 						kernel.dialogEvents.onloaded({
 							type: 'loaded'
@@ -602,30 +611,49 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			return loadingRT > 0;
 		};
 		kernel.hint = function (text, className, t) {
-			hint[0].className = className || '';
-			hint.find('span').text(text);
+			hint.className = className || '';
+			hint.querySelector('span').textContent = text;
 			if (hintmo) {
 				clearTimeout(hintmo);
 			} else {
-				hint.css('display', 'block');
-				hint[0].offsetWidth;
-				hint.fadeIn();
+				hint.style.opacity = 1;
+				hint.animate([{
+					opacity: 0
+				}, {
+					opacity: 1
+				}], {
+					duration: 400,
+					easing: 'ease-in-out'
+				});
 			}
 			if (!t) {
 				t = className === 'error' ? 4000 : className === 'warning' ? 3000 : 2000;
 			}
 			hintmo = setTimeout(function () {
 				hintmo = 0;
-				hint.fadeOut(function () {
-					hint.css('display', '');
+				hint.style.opacity = '';
+				hint.animate([{
+					opacity: 1
+				}, {
+					opacity: 0
+				}], {
+					duration: 400,
+					easing: 'ease-in-out'
 				});
 			}, t);
 		};
 		kernel.showReadable = function (html, width, height, callback, className) {
-			readable.prop('className', className || '').css('display', 'block').find('>div').css({
-				width: width,
-				height: height
-			}).find('>div').append(html);
+			let o = readable.querySelector(':scope>div');
+			readable.className = className || '';
+			readable.style.display = 'block';
+			o.style.width = width;
+			o.style.height = height;
+			o = o.querySelector(':scope>div');
+			if (typeof html === 'string') {
+				o.innerHTML = html;
+			} else {
+				o.appendChild(html);
+			}
 			raCb = callback;
 		};
 		kernel.hideReadable = function () {
@@ -633,16 +661,17 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				raCb();
 				raCb = undefined;
 			}
-			readable.css('display', '').find('>div>div>*').remove();
+			readable.style.display = '';
+			readable.querySelector(':scope>div>div').innerHTML = '';
 		};
 		kernel.hideDialog = function (param) {
-			var f;
+			let f;
 			if (typeof dlgCb === 'function') {
 				f = dlgCb;
 				dlgCb = undefined;
-				f(dlgCtn[0].className === 'isConfirm' ? param : undefined);
+				f(dlgCtn.className === 'isConfirm' ? param : undefined);
 			}
-			dlgCtn[0].className = '';
+			dlgCtn.className = '';
 			if (dlgStack.length) {
 				f = dlgStack.shift();
 				kernel[f.shift()].apply(kernel, f);
@@ -652,61 +681,57 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			kernel.showReadable('<iframe frameborder="no" allowtransparency="yes" marginwidth="0" marginheight="0" src="' + url + '"></iframe>', width, height, callback, 'foreign');
 		};
 		kernel.confirm = function (text, callback, width) {
-			var ctn, txt, yes, no;
-			if (dlgCtn[0].className) {
+			let ctn, txt, yes, no;
+			if (dlgCtn.className) {
 				dlgStack.push(['confirm', text, callback, width]);
 			} else {
-				ctn = dlgCtn.find('>div');
-				txt = ctn.find('>div>div');
-				yes = ctn.find('>a.yes');
-				no = ctn.find('>a.no');
+				ctn = dlgCtn.querySelector(':scope>div');
+				txt = ctn.querySelector(':scope>div>div');
+				yes = ctn.querySelector(':scope>a.yes');
+				no = ctn.querySelector(':scope>a.no');
 				dlgCb = callback;
-				ctn.css('width', width || '400px');
-				if (dataType(text) === 'Array') {
-					txt.text(text[0]);
-					yes.text(text[1]);
-					no.text(text[2]);
+				ctn.style.width = width || '400px';
+				if (Array.isArray(text)) {
+					txt.textContent = text[0];
+					yes.textContent = text[1];
+					no.textContent = text[2];
 				} else {
-					txt.text(text);
-					yes.text(lang.yes);
-					no.text(lang.no);
+					txt.textContent = text;
+					yes.textContent = lang.yes;
+					no.textContent = lang.no;
 				}
-				dlgCtn[0].className = 'isConfirm';
-				ctn.css('height', txt.outerHeight() + Math.max(yes.outerHeight(), no.outerHeight()) + 76 + 'px');
+				dlgCtn.className = 'isConfirm';
+				ctn.style.height = txt.offsetHeight + Math.max(yes.offsetHeight, no.offsetHeight) + 76 + 'px';
 			}
 		};
 		kernel.alert = function (text, callback, width) {
-			var ctn, txt;
-			if (dlgCtn[0].className) {
+			let ctn, txt;
+			if (dlgCtn.className) {
 				dlgStack.push(['alert', text, callback, width]);
 			} else {
-				ctn = dlgCtn.find('>div');
-				txt = ctn.find('>div>div');
+				ctn = dlgCtn.querySelector(':scope>div');
+				txt = ctn.querySelector(':scope>div>div');
 				dlgCb = callback;
-				ctn.css('width', width || '400px');
-				txt.text(text);
-				dlgCtn[0].className = 'isAlert';
-				ctn.css('height', txt.outerHeight() + 46 + 'px');
+				ctn.style.width = width || '400px';
+				txt.textContent = text;
+				dlgCtn.className = 'isAlert';
+				ctn.style.height = txt.offsetHeight + 46 + 'px';
 			}
 		};
-		readable.find('>div>a').on('click', kernel.hideReadable);
-		dlgCtn.find('>div>a.close').on('click', kernel.hideDialog);
-		dlgCtn.find('>div>a.yes').on('click', function () {
-			kernel.hideDialog(true);
-		});
-		dlgCtn.find('>div>a.no').on('click', function () {
-			kernel.hideDialog(false);
-		});
+		readable.querySelector(':scope>div>a').addEventListener('click', kernel.hideReadable);
+		dlgCtn.querySelector(':scope>div>a.close').addEventListener('click', kernel.hideDialog);
+		dlgCtn.querySelector(':scope>div>a.yes').addEventListener('click', kernel.hideDialog.bind(kernel, true));
+		dlgCtn.querySelector(':scope>div>a.no').addEventListener('click', kernel.hideDialog.bind(kernel, false));
 		//目前只有loaded事件
 		kernel.dialogEvents = {};
 	}();
 	//页面加载相关功能
 	! function () {
-		var currentpage;
+		let currentpage;
 		//初始化并启动路由或者修改默认页
 		//当调用此方法后引起路由变化则会返回true
 		kernel.init = function (home) {
-			var oldHash, oldHome, tmp;
+			let oldHash, oldHome, tmp;
 			if (pages.hasOwnProperty(home)) {
 				if (homePage) {
 					if (homePage !== home) {
@@ -720,7 +745,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				} else {
 					homePage = home;
 					if ('onhashchange' in self) {
-						$(self).on('hashchange', hashchange);
+						self.addEventListener('hashchange', hashchange);
 					} else {
 						setInterval(function () {
 							if (oldHash !== location.hash) {
@@ -744,7 +769,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			}
 		};
 		kernel.reloadPage = function (id, silent) {
-			var thislocation;
+			let thislocation;
 			// 是否有数据正在加载
 			if (kernel.isLoading()) {
 				thislocation = kernel.location;
@@ -771,7 +796,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 		kernel.pageEvents = {};
 
 		function reloadPage(id, silent) {
-			if (!id || id === currentpage || (dataType(id) === 'Array' && id.indexOf(currentpage) >= 0)) {
+			if (!id || id === currentpage || (Array.isArray(id) && id.indexOf(currentpage) >= 0)) {
 				if (!silent) {
 					clearWindow();
 				}
@@ -782,7 +807,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 		}
 
 		function hashchange() {
-			var historyNav = history.state,
+			let historyNav = history.state,
 				nl = kernel.parseHash(location.hash);
 			history.replaceState && history.replaceState(true, null);
 			if (!kernel.location || !kernel.isSameLocation(kernel.location, nl)) {
@@ -798,7 +823,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 					});
 				}
 				initLoad('page', pages[nl.id], nl.id, function (firstLoad) {
-					var force, tmp;
+					let force;
 					//发生页面跳转或首次加载
 					if (nl.id !== currentpage) {
 						force = firstLoad || !historyNav;
@@ -807,13 +832,13 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 								pages[currentpage].onunload();
 							}
 							pages[currentpage].status--;
-							sel('page', currentpage).css('display', '');
+							sel('page', currentpage).style.display = '';
 							if (pages[currentpage].autoDestroy) {
 								destroy(pages[currentpage], 'popup', activePopup);
 							}
 						}
 						document.body.className = currentpage = nl.id;
-						sel('page', nl.id).css('display', 'block');
+						sel('page', nl.id).style.display = 'block';
 						pages[nl.id].status++;
 						if (typeof pages[nl.id].onload === 'function') {
 							pages[nl.id].onload(force);
@@ -838,8 +863,8 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 	return kernel;
 
 	function destroy(cfg, type, id) {
-		var n, o = sel(type, id);
-		if (o.length) {
+		let n, o = sel(type, id);
+		if (o) {
 			if (typeof cfg.ondestroy === 'function') {
 				cfg.ondestroy();
 			}
@@ -850,8 +875,10 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 					o = require(n);
 					require.undef(n);
 					if (o) {
-						for (n in o) {
-							delete cfg[n];
+						if (self.Reflect) {
+							Reflect.setPrototypeOf(cfg, Object.prototype);
+						} else {
+							cfg.__proto__ = Object.prototype;
 						}
 					}
 				}
@@ -865,20 +892,20 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 	}
 
 	function sel(type, id) {
-		var result = '#' + type;
+		let result = '#' + type;
 		if (type === 'popup') {
 			result += '>div';
 		} else if (type === 'panel') {
 			result += '>.contents>div';
 		}
 		if (id) {
-			result += '>.' + id;
+			result += '>div.' + id;
 		}
-		return $(result);
+		return document.querySelector(result);
 	}
 
 	function initLoad(type, oldcfg, id, callback) {
-		var url, n, m, isPage;
+		let url, n, m, isPage;
 		if (oldcfg.status > 1) {
 			callback();
 		} else if (!oldcfg.status) {
@@ -891,21 +918,18 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			}
 			if (oldcfg.html) {
 				url = m + id + '.html';
-				$.ajax({
-					url: url,
-					type: 'get',
-					dataType: 'text',
-					success: loadJs,
-					error: function (xhr) {
+				fetch(url).then((res) => {
+					if (res.ok) {
+						return res.text().then((html) => loadJs(html));
+					} else {
 						destroy(oldcfg, type, id);
-						if (BUILD && xhr.status === 404) {
+						if (BUILD && res.status === 404) {
 							updated();
 						} else {
-							errorOccurs(url, xhr.status);
+							errorOccurs(url, res.status);
 						}
-					},
-					complete: kernel.hideLoading
-				});
+					}
+				}).then(kernel.hideLoading);
 				kernel.showLoading();
 			} else {
 				loadJs('');
@@ -913,17 +937,21 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 		}
 
 		function loadJs(html) {
-			var js,
+			let js,
 				ctn = sel(type);
-			ctn[0].insertAdjacentHTML('afterBegin', '<div class="' + id + '">' + html + '</div>');
+			ctn.insertAdjacentHTML('afterBegin', '<div class="' + id + '">' + html + '</div>');
 			if (oldcfg.js) {
-				ctn[0].firstChild.style.visibility = 'hidden';
+				ctn.firstChild.style.visibility = 'hidden';
 				kernel.showLoading();
 				kernel.listeners.add(kernel.dialogEvents, 'loaded', loaded);
 				js = n + id;
 				require([js], function (cfg) {
 					if (cfg) {
-						Object.assign(oldcfg, cfg);
+						if (self.Reflect) {
+							Reflect.setPrototypeOf(oldcfg, cfg);
+						} else {
+							oldcfg.__proto__ = cfg;
+						}
 					}
 					oldcfg.status++;
 					callback(true);
@@ -944,7 +972,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 
 			function loaded(evt) {
 				kernel.listeners.remove(this, evt.type, loaded);
-				ctn.find('>.' + id)[0].style.visibility = '';
+				ctn.querySelector(':scope>div.' + id).style.visibility = '';
 			}
 		}
 

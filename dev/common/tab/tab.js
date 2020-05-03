@@ -1,9 +1,10 @@
 'use strict';
 define(['common/kernel/kernel', './lang'], function (kernel, lang) {
-	var tabMenu = $('<div><a class="reload" href="javascript:;">' + lang.reload + '</a><a class="closeOther" href="javascript:;">' + lang.closeOther + '</a><a class="closeLeft" href="javascript:;">' + lang.closeLeft + '</a><a class="closeRight" href="javascript:;">' + lang.closeRight + '</a></div>'),
-		tabProto = {
+	let tabMenu = document.createElement('div');
+	tabMenu.innerHTML = '<a class="reload" href="javascript:;">' + lang.reload + '</a><a class="closeOther" href="javascript:;">' + lang.closeOther + '</a><a class="closeLeft" href="javascript:;">' + lang.closeLeft + '</a><a class="closeRight" href="javascript:;">' + lang.closeRight + '</a>';
+	let tabProto = {
 			open: function (o) {
-				var i, found, reload;
+				let i, found, reload;
 				if (o.id in this.cfg) {
 					if (!o.args) {
 						for (i = 0; i < this.list.length; i++) {
@@ -34,7 +35,7 @@ define(['common/kernel/kernel', './lang'], function (kernel, lang) {
 				return i;
 			},
 			add: function (o) {
-				var i, tab, url,
+				let i, tab, url,
 					m = 'tab-' + this.name + '/' + o.id + '/',
 					self = this;
 				if (o.id in this.cfg) {
@@ -43,14 +44,16 @@ define(['common/kernel/kernel', './lang'], function (kernel, lang) {
 					}
 					setDefault(o.args, this.cfg[o.id].args);
 					tab = {
-						head: $('<span class="' + o.id + '"><span title="' + this.cfg[o.id].title + '">' + this.cfg[o.id].title + '</span><a href="javascript:;"></a></span>'),
-						body: $('<div class="' + o.id + '"></div>'),
+						head: document.createElement('span'),
+						body: document.createElement('div'),
 						args: o.args,
 						parent: this,
 						setTitle: setTitle
 					};
-					this.inv && this.tabs.length ? this.tabs[this.tabs.length - 1].head.before(tab.head) : this.tabCtn.append(tab.head);
-					this.tabContent.append(tab.body);
+					tab.head.innerHTML = '<span title="' + this.cfg[o.id].title + '">' + this.cfg[o.id].title + '</span><a href="javascript:;"></a>';
+					tab.body.className = tab.head.className = o.id;
+					this.inv && this.tabs.length ? this.tabCtn.insertBefore(tab.head, this.tabs[this.tabs.length - 1].head) : this.tabCtn.appendChild(tab.head);
+					this.tabContent.appendChild(tab.body);
 					i = this.list.length;
 					this.list.push(o);
 					this.tabs.push(tab);
@@ -65,28 +68,25 @@ define(['common/kernel/kernel', './lang'], function (kernel, lang) {
 							this.cfg[o.id].status = 1;
 							if ('html' in this.cfg[o.id]) {
 								url = require.toUrl(m + this.cfg[o.id].html);
-								$.ajax({
-									url: url,
-									type: 'get',
-									dataType: 'text',
-									success: function (text) {
-										delete self.cfg[o.id].html;
-										self.cfg[o.id].htmlContent = text;
-										loadJs();
-									},
-									error: function (xhr, msg) {
+								fetch(url).then(res => {
+									if (res.ok) {
+										return res.text(html => {
+											delete self.cfg[o.id].html;
+											self.cfg[o.id].htmlContent = html;
+											loadJs();
+										});
+									} else {
 										self.cfg[o.id].status = 0;
 										self.cfg[o.id].oncomplete({
 											type: 'complete'
 										});
-										if (BUILD && xhr.status === 404) {
+										if (BUILD && res.status === 404) {
 											updated();
 										} else {
-											errorOccurs(url, xhr.status);
+											errorOccurs(url, res.status);
 										}
-									},
-									complete: kernel.hideLoading
-								});
+									}
+								}).then(kernel.hideLoading);
 								kernel.showLoading();
 							} else {
 								loadJs();
@@ -118,7 +118,7 @@ define(['common/kernel/kernel', './lang'], function (kernel, lang) {
 				}
 
 				function loadJs() {
-					var js;
+					let js;
 					if ('js' in self.cfg[o.id]) {
 						kernel.showLoading();
 						js = m + self.cfg[o.id].js;
@@ -153,23 +153,23 @@ define(['common/kernel/kernel', './lang'], function (kernel, lang) {
 
 				function initTab() {
 					if (self.cfg[o.id].htmlContent) {
-						tab.body.html(self.cfg[o.id].htmlContent);
+						tab.body.innerHTML = self.cfg[o.id].htmlContent;
 					}
 					Object.assign(tab, self.cfg[o.id].proto);
 				}
 			},
 			show: function (i) {
-				var firstload;
+				let firstload;
 				if (i >= 0 && i < this.list.length) {
 					if (typeof this.active === 'number' && this.active !== i) {
 						if (typeof this.tabs[this.active].onhide === 'function') {
 							this.tabs[this.active].onhide();
 						}
-						this.tabCtn.find('>span.active').removeClass('active');
-						this.tabContent.find('>div.active').removeClass('active');
+						this.tabCtn.querySelector(':scope>span.active').classList.remve('active');
+						this.tabContent.querySelector(':scope>div.active').classList.remove('active');
 					}
-					this.tabs[i].body.addClass('active');
-					this.tabs[i].head.addClass('active');
+					this.tabs[i].body.classList.add('active');
+					this.tabs[i].head.classList.add('active');
 					if (this.cfg[this.list[i].id].status === 2) {
 						if (!this.tabs[i].loaded) {
 							firstload = true;
@@ -219,9 +219,8 @@ define(['common/kernel/kernel', './lang'], function (kernel, lang) {
 				}
 			},
 			clear: function () {
-				var i;
 				if (this.tabs.length) {
-					for (i = 0; i < this.list.length; i++) {
+					for (let i = 0; i < this.list.length; i++) {
 						if (i === this.active && typeof this.tabs[i].onhide === 'function') {
 							this.tabs[i].onhide();
 						}
@@ -243,9 +242,8 @@ define(['common/kernel/kernel', './lang'], function (kernel, lang) {
 				}
 			},
 			closeOther: function (j) {
-				var i;
 				if (j > 0 && j < this.tabs.length - 1) {
-					for (i = 0; i < this.list.length; i++) {
+					for (let i = 0; i < this.list.length; i++) {
 						if (i !== j) {
 							if (i === this.active && typeof this.tabs[i].onhide === 'function') {
 								this.tabs[i].onhide();
@@ -274,8 +272,8 @@ define(['common/kernel/kernel', './lang'], function (kernel, lang) {
 				}
 			},
 			closeLeft: function (j) {
-				var i = 0;
 				if (j > 0 && j < this.tabs.length) {
+					let i = 0;
 					while (i < j) {
 						if (i === this.active && typeof this.tabs[i].onhide === 'function') {
 							this.tabs[i].onhide();
@@ -304,9 +302,9 @@ define(['common/kernel/kernel', './lang'], function (kernel, lang) {
 				}
 			},
 			closeRight: function (j) {
-				var i = j + 1,
-					k = i;
 				if (j >= 0 && j < this.tabs.length - 1) {
+					let i = j + 1,
+						k = i;
 					while (i < this.tabs.length) {
 						if (i === this.active && typeof this.tabs[i].onhide === 'function') {
 							this.tabs[i].onhide();
@@ -349,7 +347,7 @@ define(['common/kernel/kernel', './lang'], function (kernel, lang) {
 	kernel.appendCss(require.toUrl('common/tab/tab.less'));
 
 	return function (name, cfg, tabCtn, tabContent, inv) {
-		var i, tmp, r = Object.create(tabProto);
+		let r = Object.create(tabProto);
 		r.list = [];
 		r.tabs = [];
 		r.name = name;
@@ -360,40 +358,50 @@ define(['common/kernel/kernel', './lang'], function (kernel, lang) {
 		if (inv) {
 			tabCtn.addClass('inv');
 		}
-		tabCtn.on('click', '>span>span', function () {
-			var i = getIdx(r, this.parentNode);
-			if (r.active !== i) {
-				r.show(i);
+		tabCtn.addEventListener('click', function(evt) {
+			let o;
+			if (o = inpath(this.querySelector(':scope>span>span'), evt.target)) {
+				let i = getIdx(r, o.parentNode);
+				if (r.active !== i) {
+					r.show(i);
+				}
+			} else if (o = inpath(this.querySelector(':scope>span>a'), evt.target)) {
+				r.close(getIdx(r, o.parentNode));
+			} else if (o = inpath(this.querySelector(':scope>span>div>a'), evt.target)) {
+				r[this.className](getIdx(r, o.parentNode.parentNode));
 			}
-		}).on('click', '>span>a', function () {
-			r.close(getIdx(r, this.parentNode));
-		}).on('contextmenu', '>span', function () {
-			if (tabMenu.parent()[0] !== this) {
-				$(this).append(tabMenu);
-				$(document).one('click', removeMenu);
-			}
-			return false;
-		}).on('click', '>span>div>a', function () {
-			r[this.className](getIdx(r, this.parentNode.parentNode));
 		});
-		tabContent.on('click', '.closepage', function () {
-			r.close(getIdx(r, tabCtn.find('span.active')[0]));
-		});
-		try {
-			tmp = JSON.parse(localStorage.getItem('tab-' + name));
-		} catch (e) {}
-		if ($.type(tmp) === 'object' && typeof tmp.active === 'number' && $.type(tmp.list) === 'array') {
-			for (i = 0; i < tmp.list.length; i++) {
-				r.add(tmp.list[i]);
+		tabCtn.addEventListener('contextmenu', function(evt){
+			let o;
+			evt.preventDefault();
+			if (o = inpath(this.querySelectorAll(':scope>span'), evt.target)) {
+				if (tabMenu.parentNode !== o) {
+					o.appendChild(tabMenu);
+					document.addEventListener('click', removeMenu);
+				}
 			}
-			r.show(tmp.active);
+		});
+		tabContent.addEventListener('click', function (evt) {
+			let o;
+			if (o = inpath(this.querySelectorAll('.closepage'), evt.target)) {
+				r.close(getIdx(r, tabCtn.querySelector('span.active')));
+			}
+		});
+		let tmp = localStorage.getItem('tab-' + name);
+		if (typeof tmp === 'string') {
+			tmp = tmp.parseJsex();
+			if (tmp && dataType(tmp.value) === 'Object' && typeof tmp.value.active === 'number' && Array.isArray(tmp.value.list)) {
+				for (let i = 0; i < tmp.value.list.length; i++) {
+					r.add(tmp.value.list[i]);
+				}
+				r.show(tmp.value.active);
+			}
 		}
 		return r;
 	};
 
 	function getIdx(r, o) {
-		var i;
-		for (i = 0; i < r.tabs.length; i++) {
+		for (let i = 0; i < r.tabs.length; i++) {
 			if (o === r.tabs[i].head[0]) {
 				return i;
 			}
@@ -401,17 +409,18 @@ define(['common/kernel/kernel', './lang'], function (kernel, lang) {
 	}
 
 	function setTitle(title) {
-		this.head.find('>span').prop('title', title).text(title);
+		let o = this.head.querySelector(':scope>span');
+		o.title = o.textContent = title;
 	}
 
 	function removeMenu() {
+		document.removeEventListener('click', removeMenu);
 		tabMenu.remove();
 	}
 
 	function setDefault(a, b) {
-		var n;
 		if (b) {
-			for (n in b) {
+			for (let n in b) {
 				if (!(n in a)) {
 					a[n] = b[n];
 				}
@@ -429,5 +438,13 @@ define(['common/kernel/kernel', './lang'], function (kernel, lang) {
 				location.reload();
 			}
 		});
+	}
+
+	function inpath(a, b) {
+		for (let i = 0; i < a.length; i++) {
+			if (a[i].contains(b)) {
+				return a[i];
+			}
+		}
 	}
 });
