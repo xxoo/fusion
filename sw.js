@@ -15,16 +15,16 @@ self.addEventListener('message', function (event) {
 			for (let i = 0; i < data.modules.length; i++) {
 				data.modules[i] = new URL(data.modules[i] + '/', event.source.url).href;
 			}
-			caches.open(data.prefix + 'modules').then(cache => cache.keys()).then(keys => keys.forEach(request => {
+			caches.open(data.prefix + 'modules').then(cache => cache.keys().then(keys => keys.forEach(request => {
 				if (!findModule(request.url)) {
 					cache.delete(request);
 				}
-			}));
-			caches.open(data.prefix + 'framework').then(cache => cache.keys()).then(keys => keys.forEach(request => {
+			})));
+			caches.open(data.prefix + 'framework').then(cache => cache.keys().then(keys => keys.forEach(request => {
 				if (data.framework.indexOf(request.url) < 0) {
 					cache.delete(request);
 				}
-			}));
+			})));
 		}
 	}
 });
@@ -45,14 +45,14 @@ self.addEventListener('fetch', function (event) {
 				type = 'modules';
 			}
 			if (type) {
-				event.respondWith(caches.open(data.prefix + type).then(cache => cache.match(event.request)).then(response => response ? response : fetch(event.request, {
+				event.respondWith(caches.open(data.prefix + type).then(cache => cache.match(event.request).then(response => response ? response : fetch(event.request, {
 					cache: 'no-cache'
 				}).then(response => {
 					if (response.ok) {
 						cache.put(event.request, response.clone());
 					}
 					return response;
-				})));
+				}))));
 			}
 		}
 	}
