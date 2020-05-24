@@ -150,7 +150,7 @@ function func(evt){
 				}, {
 					title: 'showPhotoView(contents:Array, idx?:number):undefined',
 					desc: '显示图片查看器',
-					example: `kernel.showPhotoView(['http://cn.bing.com/az/hprichbg/rb/SnailsKissing_ZH-CN7861942488_1920x1080.jpg','http://cn.bing.com/az/hprichbg/rb/RestArea_ZH-CN13518721881_1920x1080.jpg']);`
+					example: `kernel.showPhotoView(['https://cn.bing.com/az/hprichbg/rb/SnailsKissing_ZH-CN7861942488_1920x1080.jpg','https://cn.bing.com/az/hprichbg/rb/RestArea_ZH-CN13518721881_1920x1080.jpg']);`
 				}, {
 					title: 'hidePhotoView():undefined',
 					desc: '关闭图片查看器, 一般不需要手动调用',
