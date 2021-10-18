@@ -286,7 +286,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 		todo = undefined;
 
 		function startAni(cb, show) {
-			let	a, b;
+			let a, b;
 			ani = true;
 			if (show) {
 				a = 0;
@@ -760,7 +760,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 						if (kernel.location.args.hasOwnProperty('autopopuparg')) {
 							tmp = kernel.location.args.autopopuparg.parseJsex();
 							if (tmp) {
-								tmp = tmp.value
+								tmp = tmp.value;
 							}
 						}
 						kernel.openPopup(kernel.location.args.autopopup, tmp);
@@ -905,22 +905,22 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 	}
 
 	function initLoad(type, oldcfg, id, callback) {
-		let url, n, m, isPage;
+		let n, isPage;
 		if (oldcfg.status > 1) {
 			callback();
 		} else if (!oldcfg.status) {
 			oldcfg.status = 1;
-			n = type + '/' + id + '/';
-			m = require.toUrl(n);
 			isPage = type === 'page';
+			n = type + '/' + id + '/';
+			let m = require.toUrl(n);
 			if (oldcfg.css) {
 				oldcfg.css = kernel.appendCss(m + id);
 			}
 			if (oldcfg.html) {
-				url = m + id + '.html';
-				fetch(url).then((res) => {
+				let url = m + id + '.html';
+				fetch(url).then(res => {
 					if (res.ok) {
-						return res.text().then((html) => loadJs(html));
+						return res.text().then(loadJs);
 					} else {
 						destroy(oldcfg, type, id);
 						if (BUILD && res.status === 404) {
@@ -929,7 +929,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 							errorOccurs(url, res.status);
 						}
 					}
-				}).then(kernel.hideLoading);
+				}, err => errorOccurs(url, err.message)).then(kernel.hideLoading);
 				kernel.showLoading();
 			} else {
 				loadJs('');
