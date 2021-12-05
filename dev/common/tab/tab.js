@@ -3,7 +3,7 @@ define(['common/kernel/kernel', './lang'], function (kernel, lang) {
 	let tabMenu = document.createElement('div');
 	tabMenu.innerHTML = '<a class="reload" href="javascript:;">' + lang.reload + '</a><a class="closeOther" href="javascript:;">' + lang.closeOther + '</a><a class="closeLeft" href="javascript:;">' + lang.closeLeft + '</a><a class="closeRight" href="javascript:;">' + lang.closeRight + '</a>';
 	let tabProto = {
-		open: function (o) {
+		open(o) {
 			let i, found, reload;
 			if (o.id in this.cfg) {
 				if (!o.args) {
@@ -34,7 +34,7 @@ define(['common/kernel/kernel', './lang'], function (kernel, lang) {
 			}
 			return i;
 		},
-		add: function (o) {
+		add(o) {
 			let i, tab,
 				m = 'tab-' + this.name + '/' + o.id + '/',
 				self = this;
@@ -158,7 +158,7 @@ define(['common/kernel/kernel', './lang'], function (kernel, lang) {
 				Object.assign(tab, self.cfg[o.id].proto);
 			}
 		},
-		show: function (i) {
+		show(i) {
 			let firstload;
 			if (i >= 0 && i < this.list.length) {
 				if (typeof this.active === 'number' && this.active !== i) {
@@ -186,7 +186,7 @@ define(['common/kernel/kernel', './lang'], function (kernel, lang) {
 				this.save();
 			}
 		},
-		close: function (i) {
+		close(i) {
 			if (i >= 0 && i < this.tabs.length) {
 				if (this.active === i) {
 					if (this.list.length > i + 1) {
@@ -218,7 +218,7 @@ define(['common/kernel/kernel', './lang'], function (kernel, lang) {
 				}
 			}
 		},
-		clear: function () {
+		clear() {
 			if (this.tabs.length) {
 				for (let i = 0; i < this.list.length; i++) {
 					if (i === this.active && typeof this.tabs[i].onhide === 'function') {
@@ -241,7 +241,7 @@ define(['common/kernel/kernel', './lang'], function (kernel, lang) {
 				}
 			}
 		},
-		closeOther: function (j) {
+		closeOther(j) {
 			if (j > 0 && j < this.tabs.length - 1) {
 				for (let i = 0; i < this.list.length; i++) {
 					if (i !== j) {
@@ -271,7 +271,7 @@ define(['common/kernel/kernel', './lang'], function (kernel, lang) {
 				}
 			}
 		},
-		closeLeft: function (j) {
+		closeLeft(j) {
 			if (j > 0 && j < this.tabs.length) {
 				let i = 0;
 				while (i < j) {
@@ -301,7 +301,7 @@ define(['common/kernel/kernel', './lang'], function (kernel, lang) {
 				}
 			}
 		},
-		closeRight: function (j) {
+		closeRight(j) {
 			if (j >= 0 && j < this.tabs.length - 1) {
 				let i = j + 1,
 					k = i;
@@ -332,12 +332,12 @@ define(['common/kernel/kernel', './lang'], function (kernel, lang) {
 				}
 			}
 		},
-		reload: function () {
+		reload() {
 			if (typeof this.active === 'number' && typeof this.tabs[this.active].onload === 'function') {
 				this.tabs[this.active].onload();
 			}
 		},
-		save: function () {
+		save() {
 			localStorage.setItem('tab-' + this.name, JSON.stringify({
 				active: this.active,
 				list: this.list
@@ -390,7 +390,7 @@ define(['common/kernel/kernel', './lang'], function (kernel, lang) {
 		let tmp = localStorage.getItem('tab-' + name);
 		if (typeof tmp === 'string') {
 			tmp = tmp.parseJsex();
-			if (tmp && dataType(tmp.value) === 'Object' && typeof tmp.value.active === 'number' && Array.isArray(tmp.value.list)) {
+			if (tmp && tmp.value && typeof tmp.value.active === 'number' && Array.isArray(tmp.value.list)) {
 				for (let i = 0; i < tmp.value.list.length; i++) {
 					r.add(tmp.value.list[i]);
 				}

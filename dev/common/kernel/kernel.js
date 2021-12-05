@@ -3,7 +3,7 @@
 define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/panels/panels', './lang'], function (slider, pages, popups, panels, lang) {
 	let homePage,
 		kernel = {
-			appendCss: function (url, forcecss) { //自动根据当前环境添加css或less
+			appendCss(url, forcecss) { //自动根据当前环境添加css或less
 				let csslnk = document.createElement('link');
 				if (self.less && !forcecss) {
 					csslnk.rel = 'stylesheet/less';
@@ -16,21 +16,24 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				}
 				return document.head.appendChild(csslnk);
 			},
-			removeCss: function (lnk) {
+			removeCss(lnk) {
 				lnk.remove();
 				if (lnk.rel === 'stylesheet/less') {
 					less.sheets.splice(less.sheets.indexOf(lnk), 1);
 					less.refresh();
 				}
 			},
-			buildHash: function (loc) {
+			buildHash(loc) {
 				let hash = '#!' + encodeURIComponent(loc.id);
 				for (let n in loc.args) {
-					hash += loc.args[n] === undefined ? '&' + encodeURIComponent(n) : '&' + encodeURIComponent(n) + '=' + encodeURIComponent(loc.args[n]);
+					hash += '&' + encodeURIComponent(n);
+					if (loc.args[n] !== undefined) {
+						hash += '=' + encodeURIComponent(loc.args[n]);
+					}
 				}
 				return hash;
 			},
-			parseHash: function (hash) {
+			parseHash(hash) {
 				let nl = {
 					id: homePage,
 					args: {}
@@ -39,7 +42,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				let s = hash.match(/[^=&]+(=[^&]*)?/g);
 				if (s && s[0].charAt(0) === '!') {
 					let a = decodeURIComponent(s[0].substr(1));
-					if (pages.hasOwnProperty(a)) {
+					if (Object.hasOwn(pages, a)) {
 						nl.id = a;
 					}
 					for (let i = 1; i < s.length; i++) {
@@ -51,10 +54,10 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				}
 				return nl;
 			},
-			isSameLocation: function (loc1, loc2) {
+			isSameLocation(loc1, loc2) {
 				if (loc1.id === loc2.id && Object.keys(loc1.args).length === Object.keys(loc2.args).length) {
 					for (let n in loc1.args) {
-						if (loc2.args.hasOwnProperty(n)) {
+						if (Object.hasOwn(loc2.args, n)) {
 							if (loc1.args[n] === undefined) {
 								if (loc1.args[n] !== loc2.args[n]) {
 									return false;
@@ -73,22 +76,22 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 					return false;
 				}
 			},
-			replaceLocation: function (loc) {
+			replaceLocation(loc) {
 				if (kernel.location && kernel.isSameLocation(loc, kernel.location)) {
 					kernel.reloadPage();
 				} else {
 					location.replace(kernel.buildHash(loc));
 				}
 			},
-			getLang: function (langs) {
+			getLang(langs) {
 				if (navigator.languages) {
 					for (let i = 0; i < navigator.languages.length; i++) {
-						if (langs.hasOwnProperty(navigator.languages[i])) {
+						if (Object.hasOwn(langs, navigator.languages[i])) {
 							return langs[navigator.languages[i]];
 						}
 					}
 				} else {
-					if (langs.hasOwnProperty(navigator.language)) {
+					if (Object.hasOwn(langs, navigator.language)) {
 						return langs[navigator.language];
 					}
 				}
@@ -100,13 +103,13 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 	! function () {
 		let key = typeof Symbol === 'function' ? Symbol('xEvents') : 'xEvents';
 		kernel.listeners = {
-			add: function (o, e, f) {
+			add(o, e, f) {
 				let result = 0;
 				if (typeof f === 'function') {
-					if (!o.hasOwnProperty(key)) {
+					if (!Object.hasOwn(o, key)) {
 						o[key] = {};
 					}
-					if (!o[key].hasOwnProperty(e)) {
+					if (!Object.hasOwn(o[key], e)) {
 						o[key][e] = {
 							stack: [],
 							heap: [],
@@ -124,13 +127,13 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				}
 				return result;
 			},
-			list: function (o, e) {
+			list(o, e) {
 				let result;
 				if (e) {
-					result = o.hasOwnProperty(key) && o[key].hasOwnProperty(e) ? o[key][e].heap.slice(0) : [];
+					result = Object.hasOwn(o, key) && Object.hasOwn(o[key], e) ? o[key][e].heap.slice(0) : [];
 				} else {
 					result = {};
-					if (o.hasOwnProperty(key)) {
+					if (o[key](o, key)) {
 						for (let i in o[key]) {
 							result[i] = o[key][i].heap.slice(0);
 						}
@@ -138,11 +141,11 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				}
 				return result;
 			},
-			remove: function (o, e, f) {
+			remove(o, e, f) {
 				let result = 0;
-				if (o.hasOwnProperty(key)) {
+				if (Object.hasOwn(key)) {
 					if (e) {
-						if (o[key].hasOwnProperty(e)) {
+						if (Object.hasOwn(o[key], e)) {
 							if (o[key][e].locked) {
 								o[key][e].stack.push(f);
 								result = 2;
@@ -214,7 +217,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			panelCtn = document.querySelector('#panel'),
 			ctn = panelCtn.querySelector(':scope>.contents>div');
 		kernel.openPanel = function (id, param) {
-			if (panels.hasOwnProperty(id)) {
+			if (Object.hasOwn(panels, id)) {
 				initLoad('panel', panels[id], id, function () {
 					if (typeof panels[id].open === 'function') {
 						panels[id].open(param);
@@ -341,7 +344,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			popup = document.getElementById('popup'),
 			ctn = popup.querySelector(':scope>div');
 		kernel.openPopup = function (id, param) {
-			if (popups.hasOwnProperty(id)) {
+			if (Object.hasOwn(popups, id)) {
 				initLoad('popup', popups[id], id, function () {
 					if (typeof popups[id].open === 'function') {
 						popups[id].open(param);
@@ -732,7 +735,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 		//当调用此方法后引起路由变化则会返回true
 		kernel.init = function (home) {
 			let oldHash, oldHome, tmp;
-			if (pages.hasOwnProperty(home)) {
+			if (Object.hasOwn(pages, home)) {
 				if (homePage) {
 					if (homePage !== home) {
 						oldHome = homePage;
@@ -756,8 +759,8 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 						oldHash = location.hash;
 					}
 					hashchange();
-					if (kernel.location.args.hasOwnProperty('autopopup')) {
-						if (kernel.location.args.hasOwnProperty('autopopuparg')) {
+					if (Object.hasOwn(kernel.location.args, 'autopopup')) {
+						if (Object.hasOwn(kernel.location.args, 'autopopuparg')) {
 							tmp = kernel.location.args.autopopuparg.parseJsex();
 							if (tmp) {
 								tmp = tmp.value;
