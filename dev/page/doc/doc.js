@@ -1,106 +1,106 @@
 'use strict';
-define(['module', 'common/kernel/kernel'], function (module, kernel) {
+define(['module', 'common/fusion/fusion'], function (module, fusion) {
 	let thisPage = module.id.replace(/^[^/]+\/|\/[^/]+/g, ''),
 		dom = document.querySelector('#page>.' + thisPage),
 		menu = dom.querySelector('.menu'),
 		content = dom.querySelector('.content'),
 		tree = [{
-			title: 'common/kernel',
+			title: 'common/fusion',
 			desc: '核心模块，包含框架中的主要接口',
 			api: {
 				properties: [{
 					title: 'location:Object',
 					desc: '用于存放当前路由信息, 请勿直接修改',
-					example: `console.log(kernel.location);`
+					example: `console.log(fusion.location);`
 				}, {
 					title: 'lastLocation:Object',
 					desc: '用于存放最近发生变化的路由信息, 可能为undefined, 请勿直接修改',
-					example: `console.log(kernel.lastLocation);`
+					example: `console.log(fusion.lastLocation);`
 				}],
 				methods: [{
 					title: 'appendCss(url:string, forcecss:bool):HTMLLinkElement',
 					desc: '用于加载样式，会自动根据当前环境来选择加载less或者由less编译成的css',
-					example: `let a = kernel.appendCss(require.toUrl('common/kernel/kernel'));
+					example: `let a = fusion.appendCss(require.toUrl('common/fusion/fusion'));
 console.log(a.href);
 setTimeout(function(){
-	kernel.removeCss(a);
+	fusion.removeCss(a);
 }, 1000);`
 				}, {
 					title: 'removeCss(lnk:HTMLLinkElement):undefined',
 					desc: '移除已加载的less或者css',
-					example: `let a = kernel.appendCss(require.toUrl('common/kernel/kernel'));
+					example: `let a = fusion.appendCss(require.toUrl('common/fusion/fusion'));
 console.log(a.href);
 setTimeout(function(){
-	kernel.removeCss(a);
+	fusion.removeCss(a);
 }, 1000);`
 				}, {
 					title: 'buildHash(loc:Object):string',
 					desc: '将loc对象转换为锚点链接字符串',
-					example: `console.log(kernel.buildHash(kernel.location));`
+					example: `console.log(fusion.buildHash(fusion.location));`
 				}, {
 					title: 'parseHash(hash:string):Object',
 					desc: '将锚点链接字符串转换为loc对象',
-					example: `console.log(kernel.parseHash(location.hash));`
+					example: `console.log(fusion.parseHash(location.hash));`
 				}, {
 					title: 'isSameLocation(loc1:Object, loc2:Object):boolean',
 					desc: '判断loc1和loc2是否对应同一个地址',
-					example: `console.log(kernel.isSameLocation(kernel.location, {
+					example: `console.log(fusion.isSameLocation(fusion.location, {
 	id: 'doc',
 	args: {
-		mod: 'common/kernel',
+		mod: 'common/fusion',
 		api: 'isSameLocation'
 	}
 }));`
 				}, {
 					title: 'replaceLocation(loc:Object):undefined',
 					desc: '改变当前地址，若loc和当前地址相同，则调用reloadPage',
-					example: `kernel.replaceLocation({
+					example: `fusion.replaceLocation({
 	id: 'doc', args: {
-		mod: 'common/kernel',
+		mod: 'common/fusion',
 		api: 'replaceLocation'
 	}
 });`
 				}, {
 					title: 'listeners.add(o:Object, e:string, f:Function):undefined',
 					desc: '注册监听事件',
-					example: `kernel.listeners.add(kernel.popupEvents, 'show', func);
-kernel.listeners.add(kernel.popupEvents, 'hide', func);
-kernel.openPopup('samplePopup', 'doc');
+					example: `fusion.listeners.add(fusion.popupEvents, 'show', func);
+fusion.listeners.add(fusion.popupEvents, 'hide', func);
+fusion.openPopup('samplePopup', 'doc');
 function func(evt){
-	console.log(kernel.listeners.list(this));
-	kernel.listeners.remove(this, evt.type, func);
+	console.log(fusion.listeners.list(this));
+	fusion.listeners.remove(this, evt.type, func);
 	console.log(evt);
 }`
 				}, {
 					title: 'listeners.list(o:Object, e?:string):Array|Object',
 					desc: '列出已注册的监听事件',
-					example: `kernel.listeners.add(kernel.popupEvents, 'show', func);
-kernel.listeners.add(kernel.popupEvents, 'hide', func);
-kernel.openPopup('samplePopup', 'doc');
+					example: `fusion.listeners.add(fusion.popupEvents, 'show', func);
+fusion.listeners.add(fusion.popupEvents, 'hide', func);
+fusion.openPopup('samplePopup', 'doc');
 function func(evt){
-	console.log(kernel.listeners.list(this));
-	kernel.listeners.remove(this, evt.type, func);
+	console.log(fusion.listeners.list(this));
+	fusion.listeners.remove(this, evt.type, func);
 	console.log(evt);
 }`
 				}, {
 					title: 'listeners.remove(o:Object, e?:string, f?:Function):undefined',
 					desc: '解除已注册的监听',
-					example: `kernel.listeners.add(kernel.popupEvents, 'show', func);
-kernel.listeners.add(kernel.popupEvents, 'hide', func);
-kernel.openPopup('samplePopup', 'doc');
+					example: `fusion.listeners.add(fusion.popupEvents, 'show', func);
+fusion.listeners.add(fusion.popupEvents, 'hide', func);
+fusion.openPopup('samplePopup', 'doc');
 function func(evt){
-	console.log(kernel.listeners.list(this));
-	kernel.listeners.remove(this, evt.type, func);
+	console.log(fusion.listeners.list(this));
+	fusion.listeners.remove(this, evt.type, func);
 	console.log(evt);
 }`
 				}, {
 					title: 'openPanel(id:string, param:any):undefined',
 					desc: '打开侧边栏',
-					example: `kernel.openPanel('samplePanel');`
+					example: `fusion.openPanel('samplePanel');`
 				}, {
 					title: 'showPanel(id:string):0|1|2',
 					desc: '显示侧边栏, 只有在指定侧边栏已经加载后才可使用. 返回0表示操作失败, 返回1表示操作成功, 返回2表示操作已队列. 若失败, 原因可能是当前侧边栏的onunload方法返回true',
-					example: `kernel.showPanel('samplePanel');`
+					example: `fusion.showPanel('samplePanel');`
 				}, {
 					title: 'closePanel(id?:string|Array):0|1|2',
 					desc: '关闭侧边栏. 返回0表示操作失败, 返回1表示操作成功, 返回2表示操作已队列. 若失败, 原因可能是当前侧边栏的onunload方法返回true',
@@ -108,49 +108,49 @@ function func(evt){
 				}, {
 					title: 'getCurrentPanel():string',
 					desc: '获取当前正在显示的侧边栏id',
-					example: `console.log(kernel.getCurrentPanel());`
+					example: `console.log(fusion.getCurrentPanel());`
 				}, {
 					title: 'destroyPanel(id:string):boolean',
 					desc: '销毁已加载的指定侧边栏, 不可销毁当前侧边栏. 返回true表示销毁成功.',
-					example: `kernel.destroyPanel('samplePanel');`
+					example: `fusion.destroyPanel('samplePanel');`
 				}, {
 					title: 'openPopup(id:string, param:any):undefined',
 					desc: '打开弹窗',
-					example: `kernel.listeners.add(kernel.popupEvents, 'show', func);
-kernel.listeners.add(kernel.popupEvents, 'hide', func);
-kernel.openPopup('samplePopup', 'doc');
+					example: `fusion.listeners.add(fusion.popupEvents, 'show', func);
+fusion.listeners.add(fusion.popupEvents, 'hide', func);
+fusion.openPopup('samplePopup', 'doc');
 function func(evt){
-	console.log(kernel.listeners.list(this));
-	kernel.listeners.remove(this, evt.type, func);
+	console.log(fusion.listeners.list(this));
+	fusion.listeners.remove(this, evt.type, func);
 	console.log(evt);
 }`
 				}, {
 					title: 'showPopup(id:string):boolean',
 					desc: '显示弹窗, 只有在指定弹窗已经加载后才可使用. 返回true表示打开成功. 若失败, 原因可能是当前弹窗的onunload方法返回true',
-					example: `kernel.showPopup('samplePopup');`
+					example: `fusion.showPopup('samplePopup');`
 				}, {
 					title: 'closePopup(id:string|Array):boolean',
 					desc: '关闭弹窗, 返回true表示关闭成. 若失败, 原因可能是当前弹窗的onunload方法返回true',
-					example: `kernel.listeners.add(kernel.popupEvents, 'show', func);
-kernel.listeners.add(kernel.popupEvents, 'hide', func);
-kernel.openPopup('samplePopup', 'doc');
+					example: `fusion.listeners.add(fusion.popupEvents, 'show', func);
+fusion.listeners.add(fusion.popupEvents, 'hide', func);
+fusion.openPopup('samplePopup', 'doc');
 function func(evt){
-	console.log(kernel.listeners.list(this));
-	kernel.listeners.remove(this, evt.type, func);
+	console.log(fusion.listeners.list(this));
+	fusion.listeners.remove(this, evt.type, func);
 	console.log(evt);
 }`
 				}, {
 					title: 'getCurrentPopup():string',
 					desc: '获取当前正在显示的弹窗id',
-					example: `console.log(kernel.getCurrentPopup());`
+					example: `console.log(fusion.getCurrentPopup());`
 				}, {
 					title: 'destroyPopup(id:string):boolean',
 					desc: '销毁已加载的指定弹窗, 不可销毁当前弹窗. 返回true表示销毁成功.',
-					example: `kernel.destroyPopup('samplePopup');`
+					example: `fusion.destroyPopup('samplePopup');`
 				}, {
-					title: 'showPhotoView(contents:Array, idx?:number):undefined',
-					desc: '显示图片查看器',
-					example: `kernel.showPhotoView(['https://cn.bing.com/az/hprichbg/rb/SnailsKissing_ZH-CN7861942488_1920x1080.jpg','https://cn.bing.com/az/hprichbg/rb/RestArea_ZH-CN13518721881_1920x1080.jpg']);`
+					title: 'showPhotoView(contents:Array, idx?:number, btns?:string|Node|Array, cbs?:Function):undefined',
+					desc: '显示图片查看器, idx为默认图片索引. btns为自定义按钮, cb为自定义按钮点击时的回调, 该回调接受两个参数btn:number(被点击的按钮索引), img:number(当前图片索引)',
+					example: `fusion.showPhotoView(['https://cn.bing.com/az/hprichbg/rb/SnailsKissing_ZH-CN7861942488_1920x1080.jpg','https://cn.bing.com/th?id=OHR.SpottedDeers_ZH-CN8790816034_UHD.jpg']);`
 				}, {
 					title: 'hidePhotoView():undefined',
 					desc: '关闭图片查看器, 一般不需要手动调用',
@@ -158,50 +158,50 @@ function func(evt){
 				}, {
 					title: 'showLoading(text?:string):undefined',
 					desc: '显示加载中界面, 这个方法包含一个引用计数, 每次调用会+1，所以此方法必须和hideLoading成对使用',
-					example: `kernel.showLoading();
-console.log(kernel.isLoading());
-setTimeout(kernel.hideLoading, 1000);
-kernel.listeners.add(kernel.dialogEvents, 'loaded', loaded);
+					example: `fusion.showLoading();
+console.log(fusion.isLoading());
+setTimeout(fusion.hideLoading, 1000);
+fusion.listeners.add(fusion.dialogEvents, 'loaded', loaded);
 function loaded(evt){
-	kernel.listeners.remove(this, evt.type, loaded);
-	console.log(kernel.isLoading());
+	fusion.listeners.remove(this, evt.type, loaded);
+	console.log(fusion.isLoading());
 }`
 				}, {
 					title: 'hideLoading():undefined',
 					desc: '使showLoading的引用计数-1, 当到达0时才会关闭加载中界面, 并触发dialogEvents.onloaded事件',
-					example: `kernel.showLoading();
-console.log(kernel.isLoading());
-setTimeout(kernel.hideLoading, 1000);
-kernel.listeners.add(kernel.dialogEvents, 'loaded', loaded);
+					example: `fusion.showLoading();
+console.log(fusion.isLoading());
+setTimeout(fusion.hideLoading, 1000);
+fusion.listeners.add(fusion.dialogEvents, 'loaded', loaded);
 function loaded(evt){
-	kernel.listeners.remove(this, evt.type, loaded);
-	console.log(kernel.isLoading());
+	fusion.listeners.remove(this, evt.type, loaded);
+	console.log(fusion.isLoading());
 }`
 				}, {
 					title: 'isLoading():boolean',
 					desc: '判断加载中界面是否在显示',
-					example: `kernel.showLoading();
-console.log(kernel.isLoading());
-setTimeout(kernel.hideLoading, 1000);
-kernel.listeners.add(kernel.dialogEvents, 'loaded', loaded);
+					example: `fusion.showLoading();
+console.log(fusion.isLoading());
+setTimeout(fusion.hideLoading, 1000);
+fusion.listeners.add(fusion.dialogEvents, 'loaded', loaded);
 function loaded(evt){
-	kernel.listeners.remove(this, evt.type, loaded);
-	console.log(kernel.isLoading());
+	fusion.listeners.remove(this, evt.type, loaded);
+	console.log(fusion.isLoading());
 }`
 				}, {
 					title: 'hint(text:string, className?:string, t?:number)',
 					desc: '显示提示文本',
-					example: `kernel.hint('提示文本', 'success');`
+					example: `fusion.hint('提示文本', 'success');`
 				}, {
 					title: 'showReadable(html:string|HTMLElement, width:string, height:string, callback?:Function, className?:string):undefined',
 					desc: '显示内容展示窗',
-					example: `kernel.showReadable('&lt;h1>title&lt;/h1>&lt;p>content&lt;/p>', '800px', '600px', function(){
+					example: `fusion.showReadable('&lt;h1>title&lt;/h1>&lt;p>content&lt;/p>', '800px', '600px', function(){
 	console.log('readable window closed');
 });`
 				}, {
 					title: 'showForeign(url:string, width:string, height:string, callback?:Function):undefined',
 					desc: '将外部链接作为iframe显示在内容展示窗内',
-					example: `kernel.showForeign('https://xxoo.github.io/fusion-mobile/', '360px', '600px', function(){
+					example: `fusion.showForeign('https://xxoo.github.io/fusion-mobile/', '360px', '600px', function(){
 	console.log('foreign window closed');
 });`
 				}, {
@@ -211,11 +211,11 @@ function loaded(evt){
 				}, {
 					title: 'alert(text:string, callback?:Function, width?:string, height?:string):undefined',
 					desc: '显示提示框',
-					example: `kernel.alert('this is an alert box.');`
+					example: `fusion.alert('this is an alert box.');`
 				}, {
 					title: 'confirm(text:string, callback:Function, width?:string, height?:string):undefined',
 					desc: '显示需确认的提示框',
-					example: `kernel.confirm('is this a confirm box?', function(sure){
+					example: `fusion.confirm('is this a confirm box?', function(sure){
 	console.log(sure);
 });`
 				}, {
@@ -228,11 +228,11 @@ function loaded(evt){
 				}, {
 					title: 'reloadPage(id?:string, silent?:boolean):undefined',
 					desc: '重新加载当前页, 如果silent为true则不关闭弹窗',
-					example: `kernel.reloadPage();`
+					example: `fusion.reloadPage();`
 				}, {
 					title: 'destroyPage(id:string):undefined',
 					desc: '销毁已加载的指定页面, 不可销毁当前页',
-					example: `kernel.destroyPage('samplePage');`
+					example: `fusion.destroyPage('samplePage');`
 				}],
 				events: [{
 					title: 'pageEvents.onroute',
@@ -243,35 +243,35 @@ function loaded(evt){
 				}, {
 					title: 'popupEvents.onshow',
 					desc: '弹窗显示时触发',
-					example: `kernel.listeners.add(kernel.popupEvents, 'show', func);
-kernel.listeners.add(kernel.popupEvents, 'hide', func);
-kernel.openPopup('samplePopup', 'doc');
+					example: `fusion.listeners.add(fusion.popupEvents, 'show', func);
+fusion.listeners.add(fusion.popupEvents, 'hide', func);
+fusion.openPopup('samplePopup', 'doc');
 function func(evt){
-	console.log(kernel.listeners.list(this));
-	kernel.listeners.remove(this, evt.type, func);
+	console.log(fusion.listeners.list(this));
+	fusion.listeners.remove(this, evt.type, func);
 	console.log(evt);
 }`
 				}, {
 					title: 'popupEvents.onhide',
 					desc: '弹窗隐藏时触发',
-					example: `kernel.listeners.add(kernel.popupEvents, 'show', func);
-kernel.listeners.add(kernel.popupEvents, 'hide', func);
-kernel.openPopup('samplePopup', 'doc');
+					example: `fusion.listeners.add(fusion.popupEvents, 'show', func);
+fusion.listeners.add(fusion.popupEvents, 'hide', func);
+fusion.openPopup('samplePopup', 'doc');
 function func(evt){
-	console.log(kernel.listeners.list(this));
-	kernel.listeners.remove(this, evt.type, func);
+	console.log(fusion.listeners.list(this));
+	fusion.listeners.remove(this, evt.type, func);
 	console.log(evt);
 }`
 				}, {
 					title: 'dialogEvents.onloaded',
 					desc: '加载动画结束后触发',
-					example: `kernel.showLoading();
-console.log(kernel.isLoading());
-setTimeout(kernel.hideLoading, 1000);
-kernel.listeners.add(kernel.dialogEvents, 'loaded', loaded);
+					example: `fusion.showLoading();
+console.log(fusion.isLoading());
+setTimeout(fusion.hideLoading, 1000);
+fusion.listeners.add(fusion.dialogEvents, 'loaded', loaded);
 function loaded(evt){
-	kernel.listeners.remove(this, evt.type, loaded);
-	console.log(kernel.isLoading());
+	fusion.listeners.remove(this, evt.type, loaded);
+	console.log(fusion.isLoading());
 }`
 				}]
 			}
@@ -297,7 +297,7 @@ function loaded(evt){
 let contents = [$('&lt;div style="background-color:yellow;color:blue;font-size: 100px;">content1&lt;/div>'), $('&lt;div style="background-color:green;color:red;font-size: 100px;">content2&lt;/div>')];
 let slider = require('common/slider/slider');
 let s = slider(ctn, contents);
-kernel.showReadable(ctn, '800px', '400px', function(){
+fusion.showReadable(ctn, '800px', '400px', function(){
 	s.stopPlay();
 });
 s.startPlay(1000);`
@@ -342,9 +342,9 @@ s.startPlay(1000);`
 			events: '事件'
 		},
 		mod, section, api;
-	content.addEventListener('click', function(evt) {
+	content.addEventListener('click', function (evt) {
 		if (evt.target.nodeName === 'A' && evt.target.parentNode.className === 'code') {
-			eval('let kernel = require("common/kernel/kernel");' + evt.target.parentNode.firstChild.data);
+			eval('let fusion = require("common/fusion/fusion");' + evt.target.parentNode.firstChild.data);
 		}
 	});
 	return {
@@ -352,7 +352,7 @@ s.startPlay(1000);`
 			let i, j;
 			mod = 0;
 			for (i = 0; i < tree.length; i++) {
-				if (kernel.location.args.mod === tree[i].title) {
+				if (fusion.location.args.mod === tree[i].title) {
 					mod = i;
 					break;
 				}
@@ -362,7 +362,7 @@ s.startPlay(1000);`
 				for (j = 0; j < sections.length; j++) {
 					if (tree[mod].api[sections[j]]) {
 						for (i = 0; i < tree[mod].api[sections[j]].length; i++) {
-							if (getShotTitle(tree[mod].api[sections[j]][i].title) === kernel.location.args.api) {
+							if (getShotTitle(tree[mod].api[sections[j]][i].title) === fusion.location.args.api) {
 								section = sections[j];
 								api = i;
 								break;
@@ -381,7 +381,7 @@ s.startPlay(1000);`
 		for (i = 0; i < tree.length; i++) {
 			s += '<a';
 			if (i !== mod) {
-				s += ' href="#!doc&mod=' + encodeURIComponent(tree[i].title) + '"';
+				s += ' href="#/doc/mod=' + encodeURIComponent(tree[i].title) + '"';
 			}
 			s += '>' + tree[i].title + '</a>';
 			if (i === mod && tree[i].api) {
@@ -391,7 +391,7 @@ s.startPlay(1000);`
 						for (k = 0; k < tree[i].api[sections[j]].length; k++) {
 							s += '<a';
 							if (k !== api || section !== sections[j]) {
-								s += ' href="#!doc&mod=' + encodeURIComponent(tree[i].title) + '&api=' + encodeURIComponent(getShotTitle(tree[i].api[sections[j]][k].title)) + '"';
+								s += ' href="#/doc/mod=' + encodeURIComponent(tree[i].title) + '/api=' + encodeURIComponent(getShotTitle(tree[i].api[sections[j]][k].title)) + '"';
 							}
 							s += '>' + getShotTitle(tree[i].api[sections[j]][k].title) + '</a>';
 						}

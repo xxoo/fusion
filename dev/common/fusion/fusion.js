@@ -1,10 +1,11 @@
-// kernel
+// fusion
 'use strict';
-define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/panels/panels', './lang'], function (slider, pages, popups, panels, lang) {
+define(['common/slider/slider', 'common/svgicos/svgicos', 'site/pages/pages', 'site/popups/popups', 'site/panels/panels', './lang'], function (slider, svgicos, pages, popups, panels, lang) {
 	let homePage,
-		kernel = {
+		fusion = {
+			__proto__: null,
 			appendCss(url, forcecss) { //自动根据当前环境添加css或less
-				let csslnk = document.createElement('link');
+				const csslnk = document.createElement('link');
 				if (self.less && !forcecss) {
 					csslnk.rel = 'stylesheet/less';
 					csslnk.href = url + '.less';
@@ -23,32 +24,82 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 					less.refresh();
 				}
 			},
+			// 创建 svg dom;
+			makeSvg(name, type) {
+				const svgns = 'http://www.w3.org/2000/svg',
+					svg = document.createElementNS(svgns, 'svg');
+				svg.appendChild(document.createElementNS(svgns, 'path'));
+				if (name) {
+					fusion.setSvgPath(svg, name, type);
+				}
+				return svg;
+			},
+			// 设置svg 内容
+			setSvgPath(svg, name, type) {
+				if (name in svgicos) {
+					name = svgicos[name];
+				}
+				svg.firstChild.setAttribute('d', name);
+				let box;
+				if (type == 3) {
+					box = {
+						x: 0,
+						y: 0,
+						width: 24,
+						height: 24
+					};
+				} else {
+					const tmp = fusion.makeSvg();
+					tmp.style.position = 'absolute';
+					tmp.style.bottom = tmp.style.right = '100%';
+					tmp.firstChild.setAttribute('d', name);
+					document.body.appendChild(tmp);
+					box = tmp.firstChild.getBBox();
+					tmp.remove();
+					if (type == 2) {
+						box.width += box.x * 2;
+						box.x = 0;
+						box.height += box.y * 2;
+						box.y = 0;
+					} else if (type) {
+						if (box.width > box.height) {
+							box.y -= (box.width - box.height) / 2;
+							box.height = box.width;
+						} else {
+							box.x -= (box.height - box.width) / 2;
+							box.width = box.height;
+						}
+					}
+				}
+				svg.setAttribute('viewBox', box.x + ' ' + box.y + ' ' + box.width + ' ' + box.height);
+			},
+			encodeArg: (s, isName) => s.replace(isName ? /[^!$\x26-\x2e\x30-\x3b\x3f-\x5f\x61-\x7e]+/g : /[^!$=\x26-\x2e\x30-\x3b\x3f-\x5f\x61-\x7e]+/g, encodeURIComponent),
 			buildHash(loc) {
-				let hash = '#!' + encodeURIComponent(loc.id);
+				let hash = '#/' + fusion.encodeArg(loc.id, true);
 				for (let n in loc.args) {
-					hash += '&' + encodeURIComponent(n);
+					hash += '/' + fusion.encodeArg(n, true);
 					if (loc.args[n] !== undefined) {
-						hash += '=' + encodeURIComponent(loc.args[n]);
+						hash += '=' + fusion.encodeArg(loc.args[n]);
 					}
 				}
 				return hash;
 			},
 			parseHash(hash) {
-				let nl = {
+				const nl = {
+					__proto__: null,
 					id: homePage,
-					args: {}
+					args: { __proto__: null }
 				};
-				hash = hash.substr(1).replace(/[#?].*$/, '');
-				let s = hash.match(/[^=&]+(=[^&]*)?/g);
-				if (s && s[0].charAt(0) === '!') {
-					let a = decodeURIComponent(s[0].substr(1));
-					if (Object.hasOwn(pages, a)) {
+				const s = hash.substring(1).match(/[^=/]+(=[^/]*)?/g);
+				if (s) {
+					let a = decodeURIComponent(s[0], true);
+					if (a in pages) {
 						nl.id = a;
 					}
 					for (let i = 1; i < s.length; i++) {
 						a = s[i].match(/^([^=]+)(=)?(.+)?$/);
 						if (a) {
-							nl.args[decodeURIComponent(a[1])] = a[2] ? decodeURIComponent(a[3] || '') : undefined;
+							nl.args[decodeURIComponent(a[1], true)] = a[2] ? decodeURIComponent(a[3] || '') : undefined;
 						}
 					}
 				}
@@ -56,8 +107,8 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			},
 			isSameLocation(loc1, loc2) {
 				if (loc1.id === loc2.id && Object.keys(loc1.args).length === Object.keys(loc2.args).length) {
-					for (let n in loc1.args) {
-						if (Object.hasOwn(loc2.args, n)) {
+					for (const n in loc1.args) {
+						if (n in loc2.args) {
 							if (loc1.args[n] === undefined) {
 								if (loc1.args[n] !== loc2.args[n]) {
 									return false;
@@ -77,39 +128,37 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				}
 			},
 			replaceLocation(loc) {
-				if (kernel.location && kernel.isSameLocation(loc, kernel.location)) {
-					kernel.reloadPage();
+				if (fusion.location && fusion.isSameLocation(loc, fusion.location)) {
+					fusion.reloadPage();
 				} else {
-					location.replace(kernel.buildHash(loc));
+					location.replace(fusion.buildHash(loc));
 				}
 			},
 			getLang(langs) {
 				if (navigator.languages) {
 					for (let i = 0; i < navigator.languages.length; i++) {
-						if (Object.hasOwn(langs, navigator.languages[i])) {
+						if (navigator.languages[i] in langs) {
 							return langs[navigator.languages[i]];
 						}
 					}
-				} else {
-					if (Object.hasOwn(langs, navigator.language)) {
-						return langs[navigator.language];
-					}
+				} else if (navigator.language in langs) {
+					return langs[navigator.language];
 				}
 				return langs.en;
 			}
 		};
-	lang = kernel.getLang(lang);
+	lang = fusion.getLang(lang);
 	//事件处理
-	! function () {
-		let key = typeof Symbol === 'function' ? Symbol('xEvents') : 'xEvents';
-		kernel.listeners = {
-			add(o, e, f) {
+	(() => {
+		const key = typeof Symbol === 'function' ? Symbol('xEvents') : 'xEvents';
+		fusion.listeners = {
+			on(o, e, f) {
 				let result = 0;
 				if (typeof f === 'function') {
 					if (!Object.hasOwn(o, key)) {
-						o[key] = {};
+						o[key] = { __proto__: null };
 					}
-					if (!Object.hasOwn(o[key], e)) {
+					if (!(e in o[key])) {
 						o[key][e] = {
 							stack: [],
 							heap: [],
@@ -127,13 +176,19 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				}
 				return result;
 			},
+			once(o, e, f) {
+				fusion.listeners.on(o, e, function ff(evt) {
+					fusion.listeners.remove(o, e, ff);
+					f.call(o, evt);
+				});
+			},
 			list(o, e) {
 				let result;
 				if (e) {
-					result = Object.hasOwn(o, key) && Object.hasOwn(o[key], e) ? o[key][e].heap.slice(0) : [];
+					result = Object.hasOwn(o, key) && e in o[key] ? o[key][e].heap.slice(0) : [];
 				} else {
-					result = {};
-					if (o[key](o, key)) {
+					result = { __proto__: null };
+					if (Object.hasOwn(o, key)) {
 						for (let i in o[key]) {
 							result[i] = o[key][i].heap.slice(0);
 						}
@@ -141,11 +196,11 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				}
 				return result;
 			},
-			remove(o, e, f) {
+			off(o, e, f) {
 				let result = 0;
-				if (Object.hasOwn(key)) {
+				if (Object.hasOwn(o, key)) {
 					if (e) {
-						if (Object.hasOwn(o[key], e)) {
+						if (e in o[key]) {
 							if (o[key][e].locked) {
 								o[key][e].stack.push(f);
 								result = 2;
@@ -162,7 +217,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 							}
 						}
 					} else {
-						for (let i in o[key]) {
+						for (const i in o[key]) {
 							if (o[key][i].locked) {
 								o[key][i].stack.push(undefined);
 								result = 2;
@@ -176,6 +231,13 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 					}
 				}
 				return result;
+			},
+			trigger(o, e, d = { __proto__: null }) {
+				const s = 'on' + e;
+				if (typeof o[s] === 'function') {
+					d.type = e;
+					o[s](d);
+				}
 			}
 		};
 
@@ -188,7 +250,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			while (this[key][evt.type].stack.length) {
 				if (this[key][evt.type].stack[0]) {
 					if (typeof this[key][evt.type].stack[0] === 'function') {
-						let i = this[key][evt.type].heap.indexOf(this[key][evt.type].stack[0]);
+						const i = this[key][evt.type].heap.indexOf(this[key][evt.type].stack[0]);
 						if (i >= 0) {
 							this[key][evt.type].heap.splice(i, 1);
 						}
@@ -209,30 +271,31 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				o['on' + e] = null;
 			}
 		}
-	}();
+	})();
 
 	//panel
-	! function () {
-		let activePanel, ani, todo,
-			panelCtn = document.querySelector('#panel'),
-			ctn = panelCtn.querySelector(':scope>.contents>div');
-		kernel.openPanel = function (id, param) {
-			if (Object.hasOwn(panels, id)) {
+	(() => {
+		let activePanel, ani, todo;
+		const panelCtn = document.querySelector('#panel'),
+			ctn = panelCtn.querySelector(':scope>.contents>div'),
+			close = ctn.querySelector(':scope>a.close');
+		fusion.openPanel = function (id, param) {
+			if (id in panels) {
 				initLoad('panel', panels[id], id, function () {
 					if (typeof panels[id].open === 'function') {
 						panels[id].open(param);
 					} else {
-						kernel.showPanel(id);
+						fusion.showPanel(id);
 					}
 				});
 				return true;
 			}
 		};
-		kernel.showPanel = function (id) {
+		fusion.showPanel = function (id) {
 			let result = 0;
 			if (panels[id].status > 1) {
 				if (ani) {
-					todo = kernel.showPanel.bind(this, id);
+					todo = fusion.showPanel.bind(this, id);
 					result = 2;
 				} else if (!activePanel) {
 					panels[id].status++;
@@ -240,7 +303,8 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 						panels[id].onload();
 					}
 					panelCtn.className = activePanel = id;
-					panelCtn.style.display = ctn.querySelector(':scope>div.' + id).style.display = 'block';
+					panelCtn.style.display = 'block';
+					ctn.querySelector(':scope>div.' + id).style.display = '';
 					startAni(function () {
 						if (typeof panels[id].onloadend === 'function') {
 							panels[id].onloadend();
@@ -257,16 +321,16 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 					}
 					result = 1;
 				} else if (hidePanel()) {
-					todo = kernel.showPanel.bind(this, id);
+					todo = fusion.showPanel.bind(this, id);
 					result = 1;
 				}
 			}
 			return result;
 		};
-		kernel.closePanel = function (id) {
+		fusion.closePanel = function (id) {
 			let result = 0;
 			if (ani) {
-				todo = kernel.closePanel.bind(this, id);
+				todo = this.closePanel.bind(this, id);
 				result = 2;
 			} else if (activePanel && (!id || activePanel === id || (Array.isArray(id) && id.indexOf(activePanel) >= 0)) && hidePanel()) {
 				result = 1;
@@ -274,19 +338,17 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			return result;
 		};
 		// 获取当前显示的 panel id
-		kernel.getCurrentPanel = function () {
+		fusion.getCurrentPanel = function () {
 			return activePanel;
 		};
-		kernel.destroyPanel = function (id) {
+		fusion.destroyPanel = function (id) {
 			if (panels[id].status === 2) {
 				destroy(panels[id], 'panel', id);
 				return true;
 			}
 		};
-		todo = kernel.closePanel.bind(kernel, undefined);
-		ctn.querySelector(':scope>a.close').addEventListener('click', todo);
-		panelCtn.querySelector(':scope>.mask').addEventListener('click', todo);
-		todo = undefined;
+		close.appendChild(fusion.makeSvg('mdiWindowClose'), 1);
+		close.onclick = panelCtn.querySelector(':scope>.mask').onclick = fusion.closePanel.bind(fusion, undefined);
 
 		function startAni(cb, show) {
 			let a, b;
@@ -327,7 +389,8 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 						panels[activePanel].onunloadend();
 					}
 					panels[activePanel].status--;
-					ctn.querySelector(':scope>div.' + activePanel).style.display = panelCtn.style.display = '';
+					ctn.querySelector(':scope>div.' + activePanel).style.display = 'none';
+					panelCtn.style.display = '';
 					if (panels[activePanel].autoDestroy) {
 						destroy(panels[activePanel], 'panel', activePanel);
 					}
@@ -336,37 +399,34 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				return true;
 			}
 		}
-	}();
+	})();
 
 	//弹出窗口
-	! function () {
-		let activePopup,
-			popup = document.getElementById('popup'),
-			ctn = popup.querySelector(':scope>div');
-		kernel.openPopup = function (id, param) {
-			if (Object.hasOwn(popups, id)) {
+	(() => {
+		let activePopup;
+		const popup = document.getElementById('popup'),
+			ctn = popup.querySelector(':scope>div'),
+			close = popup.querySelector(':scope>div>a.close');
+		fusion.openPopup = function (id, param) {
+			if (id in popups) {
 				initLoad('popup', popups[id], id, function () {
 					if (typeof popups[id].open === 'function') {
 						popups[id].open(param);
 					} else {
-						kernel.showPopup(id);
+						fusion.showPopup(id);
 					}
 				});
 				return true;
 			}
 		};
-		kernel.showPopup = function (id) {
+		fusion.showPopup = function (id) {
 			let result;
 			if (popups[id].status > 1) {
 				if (!activePopup) {
-					ctn.querySelector(':scope>div.' + id).style.display = popup.style.display = 'block';
+					ctn.querySelector(':scope>div.' + id).style.display = '';
+					popup.style.display = 'flex';
 					popup.className = activePopup = id;
-					if (typeof kernel.popupEvents.onshow === 'function') {
-						kernel.popupEvents.onshow({
-							type: 'show',
-							id: activePopup
-						});
-					}
+					fusion.listeners.trigger(fusion.popupEvents, 'show', { id: activePopup });
 					popups[id].status++;
 					if (typeof popups[id].onload === 'function') {
 						popups[id].onload();
@@ -379,11 +439,11 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 					result = true;
 				} else if (typeof popups[activePopup].onunload !== 'function' || !popups[activePopup].onunload()) {
 					popups[activePopup].status--;
-					ctn.querySelector(':scope>div.' + activePopup).style.display = '';
+					ctn.querySelector(':scope>div.' + activePopup).style.display = 'none';
 					if (popups[activePopup].autoDestroy) {
 						destroy(popups[activePopup], 'popup', activePopup);
 					}
-					ctn.querySelector(':scope>div.' + id).style.display = 'block';
+					ctn.querySelector(':scope>div.' + id).style.display = '';
 					popup.className = activePopup = id;
 					popups[id].status++;
 					if (typeof popups[id].onload === 'function') {
@@ -394,53 +454,55 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			}
 			return result;
 		};
-		kernel.closePopup = function (id) {
+		fusion.closePopup = function (id) {
 			let close;
 			if (activePopup && (!id || activePopup === id || (Array.isArray(id) && id.indexOf(activePopup) >= 0)) && (typeof popups[activePopup].onunload !== 'function' || !popups[activePopup].onunload())) {
 				popups[activePopup].status--;
 				close = activePopup;
-				ctn.querySelector(':scope>div.' + activePopup).style.display = popup.style.display = popup.className = activePopup = '';
+				ctn.querySelector(':scope>div.' + activePopup).style.display = 'none';
+				popup.style.display = popup.className = '';
 				if (popups[close].autoDestroy) {
 					destroy(popups[close], 'popup', activePopup);
 				}
-				if (typeof kernel.popupEvents.onhide === 'function') {
-					kernel.popupEvents.onhide({
-						type: 'hide',
-						id: close
-					});
-				}
+				activePopup = '';
+				fusion.listeners.trigger(fusion.popupEvents, 'hide', { id: close });
 				return true;
 			}
 		};
 		// 获取当前显示的 popup id
-		kernel.getCurrentPopup = function () {
+		fusion.getCurrentPopup = function () {
 			return activePopup;
 		};
-		kernel.destroyPopup = function (id) {
+		fusion.destroyPopup = function (id) {
 			if (popups[id].status === 2) {
 				destroy(popups[id], 'popup', id);
 				return true;
 			}
 		};
-		kernel.popupEvents = {};
-		popup.querySelector(':scope>div>a').addEventListener('click', kernel.closePopup.bind(kernel, undefined));
-	}();
+		fusion.popupEvents = { __proto__: null };
+		close.appendChild(fusion.makeSvg('mdiWindowClose', 3));
+		close.onclick = fusion.closePopup.bind(fusion, undefined);
+	})();
 	//图片展示
-	! function () {
-		let ctn = document.querySelector('#photoview'),
+	(() => {
+		const ctn = document.querySelector('#photoview'),
 			close = ctn.querySelector('a.close'),
-			prev = ctn.querySelector('a.prev'),
-			next = ctn.querySelector('a.next'),
-			rp = ctn.querySelector('a.rotate.p'),
-			rn = ctn.querySelector('a.rotate.n'),
-			sld = slider(ctn.querySelector(':scope>div')),
+			btns = ctn.querySelector('.btns'),
+			btnCtn = btns.querySelector('div'),
+			prev = btnCtn.querySelector('a.prev'),
+			next = btnCtn.querySelector('a.next'),
+			flip = btnCtn.querySelector('a.flip'),
+			rotate = btnCtn.querySelector('a.rotate'),
+			imgs = ctn.querySelector('.imgs'),
+			sld = slider(imgs),
 			siz = [],
 			deg = [],
-			w, h;
-		kernel.showPhotoView = function (contents, idx) {
+			scl = [];
+		let w, h, tmo;
+		fusion.showPhotoView = function (contents, idx, acts, cb) {
 			if (Array.isArray(contents)) {
 				for (let i = 0; i < contents.length; i++) {
-					let img = document.createElement('img');
+					const img = new Image();
 					img.src = contents[i];
 					sld.add(img);
 					getsz(i);
@@ -448,24 +510,37 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				if (idx >= 0 && idx < sld.children.length) {
 					sld.slideTo(idx, true);
 				}
-				if (sld.children.length > 1) {
-					prev.style.display = next.style.display = 'block';
-				} else {
-					prev.style.display = next.style.display = '';
+				prev.style.display = next.style.display = sld.children.length > 1 ? '' : 'none';
+				if (Array.isArray(acts)) {
+					for (let i = 0; i < acts.length; i++) {
+						const a = document.createElement(a);
+						if (typeof acts[i] === 'string') {
+							a.innerHTML = acts[i];
+						} else if (acts[i] instanceof Node) {
+							a.replaceChildren(acts[i]);
+						} else if (acts[i] && typeof acts[i][Symbol.iterator] === 'function') {
+							a.replaceChildren(...acts[i]);
+						}
+						if (typeof cb === 'function') {
+							a.onclick = () => cb(i, sld.current);
+						}
+						next.insertAdjacentElement('beforebegin', a);
+					}
 				}
 			}
 		};
-		kernel.hidePhotoView = function () {
-			siz = [];
+		fusion.hidePhotoView = function () {
+			siz.splice(0);
+			scl.splice(0);
 			while (sld.children.length) {
 				sld.remove(0);
 			}
 		};
-		ctn.addEventListener('click', function (evt) {
+		imgs.onclick = function (evt) {
 			if (evt.target.nodeName === 'IMG') {
 				if (evt.target.style.cursor === 'zoom-in') {
-					let d = deg[sld.current] % 2;
-					if (d) {
+					//let d = deg[sld.current] % 2;
+					if (deg[sld.current] % 2) {
 						evt.target.style.top = siz[sld.current].w > h ? (siz[sld.current].w - siz[sld.current].h) / 2 + 'px' : (h - siz[sld.current].h) / 2 + 'px';
 						evt.target.style.left = siz[sld.current].h > w ? (siz[sld.current].h - siz[sld.current].w) / 2 + 'px' : (w - siz[sld.current].w) / 2 + 'px';
 					} else {
@@ -479,27 +554,39 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 					chksz(sld.current);
 				}
 			}
-		});
+		};
+		ctn.onmousemove = function (evt) {
+			ctn.classList.add('act');
+			if (tmo) {
+				clearTimeout(tmo);
+				tmo = undefined;
+			}
+			if (evt.target.nodeName !== 'A') {
+				tmo = setTimeout(hideBtns, 2000);
+			}
+		};
 		self.addEventListener('resize', rsz);
-		prev.addEventListener('click', function () {
+		prev.onclick = function () {
 			sld.slideTo(sld.current - 1);
-		});
-		next.addEventListener('click', function () {
+		};
+		next.onclick = function () {
 			sld.slideTo(sld.current + 1);
-		});
-		rp.addEventListener('click', function () {
+		};
+		flip.onclick = function () {
+			if (deg[sld.current] % 2) {
+				scl[sld.current][1] *= -1;
+			} else {
+				scl[sld.current][0] *= -1;
+			}
+			chksz(sld.current);
+		};
+		rotate.onclick = function () {
 			if (typeof deg[sld.current] === 'number') {
 				deg[sld.current]++;
 				chksz(sld.current);
 			}
-		});
-		rn.addEventListener('click', function () {
-			if (typeof deg[sld.current] === 'number') {
-				deg[sld.current]--;
-				chksz(sld.current);
-			}
-		});
-		close.addEventListener('click', kernel.hidePhotoView);
+		};
+		close.onclick = fusion.hidePhotoView;
 		sld.onchange = function () {
 			if (this.current === undefined) {
 				ctn.style.display = '';
@@ -507,15 +594,19 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				if (siz[this.current]) {
 					chksz(this.current);
 				}
-				ctn.style.display = 'block';
+				ctn.style.display = 'flex';
 			}
 		};
-		if ('transform' in document.documentElement.style) {
-			rp.style.display = 'block';
-			rn.style.display = 'block';
-		}
+		prev.appendChild(fusion.makeSvg('mdiChevronLeft', 1));
+		next.appendChild(fusion.makeSvg('mdiChevronRight', 1));
+		flip.appendChild(fusion.makeSvg('mdiFlipHorizontal', 1));
+		rotate.appendChild(fusion.makeSvg('mdiFileRotateRightOutline', 1));
+		close.appendChild(fusion.makeSvg('mdiCloseThick', 1));
 		rsz();
-
+		function hideBtns() {
+			tmo = undefined;
+			ctn.classList.remove('act');
+		}
 		function rsz() {
 			w = self.innerWidth;
 			h = self.innerHeight;
@@ -525,25 +616,24 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 		}
 
 		function getsz(i) {
-			sld.children[i].addEventListener('load', load);
-
-			function load() {
-				this.removeEventListener('load', load);
+			sld.children[i].onload = function () {
+				this.onload = null;
 				siz[i] = {
 					w: this.width,
 					h: this.height
 				};
 				deg[i] = 0;
+				scl[i] = [1, 1];
 				if (sld.current === i) {
 					chksz(i);
 				}
 				this.style.visibility = 'visible';
-			}
+			};
 		}
 
 		function chksz(i) {
-			let r, cw, ch, dw, dh,
-				d = deg[i] % 2;
+			let r, cw, ch, dw, dh;
+			const d = deg[i] % 2;
 			if (d) {
 				dw = siz[i].h;
 				dh = siz[i].w;
@@ -577,43 +667,42 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			sld.children[i].style.left = (w - dw) / 2 + 'px';
 			sld.children[i].style.width = dw + 'px';
 			sld.children[i].style.height = dh + 'px';
-			sld.children[i].style.transform = 'rotate(' + 90 * deg[i] + 'deg)';
+			sld.children[i].style.transform = 'rotate(' + 90 * deg[i] + 'deg) scale(' + scl[i][0] + ',' + scl[i][1] + ')';
 		}
-	}();
+	})();
 	//对话框及提示功能
-	! function () {
-		let hintmo,
-			loadingRT = 0,
-			hint = document.querySelector('#hint'),
+	(() => {
+		const hint = document.querySelector('#hint'),
 			readable = document.querySelector('#readable'),
 			dlgCtn = document.querySelector('#dialog'),
 			loading = document.querySelector('#loading'),
-			dlgStack = [],
-			dlgCb, raCb; //callbacks
-		kernel.showLoading = function (text) { //loading提示框, 每次调用引用计数＋1所以showLoading和hideLoading必须成对使用
-			loading.querySelector(':scope>div>div').textContent = text ? text : lang.loading;
+			txt = dlgCtn.querySelector(':scope>div>.content'),
+			yes = dlgCtn.querySelector(':scope>div>.btns>a.yes'),
+			no = dlgCtn.querySelector(':scope>div>.btns>a.no'),
+			dlgClose = dlgCtn.querySelector(':scope>div>.close'),
+			dlgStack = [];
+		let hintmo,
+			dlgId = 0,
+			loadingRT = 0,
+			onClose, raCb; //callbacks
+		fusion.showLoading = function (text) { //loading提示框, 每次调用引用计数＋1所以showLoading和hideLoading必须成对使用
+			loading.querySelector(':scope>div').lastChild.data = text ? text : lang.loading;
 			if (loadingRT === 0) {
-				loading.style.display = 'block';
+				loading.style.display = 'flex';
 			}
 			loadingRT += 1;
 		};
-		kernel.hideLoading = function () { //不要使用hideDialog来关闭loading提示框
+		fusion.hideLoading = function () { //不要使用hideDialog来关闭loading提示框
 			if (loadingRT > 0) {
 				loadingRT -= 1;
 				if (loadingRT === 0) {
 					loading.style.display = '';
-					if (typeof kernel.dialogEvents.onloaded === 'function') {
-						kernel.dialogEvents.onloaded({
-							type: 'loaded'
-						});
-					}
+					fusion.listeners.trigger(fusion.dialogEvents, 'loaded');
 				}
 			}
 		};
-		kernel.isLoading = function () {
-			return loadingRT > 0;
-		};
-		kernel.hint = function (text, className, t) {
+		fusion.isLoading = () => loadingRT > 0;
+		fusion.hint = function (text, className, t) {
 			hint.className = className || '';
 			hint.querySelector('span').textContent = text;
 			if (hintmo) {
@@ -645,21 +734,25 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 				});
 			}, t);
 		};
-		kernel.showReadable = function (html, width, height, callback, className) {
+		fusion.showReadable = function (html, width, height, callback, className) {
 			let o = readable.querySelector(':scope>div');
 			readable.className = className || '';
-			readable.style.display = 'block';
+			readable.style.display = 'flex';
 			o.style.width = width;
 			o.style.height = height;
 			o = o.querySelector(':scope>div');
 			if (typeof html === 'string') {
 				o.innerHTML = html;
+			} else if (html instanceof Node) {
+				o.replaceChildren(html);
+			} else if (html && typeof html[Symbol.iterator] === 'function') {
+				o.replaceChildren(...html);
 			} else {
-				o.appendChild(html);
+				o.innerHTML = '';
 			}
 			raCb = callback;
 		};
-		kernel.hideReadable = function () {
+		fusion.hideReadable = function () {
 			if (typeof raCb === 'function') {
 				raCb();
 				raCb = undefined;
@@ -667,136 +760,140 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			readable.style.display = '';
 			readable.querySelector(':scope>div>div').innerHTML = '';
 		};
-		kernel.hideDialog = function (param) {
-			let f;
-			if (typeof dlgCb === 'function') {
-				f = dlgCb;
-				dlgCb = undefined;
-				f(dlgCtn.className === 'isConfirm' ? param : undefined);
-			}
-			dlgCtn.className = '';
-			if (dlgStack.length) {
-				f = dlgStack.shift();
-				kernel[f.shift()].apply(kernel, f);
-			}
-		};
-		kernel.showForeign = function (url, width, height, callback) {
-			kernel.showReadable('<iframe frameborder="no" allowtransparency="yes" marginwidth="0" marginheight="0" src="' + url + '"></iframe>', width, height, callback, 'foreign');
-		};
-		kernel.confirm = function (text, callback, width) {
-			let ctn, txt, yes, no;
-			if (dlgCtn.className) {
-				dlgStack.push(['confirm', text, callback, width]);
-			} else {
-				ctn = dlgCtn.querySelector(':scope>div');
-				txt = ctn.querySelector(':scope>div>div');
-				yes = ctn.querySelector(':scope>a.yes');
-				no = ctn.querySelector(':scope>a.no');
-				dlgCb = callback;
-				ctn.style.width = width || '400px';
-				if (Array.isArray(text)) {
-					txt.textContent = text[0];
-					yes.textContent = text[1];
-					no.textContent = text[2];
-				} else {
-					txt.textContent = text;
-					yes.textContent = lang.yes;
-					no.textContent = lang.no;
+		fusion.closeDialog = function (param, id) {
+			const t = typeof id === 'number';
+			if (!t || id === dlgId) {
+				if (typeof onClose === 'function') {
+					onClose(param, id);
+					onClose = undefined;
 				}
-				dlgCtn.className = 'isConfirm';
-				ctn.style.height = txt.offsetHeight + Math.max(yes.offsetHeight, no.offsetHeight) + 76 + 'px';
+				dlgCtn.className = dlgCtn.style.display = '';
+				let g;
+				while (dlgStack.length && !g) {
+					g = dlgStack.shift();
+					if (g) {
+						openDialog.apply(undefined, g);
+					} else {
+						++dlgId;
+					}
+				}
+			} else if (t && t > dlgId && id <= dlgId + dlgStack.length) {
+				dlgStack[id - dlgId - 1] = undefined;
 			}
 		};
-		kernel.alert = function (text, callback, width) {
-			let ctn, txt;
-			if (dlgCtn.className) {
-				dlgStack.push(['alert', text, callback, width]);
-			} else {
-				ctn = dlgCtn.querySelector(':scope>div');
-				txt = ctn.querySelector(':scope>div>div');
-				dlgCb = callback;
-				ctn.style.width = width || '400px';
-				txt.textContent = text;
-				dlgCtn.className = 'isAlert';
-				ctn.style.height = txt.offsetHeight + 46 + 'px';
-			}
-		};
-		readable.querySelector(':scope>div>a').addEventListener('click', kernel.hideReadable);
-		dlgCtn.querySelector(':scope>div>a.close').addEventListener('click', kernel.hideDialog);
-		dlgCtn.querySelector(':scope>div>a.yes').addEventListener('click', kernel.hideDialog.bind(kernel, true));
-		dlgCtn.querySelector(':scope>div>a.no').addEventListener('click', kernel.hideDialog.bind(kernel, false));
+		fusion.showForeign = (url, width, height, callback) => fusion.showReadable('<iframe frameborder="no" allowtransparency="yes" marginwidth="0" marginheight="0" src="' + url + '"></iframe>', width, height, callback, 'foreign');
+		fusion.confirm = (text, onclose, onopen) => openDialog('confirm', text, onclose, onopen);
+		fusion.alert = (text, onclose, onopen) => openDialog('alert', text, onclose, onopen);
+		fusion.htmlDialog = (html, className, onclose, onopen) => openDialog(className || '', html, onclose, onopen);
+		dlgClose.appendChild(fusion.makeSvg('mdiWindowClose', 2));
+		readable.querySelector(':scope>div>a').onclick = fusion.hideReadable;
+		yes.onclick = fusion.closeDialog.bind(fusion, true);
+		no.onclick = dlgClose.onclick = fusion.closeDialog.bind(fusion, false);
 		//目前只有loaded事件
-		kernel.dialogEvents = {};
-	}();
+		fusion.dialogEvents = { __proto__: null };
+
+		function openDialog(type, content, onclose, onopen) {
+			if (dlgCtn.className) {
+				dlgStack.push([type, content, onclose, onopen]);
+				return dlgId + dlgStack.length;
+			} else {
+				if (type === 'alert') {
+					if (Array.isArray(content)) {
+						txt.textContent = content[0];
+						no.textContent = content[1];
+					} else {
+						txt.textContent = content;
+						no.textContent = lang.close;
+					}
+				} else if (type === 'confirm') {
+					if (Array.isArray(content)) {
+						txt.textContent = content[0];
+						yes.textContent = content[1];
+						no.textContent = content[2];
+					} else {
+						txt.textContent = content;
+						yes.textContent = lang.yes;
+						no.textContent = lang.no;
+					}
+				} else if (typeof content === 'string') {
+					txt.innerHTML = content;
+				} else if (content instanceof Node) {
+					txt.replaceChildren(content);
+				} else if (content && typeof content[Symbol.iterator] === 'function') {
+					txt.replaceChildren(...content);
+				} else {
+					txt.innerHTML = '';
+				}
+				dlgCtn.className = 'type';
+				dlgCtn.style.display = 'flex';
+				++dlgId;
+				onClose = onclose;
+				if (typeof onopen === 'function') {
+					onopen(dlgId);
+				}
+				return dlgId;
+			}
+		}
+	})();
 	//页面加载相关功能
-	! function () {
+	(() => {
 		let currentpage;
 		//初始化并启动路由或者修改默认页
 		//当调用此方法后引起路由变化则会返回true
-		kernel.init = function (home) {
-			let oldHash, oldHome, tmp;
-			if (Object.hasOwn(pages, home)) {
+		fusion.init = function (home) {
+			let oldHome, tmp;
+			if (home in pages) {
 				if (homePage) {
 					if (homePage !== home) {
 						oldHome = homePage;
 						homePage = home;
-						if (kernel.location.id === oldHome) {
+						if (fusion.location.id === oldHome) {
 							hashchange();
 							return true;
 						}
 					}
 				} else {
 					homePage = home;
-					if ('onhashchange' in self) {
-						self.addEventListener('hashchange', hashchange);
-					} else {
-						setInterval(function () {
-							if (oldHash !== location.hash) {
-								oldHash = location.hash;
-								hashchange();
-							}
-						}, 10);
-						oldHash = location.hash;
-					}
+					self.addEventListener('hashchange', hashchange);
 					hashchange();
-					if (Object.hasOwn(kernel.location.args, 'autopopup')) {
-						if (Object.hasOwn(kernel.location.args, 'autopopuparg')) {
-							tmp = kernel.location.args.autopopuparg.parseJsex();
+					if ('autoPopup' in fusion.location.args) {
+						if ('autoPopupArg' in fusion.location.args) {
+							tmp = fusion.location.args.autoPopupArg.parseJsex();
 							if (tmp) {
 								tmp = tmp.value;
 							}
 						}
-						kernel.openPopup(kernel.location.args.autopopup, tmp);
+						fusion.openPopup(fusion.location.args.autoPopup, tmp);
 					}
 				}
 			}
 		};
-		kernel.reloadPage = function (id, silent) {
+		fusion.reloadPage = function (id, silent) {
 			let thislocation;
 			// 是否有数据正在加载
-			if (kernel.isLoading()) {
-				thislocation = kernel.location;
+			if (fusion.isLoading()) {
+				thislocation = fusion.location;
 				// 注册监听 ; loaded
-				kernel.listeners.add(kernel.dialogEvents, 'loaded', listener);
+				fusion.listeners.on(fusion.dialogEvents, 'loaded', listener);
 			} else {
 				reloadPage(id, silent);
 			}
 
 			function listener(evt) {
-				kernel.listeners.remove(this, evt.type, listener);
+				fusion.listeners.off(this, evt.type, listener);
 				// url 是否改变
-				if (thislocation === kernel.location) {
+				if (thislocation === fusion.location) {
 					reloadPage(id, silent);
 				}
 			}
 		};
-		kernel.destroyPage = function (id) {
+		fusion.destroyPage = function (id) {
 			if (pages[id].status === 2) {
 				destroy(pages[id], 'page', id);
 				return true;
 			}
 		};
-		kernel.pageEvents = {};
+		fusion.pageEvents = { __proto__: null };
 
 		function reloadPage(id, silent) {
 			if (!id || id === currentpage || (Array.isArray(id) && id.indexOf(currentpage) >= 0)) {
@@ -810,21 +907,16 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 		}
 
 		function hashchange() {
-			let historyNav = history.state,
-				nl = kernel.parseHash(location.hash);
+			const historyNav = history.state,
+				nl = fusion.parseHash(location.hash);
 			history.replaceState && history.replaceState(true, null);
-			if (!kernel.location || !kernel.isSameLocation(kernel.location, nl)) {
-				kernel.lastLocation = kernel.location;
-				kernel.location = nl;
-				if (kernel.lastLocation) {
+			if (!fusion.location || !fusion.isSameLocation(fusion.location, nl)) {
+				fusion.lastLocation = fusion.location;
+				fusion.location = nl;
+				if (fusion.lastLocation) {
 					clearWindow();
 				}
-				if (typeof kernel.pageEvents.onroute === 'function') {
-					kernel.pageEvents.onroute({
-						type: 'route',
-						history: historyNav
-					});
-				}
+				fusion.listeners.trigger(fusion.pageEvents, 'route', { history: historyNav });
 				initLoad('page', pages[nl.id], nl.id, function (firstLoad) {
 					let force;
 					//发生页面跳转或首次加载
@@ -835,35 +927,87 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 								pages[currentpage].onunload();
 							}
 							pages[currentpage].status--;
-							sel('page', currentpage).style.display = '';
+							sel('page', currentpage).style.display = 'none';
 							if (pages[currentpage].autoDestroy) {
 								destroy(pages[currentpage], 'popup', activePopup);
 							}
 						}
 						document.body.className = currentpage = nl.id;
-						sel('page', nl.id).style.display = 'block';
+						sel('page', nl.id).style.display = '';
 						pages[nl.id].status++;
 						if (typeof pages[nl.id].onload === 'function') {
 							pages[nl.id].onload(force);
 						}
-					} else {
-						if (typeof pages[nl.id].onload === 'function') {
-							//未发生页面跳转但url有变化时允许页面缓存
-							pages[nl.id].onload();
-						}
+					} else if (typeof pages[nl.id].onload === 'function') {
+						//未发生页面跳转但url有变化时允许页面缓存
+						pages[nl.id].onload();
 					}
-					if (typeof kernel.pageEvents.onrouteend === 'function') {
-						kernel.pageEvents.onrouteend({
-							type: 'routeend',
-							history: historyNav,
-							force: force
-						});
-					}
+					fusion.listeners.trigger(fusion.pageEvents, 'routeend', {
+						history: historyNav,
+						force: force
+					});
 				});
 			}
 		}
-	}();
-	return kernel;
+	})();
+	(() => {
+		const tips = document.querySelector('#tips'),
+			list = { __proto__: null };
+		let id = 0;
+		fusion.showTip = function (content, options = {}) {
+			const tipId = id++,
+				dom = document.createElement('div'),
+				close = () => {
+					tmo && clearTimeout(tmo);
+					delete list[tipId];
+					dom.style.transitionProperty = 'margin-left';
+					dom.style.marginLeft = dom.offsetWidth + 20 + 'px';
+					dom.ontransitionend = step2;
+				};
+			let tmo;
+			list[tipId] = close;
+			if (typeof options.className === 'string') {
+				dom.className = options.className;
+			}
+			if (options.showClose) {
+				dom.insertAdjacentHTML('beforeend', '<a class="close">✕</a>');
+				dom.firstChild.onclick = close;
+			}
+			if (typeof content === 'string') {
+				dom.insertAdjacentHTML('beforeend', content);
+			} else {
+				dom.appendChild(content);
+			}
+			if (typeof options.timeout === 'number') {
+				dom.onmouseover = () => tmo = clearTimeout(tmo);
+				dom.onmouseout = () => tmo = setTimeout(close, options.timeout);
+				dom.onmouseout();
+			}
+			tips.appendChild(dom);
+			dom.style.marginBottom = -dom.offsetHeight + 'px';
+			dom.offsetHeight;
+			dom.ontransitionend = cleanup;
+			dom.style.transitionProperty = 'margin-bottom';
+			dom.style.marginBottom = '10px';
+			return close;
+		};
+		fusion.clearTips = function () {
+			for (const n in list) {
+				list[n]();
+			}
+		};
+		function step2() {
+			this.style.visibility = 'hidden';
+			this.style.transitionProperty = 'margin-bottom';
+			this.style.marginBottom = -this.offsetHeight + 'px';
+			this.ontransitionend = () => this.remove();
+		}
+		function cleanup() {
+			this.style.transitionProperty = this.style.marginBottom = '';
+			this.ontransitionend = null;
+		}
+	})();
+	return fusion;
 
 	function destroy(cfg, type, id) {
 		let n, o = sel(type, id);
@@ -888,7 +1032,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			}
 		}
 		if (cfg.css && cfg.css.href) {
-			kernel.removeCss(cfg.css);
+			fusion.removeCss(cfg.css);
 			cfg.css = true;
 		}
 		delete cfg.status;
@@ -917,7 +1061,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			n = type + '/' + id + '/';
 			let m = require.toUrl(n);
 			if (oldcfg.css) {
-				oldcfg.css = kernel.appendCss(m + id);
+				oldcfg.css = fusion.appendCss(m + id);
 			}
 			if (oldcfg.html) {
 				let url = m + id + '.html';
@@ -932,21 +1076,21 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 							errorOccurs(url, res.status);
 						}
 					}
-				}, err => errorOccurs(url, err.message)).then(kernel.hideLoading);
-				kernel.showLoading();
+				}, err => errorOccurs(url, err.message)).then(fusion.hideLoading);
+				fusion.showLoading();
 			} else {
 				loadJs('');
 			}
 		}
 
 		function loadJs(html) {
-			let js,
-				ctn = sel(type);
-			ctn.insertAdjacentHTML('afterBegin', '<div class="' + id + '">' + html + '</div>');
+			let js;
+			const ctn = sel(type);
+			ctn.insertAdjacentHTML('afterBegin', '<div class="' + id + '" style="display:none">' + html + '</div>');
 			if (oldcfg.js) {
 				ctn.firstChild.style.visibility = 'hidden';
-				kernel.showLoading();
-				kernel.listeners.add(kernel.dialogEvents, 'loaded', loaded);
+				fusion.showLoading();
+				fusion.listeners.on(fusion.dialogEvents, 'loaded', loaded);
 				js = n + id;
 				require([js], function (cfg) {
 					if (cfg) {
@@ -958,7 +1102,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 					}
 					oldcfg.status++;
 					callback(true);
-					kernel.hideLoading();
+					fusion.hideLoading();
 				}, BUILD && function (error) {
 					destroy(oldcfg, type, id);
 					if ((error.requireType && error.requireType !== 'scripterror' && error.requireType !== 'nodefine') || (error.xhr && error.xhr.status !== 404)) {
@@ -966,7 +1110,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 					} else {
 						updated();
 					}
-					kernel.hideLoading();
+					fusion.hideLoading();
 				});
 			} else {
 				oldcfg.status++;
@@ -974,13 +1118,13 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			}
 
 			function loaded(evt) {
-				kernel.listeners.remove(this, evt.type, loaded);
+				fusion.listeners.off(this, evt.type, loaded);
 				ctn.querySelector(':scope>div.' + id).style.visibility = '';
 			}
 		}
 
 		function errorOccurs(res, msg) {
-			kernel.alert(lang.error.replace('${res}', res) + msg, isPage ? function () {
+			fusion.alert(lang.error.replace('${res}', res) + msg, isPage ? function () {
 				history.back();
 			} : undefined);
 		}
@@ -989,7 +1133,7 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 			if (isPage) {
 				location.reload();
 			} else {
-				kernel.confirm(lang.update, function (sure) {
+				fusion.confirm(lang.update, function (sure) {
 					if (sure) {
 						location.reload();
 					}
@@ -999,8 +1143,8 @@ define(['common/slider/slider', 'site/pages/pages', 'site/popups/popups', 'site/
 	}
 
 	function clearWindow() {
-		kernel.closePanel();
-		kernel.closePopup();
-		kernel.hideReadable();
+		fusion.closePanel();
+		fusion.closePopup();
+		fusion.hideReadable();
 	}
 });

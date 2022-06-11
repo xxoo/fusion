@@ -1,21 +1,21 @@
 'use strict';
-define(['module', 'common/kernel/kernel'], function(module, kernel) {
+define(['module', 'common/fusion/fusion'], function (module, fusion) {
 	let thisPanel = module.id.replace(/^[^/]+\/|\/[^/]+/g, ''),
 		dom = document.querySelector('#panel>.contents>div>.' + thisPanel);
 	return {
-		onload: function() {
+		onload: function () {
 			console.log('opening ' + thisPanel);
 		},
-		onunload: function() {
+		onunload: function () {
 			console.log('closing ' + thisPanel);
 		},
-		onloadend: function() {
+		onloadend: function () {
 			console.log(thisPanel + ' is open');
 		},
-		onunloadend: function() {
+		onunloadend: function () {
 			console.log(thisPanel + ' is closed');
 		},
-		ondestroy: function() {
+		ondestroy: function () {
 			console.log('do clean up stuff here');
 		}
 	};
