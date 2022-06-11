@@ -347,7 +347,7 @@ define(['common/slider/slider', 'common/svgicos/svgicos', 'site/pages/pages', 's
 				return true;
 			}
 		};
-		close.appendChild(fusion.makeSvg('mdiWindowClose'), 3);
+		close.appendChild(fusion.makeSvg('mdiWindowClose', 3));
 		close.onclick = panelCtn.querySelector(':scope>.mask').onclick = fusion.closePanel.bind(fusion, undefined);
 
 		function startAni(cb, show) {
@@ -785,7 +785,7 @@ define(['common/slider/slider', 'common/svgicos/svgicos', 'site/pages/pages', 's
 		fusion.confirm = (text, onclose, onopen) => openDialog('confirm', text, onclose, onopen);
 		fusion.alert = (text, onclose, onopen) => openDialog('alert', text, onclose, onopen);
 		fusion.htmlDialog = (html, className, onclose, onopen) => openDialog(className || '', html, onclose, onopen);
-		dlgClose.appendChild(fusion.makeSvg('mdiWindowClose', 2));
+		dlgClose.appendChild(fusion.makeSvg('mdiWindowClose', 3));
 		readable.querySelector(':scope>div>a').onclick = fusion.hideReadable;
 		yes.onclick = fusion.closeDialog.bind(fusion, true);
 		no.onclick = dlgClose.onclick = fusion.closeDialog.bind(fusion, false);
