@@ -674,6 +674,7 @@ define(['common/slider/slider', 'common/svgicos/svgicos', 'site/pages/pages', 's
 	(() => {
 		const hint = document.querySelector('#hint'),
 			readable = document.querySelector('#readable'),
+			readableClose = readable.querySelector(':scope>div>a'),
 			dlgCtn = document.querySelector('#dialog'),
 			loading = document.querySelector('#loading'),
 			txt = dlgCtn.querySelector(':scope>div>.content'),
@@ -786,7 +787,8 @@ define(['common/slider/slider', 'common/svgicos/svgicos', 'site/pages/pages', 's
 		fusion.alert = (text, onclose, onopen) => openDialog('alert', text, onclose, onopen);
 		fusion.htmlDialog = (html, className, onclose, onopen) => openDialog(className || '', html, onclose, onopen);
 		dlgClose.appendChild(fusion.makeSvg('mdiWindowClose', 3));
-		readable.querySelector(':scope>div>a').onclick = fusion.hideReadable;
+		readableClose.appendChild(fusion.makeSvg('mdiCloseThick', 1));
+		readableClose.onclick = fusion.hideReadable;
 		yes.onclick = fusion.closeDialog.bind(fusion, true);
 		no.onclick = dlgClose.onclick = fusion.closeDialog.bind(fusion, false);
 		//目前只有loaded事件
