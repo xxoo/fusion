@@ -11,7 +11,7 @@ define(['module', 'common/fusion/fusion'], function (module, fusion) {
 				properties: [{
 					title: 'currentPanel:string',
 					desc: '获取当前正在显示的侧边栏id',
-					example: `console.log(fusion.currentPanel());`
+					example: `console.log(fusion.currentPanel);`
 				}, {
 					title: 'currentPopup:string',
 					desc: '获取当前正在显示的弹窗id',
