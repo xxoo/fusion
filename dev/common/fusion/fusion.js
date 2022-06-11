@@ -85,12 +85,12 @@ define(['common/slider/slider', 'common/svgicos/svgicos', 'site/pages/pages', 's
 				return hash;
 			},
 			parseHash(hash) {
-				const nl = {
-					__proto__: null,
-					id: homePage,
-					args: { __proto__: null }
-				};
-				const s = hash.substring(1).match(/[^=/]+(=[^/]*)?/g);
+				const s = hash.substring(1).match(/[^=/]+(=[^/]*)?/g),
+					nl = {
+						__proto__: null,
+						id: homePage,
+						args: { __proto__: null }
+					};
 				if (s) {
 					let a = decodeURIComponent(s[0], true);
 					if (a in pages) {
