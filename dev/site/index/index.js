@@ -13,11 +13,11 @@ define(['common/fusion/fusion'], function (fusion) {
 				head.removeChild(ipt);
 			}
 		});
-		fusion.listeners.add(fusion.pageEvents, 'route', function () {
+		fusion.listeners.on(fusion.pageEvents, 'route', function () {
 			_hmt.push(['_trackPageview', location.pathname + fusion.buildHash(fusion.location)]);
 		});
 	}
-	fusion.listeners.add(fusion.pageEvents, 'routeend', function (evt) {
+	fusion.listeners.on(fusion.pageEvents, 'routeend', function (evt) {
 		//如果上次访问的页面id和当前页id不同，并且不是在history中导航时，则滚动到页面顶部
 		if (fusion.lastLocation && fusion.lastLocation.id !== fusion.location.id && !evt.history && Math.max(document.body.scrollTop, document.documentElement.scrollTop)) {
 			window.scrollTo({
