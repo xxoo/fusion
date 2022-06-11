@@ -347,7 +347,7 @@ define(['common/slider/slider', 'common/svgicos/svgicos', 'site/pages/pages', 's
 				return true;
 			}
 		};
-		close.appendChild(fusion.makeSvg('mdiWindowClose'), 1);
+		close.appendChild(fusion.makeSvg('mdiWindowClose'), 3);
 		close.onclick = panelCtn.querySelector(':scope>.mask').onclick = fusion.closePanel.bind(fusion, undefined);
 
 		function startAni(cb, show) {
