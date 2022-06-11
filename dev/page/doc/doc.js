@@ -6,9 +6,28 @@ define(['module', 'common/fusion/fusion'], function (module, fusion) {
 		content = dom.querySelector('.content'),
 		tree = [{
 			title: 'common/fusion',
-			desc: '核心模块，包含框架中的主要接口',
+			desc: '核心模块, 包含框架中的主要接口',
 			api: {
 				properties: [{
+					title: 'currentPanel:string',
+					desc: '获取当前正在显示的侧边栏id',
+					example: `console.log(fusion.currentPanel());`
+				}, {
+					title: 'currentPopup:string',
+					desc: '获取当前正在显示的弹窗id',
+					example: `console.log(fusion.currentPopup);`
+				}, {
+					title: 'showLoading(text?:string):undefined',
+					desc: '显示加载中界面, 这个方法包含一个引用计数, 每次调用会+1, 所以此方法必须和hideLoading成对使用',
+					example: `fusion.showLoading();
+console.log(fusion.isLoading);
+setTimeout(fusion.hideLoading, 1000);
+fusion.listeners.on(fusion.dialogEvents, 'loaded', loaded);
+function loaded(evt){
+	fusion.listeners.off(this, evt.type, loaded);
+	console.log(fusion.isLoading);
+}`
+				}, {
 					title: 'location:Object',
 					desc: '用于存放当前路由信息, 请勿直接修改',
 					example: `console.log(fusion.location);`
@@ -19,7 +38,7 @@ define(['module', 'common/fusion/fusion'], function (module, fusion) {
 				}],
 				methods: [{
 					title: 'appendCss(url:string, forcecss:bool):HTMLLinkElement',
-					desc: '用于加载样式，会自动根据当前环境来选择加载less或者由less编译成的css',
+					desc: '用于加载样式, 会自动根据当前环境来选择加载less或者由less编译成的css',
 					example: `let a = fusion.appendCss(require.toUrl('common/fusion/fusion'));
 console.log(a.href);
 setTimeout(function(){
@@ -53,7 +72,7 @@ setTimeout(function(){
 }));`
 				}, {
 					title: 'replaceLocation(loc:Object):undefined',
-					desc: '改变当前地址，若loc和当前地址相同，则调用reloadPage',
+					desc: '改变当前地址, 若loc和当前地址相同, 则调用reloadPage',
 					example: `fusion.replaceLocation({
 	id: 'doc', args: {
 		mod: 'common/fusion',
@@ -106,10 +125,6 @@ function func(evt){
 					desc: '关闭侧边栏. 返回0表示操作失败, 返回1表示操作成功, 返回2表示操作已队列. 若失败, 原因可能是当前侧边栏的onunload方法返回true',
 					example: ``
 				}, {
-					title: 'getCurrentPanel():string',
-					desc: '获取当前正在显示的侧边栏id',
-					example: `console.log(fusion.getCurrentPanel());`
-				}, {
 					title: 'destroyPanel(id:string):boolean',
 					desc: '销毁已加载的指定侧边栏, 不可销毁当前侧边栏. 返回true表示销毁成功.',
 					example: `fusion.destroyPanel('samplePanel');`
@@ -140,10 +155,6 @@ function func(evt){
 	console.log(evt);
 }`
 				}, {
-					title: 'getCurrentPopup():string',
-					desc: '获取当前正在显示的弹窗id',
-					example: `console.log(fusion.getCurrentPopup());`
-				}, {
 					title: 'destroyPopup(id:string):boolean',
 					desc: '销毁已加载的指定弹窗, 不可销毁当前弹窗. 返回true表示销毁成功.',
 					example: `fusion.destroyPopup('samplePopup');`
@@ -156,37 +167,26 @@ function func(evt){
 					desc: '关闭图片查看器, 一般不需要手动调用',
 					example: ``
 				}, {
-					title: 'showLoading(text?:string):undefined',
-					desc: '显示加载中界面, 这个方法包含一个引用计数, 每次调用会+1，所以此方法必须和hideLoading成对使用',
-					example: `fusion.showLoading();
-console.log(fusion.isLoading());
-setTimeout(fusion.hideLoading, 1000);
-fusion.listeners.on(fusion.dialogEvents, 'loaded', loaded);
-function loaded(evt){
-	fusion.listeners.off(this, evt.type, loaded);
-	console.log(fusion.isLoading());
-}`
-				}, {
 					title: 'hideLoading():undefined',
 					desc: '使showLoading的引用计数-1, 当到达0时才会关闭加载中界面, 并触发dialogEvents.onloaded事件',
 					example: `fusion.showLoading();
-console.log(fusion.isLoading());
+console.log(fusion.isLoading);
 setTimeout(fusion.hideLoading, 1000);
 fusion.listeners.on(fusion.dialogEvents, 'loaded', loaded);
 function loaded(evt){
 	fusion.listeners.off(this, evt.type, loaded);
-	console.log(fusion.isLoading());
+	console.log(fusion.isLoading);
 }`
 				}, {
-					title: 'isLoading():boolean',
+					title: 'isLoading:boolean',
 					desc: '判断加载中界面是否在显示',
 					example: `fusion.showLoading();
-console.log(fusion.isLoading());
+console.log(fusion.isLoading);
 setTimeout(fusion.hideLoading, 1000);
 fusion.listeners.on(fusion.dialogEvents, 'loaded', loaded);
 function loaded(evt){
 	fusion.listeners.off(this, evt.type, loaded);
-	console.log(fusion.isLoading());
+	console.log(fusion.isLoading);
 }`
 				}, {
 					title: 'hint(text:string, className?:string, t?:number)',
@@ -266,12 +266,12 @@ function func(evt){
 					title: 'dialogEvents.onloaded',
 					desc: '加载动画结束后触发',
 					example: `fusion.showLoading();
-console.log(fusion.isLoading());
+console.log(fusion.isLoading);
 setTimeout(fusion.hideLoading, 1000);
 fusion.listeners.on(fusion.dialogEvents, 'loaded', loaded);
 function loaded(evt){
 	fusion.listeners.off(this, evt.type, loaded);
-	console.log(fusion.isLoading());
+	console.log(fusion.isLoading);
 }`
 				}]
 			}
