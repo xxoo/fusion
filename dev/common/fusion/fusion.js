@@ -337,16 +337,18 @@ define(['common/slider/slider', 'common/svgicos/svgicos', 'site/pages/pages', 's
 			}
 			return result;
 		};
-		// 获取当前显示的 panel id
-		fusion.getCurrentPanel = function () {
-			return activePanel;
-		};
 		fusion.destroyPanel = function (id) {
 			if (panels[id].status === 2) {
 				destroy(panels[id], 'panel', id);
 				return true;
 			}
 		};
+		// 获取当前显示的 panel id
+		Object.defineProperty('currentPanel', {
+			get: function () {
+				return activePanel;
+			}
+		});
 		close.appendChild(fusion.makeSvg('mdiWindowClose', 3));
 		close.onclick = panelCtn.querySelector(':scope>.mask').onclick = fusion.closePanel.bind(fusion, undefined);
 
@@ -469,16 +471,18 @@ define(['common/slider/slider', 'common/svgicos/svgicos', 'site/pages/pages', 's
 				return true;
 			}
 		};
-		// 获取当前显示的 popup id
-		fusion.getCurrentPopup = function () {
-			return activePopup;
-		};
 		fusion.destroyPopup = function (id) {
 			if (popups[id].status === 2) {
 				destroy(popups[id], 'popup', id);
 				return true;
 			}
 		};
+		// 获取当前显示的 popup id
+		Object.defineProperty('currentPopup', {
+			get: function () {
+				return activePopup;
+			}
+		});
 		fusion.popupEvents = { __proto__: null };
 		close.appendChild(fusion.makeSvg('mdiWindowClose', 3));
 		close.onclick = fusion.closePopup.bind(fusion, undefined);
@@ -702,7 +706,6 @@ define(['common/slider/slider', 'common/svgicos/svgicos', 'site/pages/pages', 's
 				}
 			}
 		};
-		fusion.isLoading = () => loadingRT > 0;
 		fusion.hint = function (text, className, t) {
 			hint.className = className || '';
 			hint.querySelector('span').textContent = text;
@@ -786,6 +789,11 @@ define(['common/slider/slider', 'common/svgicos/svgicos', 'site/pages/pages', 's
 		fusion.confirm = (text, onclose, onopen) => openDialog('confirm', text, onclose, onopen);
 		fusion.alert = (text, onclose, onopen) => openDialog('alert', text, onclose, onopen);
 		fusion.htmlDialog = (html, className, onclose, onopen) => openDialog(className || '', html, onclose, onopen);
+		Object.defineProperty('isLoading', {
+			get: function () {
+				return loadingRT > 0;
+			}
+		});
 		dlgClose.appendChild(fusion.makeSvg('mdiWindowClose', 3));
 		readableClose.appendChild(fusion.makeSvg('mdiCloseThick', 1));
 		readableClose.onclick = fusion.hideReadable;
@@ -873,7 +881,7 @@ define(['common/slider/slider', 'common/svgicos/svgicos', 'site/pages/pages', 's
 		fusion.reloadPage = function (id, silent) {
 			let thislocation;
 			// 是否有数据正在加载
-			if (fusion.isLoading()) {
+			if (fusion.isLoading) {
 				thislocation = fusion.location;
 				// 注册监听 ; loaded
 				fusion.listeners.on(fusion.dialogEvents, 'loaded', listener);
