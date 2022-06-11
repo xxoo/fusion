@@ -1,0 +1,1 @@
+"use strict";define(["module","common/fusion/fusion"],(function(o,n){let e=o.id.replace(/^[^/]+\/|\/[^/]+/g,""),t=document.querySelector("#popup>div>."+e).querySelector(":scope>.content>span");return{open:function(o){t.textContent=o,n.showPopup(e)},onunload:function(){console.log("closing "+e)}}}));
