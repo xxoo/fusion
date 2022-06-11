@@ -61,36 +61,36 @@ setTimeout(function(){
 	}
 });`
 				}, {
-					title: 'listeners.add(o:Object, e:string, f:Function):undefined',
+					title: 'listeners.on(o:Object, e:string, f:Function):undefined',
 					desc: '注册监听事件',
-					example: `fusion.listeners.add(fusion.popupEvents, 'show', func);
-fusion.listeners.add(fusion.popupEvents, 'hide', func);
+					example: `fusion.listeners.on(fusion.popupEvents, 'show', func);
+fusion.listeners.on(fusion.popupEvents, 'hide', func);
 fusion.openPopup('samplePopup', 'doc');
 function func(evt){
 	console.log(fusion.listeners.list(this));
-	fusion.listeners.remove(this, evt.type, func);
+	fusion.listeners.off(this, evt.type, func);
 	console.log(evt);
 }`
 				}, {
 					title: 'listeners.list(o:Object, e?:string):Array|Object',
 					desc: '列出已注册的监听事件',
-					example: `fusion.listeners.add(fusion.popupEvents, 'show', func);
-fusion.listeners.add(fusion.popupEvents, 'hide', func);
+					example: `fusion.listeners.on(fusion.popupEvents, 'show', func);
+fusion.listeners.on(fusion.popupEvents, 'hide', func);
 fusion.openPopup('samplePopup', 'doc');
 function func(evt){
 	console.log(fusion.listeners.list(this));
-	fusion.listeners.remove(this, evt.type, func);
+	fusion.listeners.off(this, evt.type, func);
 	console.log(evt);
 }`
 				}, {
-					title: 'listeners.remove(o:Object, e?:string, f?:Function):undefined',
+					title: 'listeners.off(o:Object, e?:string, f?:Function):undefined',
 					desc: '解除已注册的监听',
-					example: `fusion.listeners.add(fusion.popupEvents, 'show', func);
-fusion.listeners.add(fusion.popupEvents, 'hide', func);
+					example: `fusion.listeners.on(fusion.popupEvents, 'show', func);
+fusion.listeners.on(fusion.popupEvents, 'hide', func);
 fusion.openPopup('samplePopup', 'doc');
 function func(evt){
 	console.log(fusion.listeners.list(this));
-	fusion.listeners.remove(this, evt.type, func);
+	fusion.listeners.off(this, evt.type, func);
 	console.log(evt);
 }`
 				}, {
@@ -116,12 +116,12 @@ function func(evt){
 				}, {
 					title: 'openPopup(id:string, param:any):undefined',
 					desc: '打开弹窗',
-					example: `fusion.listeners.add(fusion.popupEvents, 'show', func);
-fusion.listeners.add(fusion.popupEvents, 'hide', func);
+					example: `fusion.listeners.on(fusion.popupEvents, 'show', func);
+fusion.listeners.on(fusion.popupEvents, 'hide', func);
 fusion.openPopup('samplePopup', 'doc');
 function func(evt){
 	console.log(fusion.listeners.list(this));
-	fusion.listeners.remove(this, evt.type, func);
+	fusion.listeners.off(this, evt.type, func);
 	console.log(evt);
 }`
 				}, {
@@ -131,12 +131,12 @@ function func(evt){
 				}, {
 					title: 'closePopup(id:string|Array):boolean',
 					desc: '关闭弹窗, 返回true表示关闭成. 若失败, 原因可能是当前弹窗的onunload方法返回true',
-					example: `fusion.listeners.add(fusion.popupEvents, 'show', func);
-fusion.listeners.add(fusion.popupEvents, 'hide', func);
+					example: `fusion.listeners.on(fusion.popupEvents, 'show', func);
+fusion.listeners.on(fusion.popupEvents, 'hide', func);
 fusion.openPopup('samplePopup', 'doc');
 function func(evt){
 	console.log(fusion.listeners.list(this));
-	fusion.listeners.remove(this, evt.type, func);
+	fusion.listeners.off(this, evt.type, func);
 	console.log(evt);
 }`
 				}, {
@@ -161,9 +161,9 @@ function func(evt){
 					example: `fusion.showLoading();
 console.log(fusion.isLoading());
 setTimeout(fusion.hideLoading, 1000);
-fusion.listeners.add(fusion.dialogEvents, 'loaded', loaded);
+fusion.listeners.on(fusion.dialogEvents, 'loaded', loaded);
 function loaded(evt){
-	fusion.listeners.remove(this, evt.type, loaded);
+	fusion.listeners.off(this, evt.type, loaded);
 	console.log(fusion.isLoading());
 }`
 				}, {
@@ -172,9 +172,9 @@ function loaded(evt){
 					example: `fusion.showLoading();
 console.log(fusion.isLoading());
 setTimeout(fusion.hideLoading, 1000);
-fusion.listeners.add(fusion.dialogEvents, 'loaded', loaded);
+fusion.listeners.on(fusion.dialogEvents, 'loaded', loaded);
 function loaded(evt){
-	fusion.listeners.remove(this, evt.type, loaded);
+	fusion.listeners.off(this, evt.type, loaded);
 	console.log(fusion.isLoading());
 }`
 				}, {
@@ -183,9 +183,9 @@ function loaded(evt){
 					example: `fusion.showLoading();
 console.log(fusion.isLoading());
 setTimeout(fusion.hideLoading, 1000);
-fusion.listeners.add(fusion.dialogEvents, 'loaded', loaded);
+fusion.listeners.on(fusion.dialogEvents, 'loaded', loaded);
 function loaded(evt){
-	fusion.listeners.remove(this, evt.type, loaded);
+	fusion.listeners.off(this, evt.type, loaded);
 	console.log(fusion.isLoading());
 }`
 				}, {
@@ -243,23 +243,23 @@ function loaded(evt){
 				}, {
 					title: 'popupEvents.onshow',
 					desc: '弹窗显示时触发',
-					example: `fusion.listeners.add(fusion.popupEvents, 'show', func);
-fusion.listeners.add(fusion.popupEvents, 'hide', func);
+					example: `fusion.listeners.on(fusion.popupEvents, 'show', func);
+fusion.listeners.on(fusion.popupEvents, 'hide', func);
 fusion.openPopup('samplePopup', 'doc');
 function func(evt){
 	console.log(fusion.listeners.list(this));
-	fusion.listeners.remove(this, evt.type, func);
+	fusion.listeners.off(this, evt.type, func);
 	console.log(evt);
 }`
 				}, {
 					title: 'popupEvents.onhide',
 					desc: '弹窗隐藏时触发',
-					example: `fusion.listeners.add(fusion.popupEvents, 'show', func);
-fusion.listeners.add(fusion.popupEvents, 'hide', func);
+					example: `fusion.listeners.on(fusion.popupEvents, 'show', func);
+fusion.listeners.on(fusion.popupEvents, 'hide', func);
 fusion.openPopup('samplePopup', 'doc');
 function func(evt){
 	console.log(fusion.listeners.list(this));
-	fusion.listeners.remove(this, evt.type, func);
+	fusion.listeners.off(this, evt.type, func);
 	console.log(evt);
 }`
 				}, {
@@ -268,9 +268,9 @@ function func(evt){
 					example: `fusion.showLoading();
 console.log(fusion.isLoading());
 setTimeout(fusion.hideLoading, 1000);
-fusion.listeners.add(fusion.dialogEvents, 'loaded', loaded);
+fusion.listeners.on(fusion.dialogEvents, 'loaded', loaded);
 function loaded(evt){
-	fusion.listeners.remove(this, evt.type, loaded);
+	fusion.listeners.off(this, evt.type, loaded);
 	console.log(fusion.isLoading());
 }`
 				}]
