@@ -1,5 +1,5 @@
 'use strict';
-define(['common/kernel/kernel'], function (kernel) {
+define(['common/fusion/fusion'], function (fusion) {
 	//百度统计代码
 	if (location.host === 'your_production_host') {
 		self._hmt = [
@@ -13,18 +13,18 @@ define(['common/kernel/kernel'], function (kernel) {
 				head.removeChild(ipt);
 			}
 		});
-		kernel.listeners.add(kernel.pageEvents, 'route', function () {
-			_hmt.push(['_trackPageview', location.pathname + kernel.buildHash(kernel.location)]);
+		fusion.listeners.add(fusion.pageEvents, 'route', function () {
+			_hmt.push(['_trackPageview', location.pathname + fusion.buildHash(fusion.location)]);
 		});
 	}
-	kernel.listeners.add(kernel.pageEvents, 'routeend', function (evt) {
+	fusion.listeners.add(fusion.pageEvents, 'routeend', function (evt) {
 		//如果上次访问的页面id和当前页id不同，并且不是在history中导航时，则滚动到页面顶部
-		if (kernel.lastLocation && kernel.lastLocation.id !== kernel.location.id && !evt.history && Math.max(document.body.scrollTop, document.documentElement.scrollTop)) {
+		if (fusion.lastLocation && fusion.lastLocation.id !== fusion.location.id && !evt.history && Math.max(document.body.scrollTop, document.documentElement.scrollTop)) {
 			window.scrollTo({
 				top: 0,
 				behavior: 'smooth'
 			});
 		}
 	});
-	kernel.init('doc');
+	fusion.init('doc');
 });

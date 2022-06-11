@@ -1,0 +1,433 @@
+@import "../../config.less";
+
+#dialog,
+#loading,
+#photoview,
+#popup,
+#readable,
+#panel {
+	display: none;
+	-webkit-backdrop-filter: @maskFilter;
+	backdrop-filter: @maskFilter;
+}
+
+#dialog,
+#loading,
+#photoview,
+#popup,
+#readable {
+	position: fixed;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+}
+
+#dialog>div,
+#loading>div,
+#popup>div,
+#readable>div {
+	position: relative;
+	flex: 0 0 auto;
+	margin: auto;
+	background-color: @dialogBackgroundColor;
+	box-shadow: @dropShadow;
+	border-radius: 6px;
+	max-width: 100%;
+	max-height: 100%;
+	overflow: hidden;
+}
+
+#loading>div {
+	text-align: center;
+	font-size: 16px;
+	line-height: 1.5;
+	color: @dialogTextColor;
+	padding: 32px 32px 24px 32px;
+
+	>div {
+		background-image: url("loading.gif");
+		background-repeat: no-repeat;
+		background-position: 50% 0;
+		width: 200px;
+		height: 120px;
+	}
+}
+
+#readable>div {
+	overflow: auto;
+}
+
+#readable.foreign>div>iframe {
+	width: 100%;
+	height: 100%;
+	display: block;
+}
+
+#popup>div>.close,
+#readable>div>.close,
+#dialog>div>.close,
+#panel>.contents>div>.close {
+	position: absolute;
+	right: 2px;
+	top: 2px;
+	width: 30px;
+	height: 30px;
+	-webkit-user-select: none;
+	user-select: none;
+	-webkit-user-drag: none;
+	cursor: pointer;
+
+	>svg {
+		display: block;
+		width: 100%;
+		height: 100%;
+		fill: @closeColor;
+	}
+}
+
+#dialog>div>.btns {
+	display: none;
+}
+
+#dialog.alert,
+#dialog.confirm {
+
+	>div {
+		min-width: 400px;
+
+		>.content {
+			white-space: pre-wrap;
+			font-size: 16px;
+			line-height: 1.5;
+			color: @dialogTextColor;
+			margin: 24px 32px;
+		}
+
+		>.btns {
+			display: block;
+			text-align: center;
+			margin-bottom: 32px;
+
+			>a {
+				display: inline-block;
+				vertical-align: top;
+				margin: 0 20px;
+				width: 100px;
+				line-height: 32px;
+				-webkit-user-select: none;
+				user-select: none;
+				-webkit-user-drag: none;
+				cursor: pointer;
+				background-color: silver;
+			}
+		}
+
+		>.close {
+			display: none;
+		}
+	}
+}
+
+#dialog.alert>div>.btns>.no {
+	display: none;
+}
+
+#readable {
+	position: fixed;
+	width: 100%;
+	height: 100%;
+}
+
+#hint {
+	opacity: 0;
+	text-align: center;
+	position: fixed;
+	top: 80px;
+	left: 0;
+	right: 0;
+	pointer-events: none;
+
+	>span {
+		padding: 10px 20px;
+		font-size: 16px;
+		display: inline-block;
+		white-space: pre;
+		line-height: 1.5;
+		min-width: 200px;
+		background-color: @infoBackgroundColor;
+		border: 1px solid @infoBorderColor;
+		color: @infoTextColor;
+		border-radius: 4px;
+		box-shadow: @dropShadow;
+		-webkit-backdrop-filter: @maskFilter;
+		backdrop-filter: @maskFilter;
+	}
+
+	&.success>span {
+		background-color: @successBackgroundColor;
+		border-color: @successBorderColor;
+		color: @successTextColor;
+	}
+
+	&.warning>span {
+		background-color: @warningBackgroundColor;
+		border-color: @warningBorderColor;
+		color: @warningTextColor;
+	}
+
+	&.error>span {
+		background-color: @errorBackgroundColor;
+		border-color: @errorBorderColor;
+		color: @errorTextColor;
+	}
+}
+
+#photoview {
+	>.imgs {
+		height: 100%;
+		width: 100%;
+		overflow: auto;
+		position: relative;
+		.scrollRules();
+
+		>img {
+			position: absolute;
+			visibility: hidden;
+			transition-duration: 200ms;
+			transition-timing-function: ease-in-out;
+			transition-property: transform, width, height, left, top;
+			-webkit-user-select: none;
+			user-select: none;
+			-webkit-user-drag: none;
+		}
+	}
+
+	&.act {
+		>.close {
+			top: -40px;
+			right: -40px;
+		}
+
+		>.btns {
+			opacity: 1;
+		}
+	}
+
+	>.close {
+		position: absolute;
+		top: -80px;
+		right: -80px;
+		width: 80px;
+		height: 80px;
+		border-radius: 50%;
+		background-color: rgba(255 255 255 / 50%);
+		box-shadow: 0 0 4px rgba(0 0 0 / 50%);
+		backdrop-filter: blur(2px);
+		cursor: pointer;
+		transition-property: top, right;
+		transition-duration: 200ms;
+		transition-timing-function: ease-in-out;
+
+		>svg {
+			display: block;
+			margin: 46px 0 0 14px;
+			width: 20px;
+			height: 20px;
+			fill: @closeColor;
+			pointer-events: none;
+		}
+	}
+
+	>.btns {
+		position: absolute;
+		bottom: 50px;
+		left: 0;
+		right: 0;
+		height: 50px;
+		display: flex;
+		justify-content: center;
+		pointer-events: none;
+		opacity: 0;
+		transition: opacity 200ms ease-in-out;
+
+		>div {
+			display: flex;
+			flex: 0 0 auto;
+			background-color: rgba(0 0 0 / 50%);
+			border-radius: 12.5px;
+			height: 100%;
+			overflow: hidden;
+			backdrop-filter: blur(2px);
+			box-shadow: 0 0 4px rgba(0 0 0 / 50%);
+
+			>a {
+				flex: 0 0 30px;
+				display: block;
+				height: 30px;
+				pointer-events: all;
+				cursor: pointer;
+				padding: 10px;
+				border-radius: 12.5px;
+
+				&:active {
+					background-color: rgba(128 128 255 / 50%);
+				}
+
+				>svg {
+					display: block;
+					width: 30px;
+					height: 30px;
+					fill: @photoViewBtnColor;
+					pointer-events: none;
+				}
+			}
+		}
+	}
+
+	>.rotate {
+		display: none;
+		bottom: 0;
+		left: 50%;
+		font-size: 100px;
+		width: 100px;
+		height: 100px;
+
+		&.n {
+			margin-left: -100px;
+		}
+
+		&.p {
+			transform: scaleX(-1);
+		}
+	}
+
+	>.next,
+	>.prev {
+		top: 50%;
+		margin-top: -50px;
+		font-size: 100px;
+		width: 100px;
+		height: 100px;
+		display: none;
+	}
+
+	>.prev {
+		left: 0;
+	}
+
+	>.next {
+		right: 0;
+	}
+}
+
+#panel {
+	background-color: rgba(0, 0, 0, 0.5);
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	right: 0;
+	left: 0;
+
+	>.mask {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		right: 0;
+		left: 0;
+	}
+
+	>.contents {
+		position: absolute;
+		left: 100%;
+		height: 100%;
+
+		>div {
+			position: relative;
+			height: 100%;
+			width: 100%;
+			background-color: @dialogBackgroundColor;
+
+			>div {
+				position: absolute;
+				top: 0;
+				left: 0;
+				bottom: 0;
+				right: 0;
+			}
+		}
+	}
+}
+
+#tips {
+	overflow: hidden;
+	position: fixed;
+	bottom: 0;
+	right: 0;
+	pointer-events: none;
+	width: 220px;
+
+	>div {
+		position: relative;
+		pointer-events: auto;
+		margin: 10px;
+		width: calc(100% - 50px);
+		color: @infoTextColor;
+		background-color: @infoBackgroundColor;
+		border: 1px solid @infoBorderColor;
+		box-shadow: @dropShadow;
+		border-radius: 4px;
+		font-size: 14px;
+		padding: 11px 14px;
+		line-height: 20px;
+		white-space: pre-wrap;
+		transition-property: none;
+		transition-duration: 200ms;
+		transition-timing-function: ease-in-out;
+		-webkit-backdrop-filter: @maskFilter;
+		backdrop-filter: @maskFilter;
+
+		>.close {
+			position: absolute;
+			top: 1px;
+			right: 1px;
+			font-size: 12px;
+			width: 12px;
+			text-align: center;
+			line-height: 1;
+			cursor: pointer;
+
+			&:hover {
+				text-shadow: 0 0 1px rgba(0, 0, 0, 0.5);
+			}
+		}
+
+		&.success {
+			background-color: @successBackgroundColor;
+			border-color: @successBorderColor;
+			color: @successTextColor;
+		}
+
+		&.warning {
+			background-color: @warningBackgroundColor;
+			border-color: @warningBorderColor;
+			color: @warningTextColor;
+		}
+
+		&.error {
+			background-color: @errorBackgroundColor;
+			border-color: @errorBorderColor;
+			color: @errorTextColor;
+		}
+	}
+}
+
+.isLoading {
+	background-image: url("loading.gif");
+	background-repeat: no-repeat;
+	background-position: 50% 50%;
+
+	>* {
+		visibility: hidden;
+	}
+}

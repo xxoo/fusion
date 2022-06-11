@@ -1,16 +1,26 @@
 ! function () {
 	'use strict';
-	var swfile = 'sw.js',
-		src, prefix, cfg, n;
-	if (document.documentElement.animate) {
-		src = document.currentScript.getAttribute('src');
+	if (typeof Element.prototype.replaceChildren !== 'function') {
+		Element.prototype.replaceChildren = function (...nodes) {
+			this.innerHTML = '';
+			for (let i = 0; i < s.length; i++) {
+				this.append(nodes[i]);
+			}
+		};
+	}
+	if (typeof Object.hasOwn !== 'function') {
+		Object.hasOwn = (o, p) => Object.prototype.hasOwnProperty.call(o, p);
+	}
+	const swfile = 'sw.js',
+		src = document.currentScript.getAttribute('src'),
 		prefix = src.replace(/framework\/[^\/]+$/, '');
-		cfg = {
+	if (document.documentElement.animate) {
+		const cfg = {
 			waitSeconds: 0,
 			baseUrl: prefix + 'dev/'
 		};
 		if (BUILD) {
-			for (n in MODULES) {
+			for (const n in MODULES) {
 				MODULES[n] = prefix + 'dist/' + n + '/' + MODULES[n];
 			}
 			cfg.paths = MODULES;
@@ -22,7 +32,8 @@
 				init();
 			} else {
 				navigator.serviceWorker.register(swfile, {
-					scope: './'
+					scope: './',
+					type: 'module'
 				}).then(function (registration) {
 					postmsg(registration.installing || registration.waiting || registration.active);
 					location.reload();
@@ -38,7 +49,7 @@
 	}
 
 	function postmsg(controller) {
-		var msg;
+		let msg;
 		if (BUILD) {
 			RES_TO_CACHE.push(src);
 			msg = {
@@ -47,7 +58,7 @@
 				framework: RES_TO_CACHE,
 				modules: []
 			};
-			for (n in MODULES) {
+			for (const n in MODULES) {
 				msg.modules.push(MODULES[n]);
 			}
 		} else {
@@ -57,21 +68,31 @@
 	}
 
 	function init() {
-		var l = document.createElement('link'),
+		const l = document.createElement('link'),
 			m = document.createElement('link');
 		if (BUILD) {
+			let n;
 			l.rel = m.rel = 'stylesheet';
 			l.href = require.toUrl('site/index/index.css');
-			m.href = require.toUrl('common/kernel/kernel.css');
-			l.onload = m.onload = trystart;
-			n = false;
+			m.href = require.toUrl('common/fusion/fusion.css');
+			l.onload = m.onload = function () {
+				this.onload = null;
+				if (n) {
+					start();
+				} else {
+					n = true;
+				}
+			};
 		} else {
 			l.rel = m.rel = 'stylesheet/less';
 			l.href = require.toUrl('site/index/index.less');
-			m.href = require.toUrl('common/kernel/kernel.less');
-			require([prefix + 'framework/less.js'], function () {
-				less.pageLoadFinished.then(start);
-			});
+			m.href = require.toUrl('common/fusion/fusion.less');
+			require([prefix + 'framework/less.js'], () => less.pageLoadFinished.then(start));
+			self.less = {
+				env: 'development',
+				errorReporting: 'console',
+				logLevel: 0
+			};
 		}
 		document.head.appendChild(m);
 		document.head.appendChild(l);
@@ -79,14 +100,5 @@
 
 	function start() {
 		require(['site/index/index']);
-	}
-
-	function trystart() {
-		this.onload = null;
-		if (n) {
-			start();
-		} else {
-			n = true;
-		}
 	}
 }();

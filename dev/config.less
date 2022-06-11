@@ -1,4 +1,3 @@
-@defaultfont: Microsoft YaHei UI, Microsoft YaHei, PingFang SC, Heiti SC;
 @closeColor: #333333;
 @closeShadowColor: white;
 @dialogBackgroundColor: white;
@@ -8,16 +7,43 @@
 @dialogNoBackgroundColor: #374e5e;
 @dialogNoTextColor: white;
 @photoViewBtnColor: white;
-@photoViewBtnShadowColor: black;
 @infoBackgroundColor: #d9edf7;
 @infoBorderColor: #bce8f1;
 @infoTextColor: #31708f;
-@successBackgroundColor: #dff0d8;
-@successBorderColor: #d6e9c6;
+@successBackgroundColor: fade(#dff0d8, 80%);
+@successBorderColor: fade(#d6e9c6, 80%);
 @successTextColor: #3c763d;
-@warningBackgroundColor: #fcf8e3;
-@warningBorderColor: #faebcc;
+@warningBackgroundColor: fade(#fcf8e3, 80%);
+@warningBorderColor: fade(#faebcc, 80%);
 @warningTextColor: #8a6d3b;
-@errorBackgroundColor: #f2dede;
-@errorBorderColor: #ebccd1;
+@errorBackgroundColor: fade(#f2dede, 80%);
+@errorBorderColor: fade(#ebccd1, 80%);
 @errorTextColor: #a94442;
+@maskFilter: blur(4px);
+@dropShadow: 0 0 4px rgba(0, 0, 0, 0.5);
+
+.scrollRules() {
+	scrollbar-width: thin;
+	scrollbar-color: rgba(255 255 255 / 50%);
+
+	&::-webkit-scrollbar {
+		width: 11px;
+		height: 11px;
+		background-color: rgba(255 255 255 / 50%);
+	}
+
+	&::-webkit-scrollbar-thumb {
+		border: 1.5px solid transparent;
+		border-radius: 5.5px;
+		background-clip: content-box;
+		background-color: rgba(0, 0, 0, 0.3);
+
+		&:not(:active):hover {
+			background-color: rgba(0, 0, 0, 0.4);
+		}
+
+		&:active {
+			background-color: rgba(0, 0, 0, 0.5);
+		}
+	}
+}

@@ -1,5 +1,5 @@
 'use strict';
-define(['common/kernel/kernel', './lang'], function (kernel, lang) {
+define(['common/fusion/fusion', './lang'], function (fusion, lang) {
 	let tabMenu = document.createElement('div');
 	tabMenu.innerHTML = '<a class="reload" href="javascript:;">' + lang.reload + '</a><a class="closeOther" href="javascript:;">' + lang.closeOther + '</a><a class="closeLeft" href="javascript:;">' + lang.closeLeft + '</a><a class="closeRight" href="javascript:;">' + lang.closeRight + '</a>';
 	let tabProto = {
@@ -16,7 +16,7 @@ define(['common/kernel/kernel', './lang'], function (kernel, lang) {
 				} else {
 					setDefault(o.args, this.cfg[o.id].args);
 					for (i = 0; i < this.list.length; i++) {
-						if (kernel.isSameLocation(o, this.list[i])) {
+						if (fusion.isSameLocation(o, this.list[i])) {
 							found = true;
 							break;
 						}
@@ -58,12 +58,12 @@ define(['common/kernel/kernel', './lang'], function (kernel, lang) {
 				this.list.push(o);
 				this.tabs.push(tab);
 				if (typeof this.cfg[o.id].css === 'string') {
-					this.cfg[o.id].css = kernel.appendCss(require.toUrl(m + this.cfg[o.id].css));
+					this.cfg[o.id].css = fusion.appendCss(require.toUrl(m + this.cfg[o.id].css));
 				}
 				if (this.cfg[o.id].status === 2) {
 					initTab();
 				} else {
-					kernel.listeners.add(this.cfg[o.id], 'complete', oncomplete);
+					fusion.listeners.on(this.cfg[o.id], 'complete', oncomplete);
 					if (this.cfg[o.id].status !== 1) {
 						this.cfg[o.id].status = 1;
 						if ('html' in this.cfg[o.id]) {
@@ -86,8 +86,8 @@ define(['common/kernel/kernel', './lang'], function (kernel, lang) {
 										errorOccurs(url, res.status);
 									}
 								}
-							}, err => errorOccurs(url, err.message)).then(kernel.hideLoading);
-							kernel.showLoading();
+							}, err => errorOccurs(url, err.message)).then(fusion.hideLoading);
+							fusion.showLoading();
 						} else {
 							loadJs();
 						}
@@ -103,7 +103,7 @@ define(['common/kernel/kernel', './lang'], function (kernel, lang) {
 			}
 
 			function oncomplete(evt) {
-				kernel.listeners.remove(self.cfg[o.id], 'complete', oncomplete);
+				fusion.listeners.off(self.cfg[o.id], 'complete', oncomplete);
 				i = self.tabs.indexOf(tab);
 				if (self.cfg[o.id].status === 2) {
 					initTab();
@@ -120,7 +120,7 @@ define(['common/kernel/kernel', './lang'], function (kernel, lang) {
 			function loadJs() {
 				let js;
 				if ('js' in self.cfg[o.id]) {
-					kernel.showLoading();
+					fusion.showLoading();
 					js = m + self.cfg[o.id].js;
 					require([js], function (proto) {
 						delete self.cfg[o.id].js;
@@ -129,7 +129,7 @@ define(['common/kernel/kernel', './lang'], function (kernel, lang) {
 						self.cfg[o.id].oncomplete({
 							type: 'complete'
 						});
-						kernel.hideLoading();
+						fusion.hideLoading();
 					}, BUILD && function (error) {
 						require.undef(js);
 						self.cfg[o.id].status = 0;
@@ -141,7 +141,7 @@ define(['common/kernel/kernel', './lang'], function (kernel, lang) {
 						} else {
 							updated();
 						}
-						kernel.hideLoading();
+						fusion.hideLoading();
 					});
 				} else {
 					self.cfg.status = 2;
@@ -344,7 +344,7 @@ define(['common/kernel/kernel', './lang'], function (kernel, lang) {
 			}));
 		}
 	};
-	kernel.appendCss(require.toUrl('common/tab/tab.less'));
+	fusion.appendCss(require.toUrl('common/tab/tab.less'));
 
 	return function (name, cfg, tabCtn, tabContent, inv) {
 		let r = Object.create(tabProto);
@@ -429,11 +429,11 @@ define(['common/kernel/kernel', './lang'], function (kernel, lang) {
 	}
 
 	function errorOccurs(res, msg) {
-		kernel.alert(lang.error.replace('${res}', res) + msg);
+		fusion.alert(lang.error.replace('${res}', res) + msg);
 	}
 
 	function updated() {
-		kernel.confirm(lang.update, function (sure) {
+		fusion.confirm(lang.update, function (sure) {
 			if (sure) {
 				location.reload();
 			}
