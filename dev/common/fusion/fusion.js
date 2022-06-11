@@ -824,7 +824,7 @@ define(['common/slider/slider', 'common/svgicos/svgicos', 'site/pages/pages', 's
 				} else {
 					txt.innerHTML = '';
 				}
-				dlgCtn.className = 'type';
+				dlgCtn.className = type;
 				dlgCtn.style.display = 'flex';
 				++dlgId;
 				onClose = onclose;
