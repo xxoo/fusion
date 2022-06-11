@@ -344,7 +344,7 @@ define(['common/slider/slider', 'common/svgicos/svgicos', 'site/pages/pages', 's
 			}
 		};
 		// 获取当前显示的 panel id
-		Object.defineProperty('currentPanel', {
+		Object.defineProperty(fusion, 'currentPanel', {
 			get: function () {
 				return activePanel;
 			}
@@ -478,7 +478,7 @@ define(['common/slider/slider', 'common/svgicos/svgicos', 'site/pages/pages', 's
 			}
 		};
 		// 获取当前显示的 popup id
-		Object.defineProperty('currentPopup', {
+		Object.defineProperty(fusion, 'currentPopup', {
 			get: function () {
 				return activePopup;
 			}
@@ -789,7 +789,7 @@ define(['common/slider/slider', 'common/svgicos/svgicos', 'site/pages/pages', 's
 		fusion.confirm = (text, onclose, onopen) => openDialog('confirm', text, onclose, onopen);
 		fusion.alert = (text, onclose, onopen) => openDialog('alert', text, onclose, onopen);
 		fusion.htmlDialog = (html, className, onclose, onopen) => openDialog(className || '', html, onclose, onopen);
-		Object.defineProperty('isLoading', {
+		Object.defineProperty(fusion, 'isLoading', {
 			get: function () {
 				return loadingRT > 0;
 			}
