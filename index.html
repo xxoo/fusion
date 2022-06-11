@@ -21,52 +21,52 @@
 			MODULES = {},
 			RES_TO_CACHE = [];
 	</script>
-	<script src='/fusion/framework/all.js?2' async></script>
+	<script src='/fusion/framework/all.js?3' async></script>
 </head>
 
-<body class="loading">
+<body>
 	<div id="page"></div>
+	<div id="tips"></div>
 	<div id="panel">
 		<div class="mask"></div>
 		<div class="contents">
 			<div>
-				<a class="close" href="javascript:;">✕</a>
+				<a class="close"></a>
 			</div>
 		</div>
 	</div>
 	<div id="popup">
 		<div>
-			<a class="close" href="javascript:;">✕</a>
+			<a class="close"></a>
 		</div>
 	</div>
 	<div id="photoview">
-		<div></div>
-		<a class="close" href="javascript:;">✕</a>
-		<a class="prev" href="javascript:;">‹</a>
-		<a class="next" href="javascript:;">›</a>
-		<a class="rotate p" href="javascript:;">⤺</a>
-		<a class="rotate n" href="javascript:;">⤺</a>
+		<div class="imgs"></div>
+		<a class="close"></a>
+		<div class="btns">
+			<div>
+				<a class="prev"></a>
+				<a class="flip"></a>
+				<a class="rotate"></a>
+				<a class="next"></a>
+			</div>
+		</div>
 	</div>
 	<div id="readable">
 		<div>
 			<div></div>
-			<a class="close" href="javascript:;">✕</a>
+			<a class="close"></a>
 		</div>
 	</div>
 	<div id="dialog">
 		<div>
-			<div>
-				<div></div>
-			</div>
-			<a class="close" href="javascript:;">✕</a>
-			<a class="yes" href="javascript:;"></a>
-			<a class="no" href="javascript:;"></a>
+			<div class="content"></div>
+			<div class="btns"><a class="yes"></a><a class="no"></a></div>
+			<a class="close"></a>
 		</div>
 	</div>
 	<div id="loading">
-		<div>
-			<div>Loading...</div>
-		</div>
+		<div><div></div>Loading...</div>
 	</div>
 	<div id="hint">
 		<span></span>
