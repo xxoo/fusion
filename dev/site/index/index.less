@@ -2,6 +2,41 @@
 
 * {
 	z-index: 0;
+	-webkit-user-drag: none;
+	scrollbar-width: thin;
+	scrollbar-color: whitesmoke;
+}
+
+::-webkit-scrollbar {
+	width: 11px;
+	height: 11px;
+	border-left: 1px solid gainsboro;
+	background-color: whitesmoke;
+
+	&:horizontal {
+		border-left: none;
+		border-top: 1px solid gainsboro;
+	}
+}
+
+::-webkit-scrollbar-thumb {
+	background-clip: content-box;
+	background-color: rgba(0, 0, 0, 0.3);
+	border: 2px solid transparent;
+	border-left-width: 3px;
+
+	&:horizontal {
+		border-left: none;
+		border-top-width: 3px;
+	}
+
+	&:not(:active):hover {
+		background-color: rgba(0, 0, 0, 0.4);
+	}
+
+	&:active {
+		background-color: rgba(0, 0, 0, 0.5);
+	}
 }
 
 html {
