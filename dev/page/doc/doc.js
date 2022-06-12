@@ -17,8 +17,8 @@ define(['module', 'common/fusion/fusion'], function (module, fusion) {
 					desc: '获取当前正在显示的弹窗id',
 					example: `console.log(fusion.currentPopup);`
 				}, {
-					title: 'showLoading(text?:string):undefined',
-					desc: '显示加载中界面, 这个方法包含一个引用计数, 每次调用会+1, 所以此方法必须和hideLoading成对使用',
+					title: 'isLoading:boolean',
+					desc: '判断加载中界面是否在显示',
 					example: `fusion.showLoading();
 console.log(fusion.isLoading);
 setTimeout(fusion.hideLoading, 1000);
@@ -178,8 +178,8 @@ function loaded(evt){
 	console.log(fusion.isLoading);
 }`
 				}, {
-					title: 'isLoading:boolean',
-					desc: '判断加载中界面是否在显示',
+					title: 'showLoading(text?:string):undefined',
+					desc: '显示加载中界面, 这个方法包含一个引用计数, 每次调用会+1, 所以此方法必须和hideLoading成对使用',
 					example: `fusion.showLoading();
 console.log(fusion.isLoading);
 setTimeout(fusion.hideLoading, 1000);
