@@ -53,13 +53,11 @@
 		if (BUILD) {
 			RES_TO_CACHE.push(src);
 			msg = {
-				home: location.pathname.replace(/(index\.html)?$/, ''),
-				prefix: prefix,
 				framework: RES_TO_CACHE,
-				modules: []
+				module: []
 			};
 			for (const n in MODULES) {
-				msg.modules.push(MODULES[n]);
+				msg.module.push(MODULES[n]);
 			}
 		} else {
 			msg = prefix;
