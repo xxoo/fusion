@@ -54,7 +54,7 @@
 			RES_TO_CACHE.push(src);
 			msg = {
 				framework: RES_TO_CACHE,
-				module: []
+				module: DIR_TO_CACHE
 			};
 			for (const n in MODULES) {
 				msg.module.push(MODULES[n]);
