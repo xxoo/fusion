@@ -39,7 +39,7 @@ define(['common/slider/slider', 'common/svgicos/svgicos', 'site/pages/pages', 's
 				if (name in svgicos) {
 					name = svgicos[name];
 				}
-				svg.firstChild.setAttribute('d', name);
+				svg.firstElementChild.setAttribute('d', name);
 				let box;
 				if (type == 3) {
 					box = {
@@ -497,6 +497,7 @@ define(['common/slider/slider', 'common/svgicos/svgicos', 'site/pages/pages', 's
 			next = btnCtn.querySelector('a.next'),
 			flip = btnCtn.querySelector('a.flip'),
 			rotate = btnCtn.querySelector('a.rotate'),
+			down = btnCtn.querySelector('a.down'),
 			imgs = ctn.querySelector('.imgs'),
 			sld = slider(imgs),
 			siz = [],
@@ -599,12 +600,14 @@ define(['common/slider/slider', 'common/svgicos/svgicos', 'site/pages/pages', 's
 					chksz(this.current);
 				}
 				ctn.style.display = 'flex';
+				down.href = this.children[this.current].src;
 			}
 		};
 		prev.appendChild(fusion.makeSvg('mdiChevronLeft', 1));
 		next.appendChild(fusion.makeSvg('mdiChevronRight', 1));
 		flip.appendChild(fusion.makeSvg('mdiFlipHorizontal', 1));
 		rotate.appendChild(fusion.makeSvg('mdiFileRotateRightOutline', 1));
+		down.appendChild(fusion.makeSvg('mdiTrayArrowDown', 1));
 		close.appendChild(fusion.makeSvg('mdiCloseThick', 1));
 		rsz();
 		function hideBtns() {
@@ -942,7 +945,7 @@ define(['common/slider/slider', 'common/svgicos/svgicos', 'site/pages/pages', 's
 								destroy(pages[currentpage], 'popup', activePopup);
 							}
 						}
-						document.body.className = currentpage = nl.id;
+						currentpage = nl.id;
 						sel('page', nl.id).style.display = '';
 						pages[nl.id].status++;
 						if (typeof pages[nl.id].onload === 'function') {
